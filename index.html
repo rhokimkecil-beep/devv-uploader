@@ -3,1127 +3,191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DEV — Roblox Asset Uploader</title>
+<title>DEV UPLOADER — Premium Asset Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --void: #020408;
-  --deep: #060d18;
-  --surface: #0b1525;
-  --glass: rgba(255,255,255,0.03);
-  --glass2: rgba(255,255,255,0.06);
-  --rim: rgba(255,255,255,0.07);
-  --rim2: rgba(255,255,255,0.12);
-  --gold: #c9a84c;
-  --gold2: #f0d080;
-  --gold-glow: rgba(201,168,76,0.3);
-  --teal: #00e5c8;
-  --teal-dim: rgba(0,229,200,0.15);
-  --red: #ff4466;
-  --red-dim: rgba(255,68,102,0.15);
-  --green: #00e5a0;
-  --text: #dde6f0;
-  --muted: #4a6080;
-  --muted2: #7a90a8;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--void);
-  color: var(--text);
-  font-family: 'Syne', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-  cursor: default;
-}
-
-/* ── CANVAS ── */
-#c { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-
-/* ── SCANLINES ── */
-.scanlines {
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
-}
-
-/* ── VIGNETTE ── */
-.vignette {
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
-}
-
-/* ── LAYOUT ── */
-.wrap { position: relative; z-index: 2; max-width: 500px; margin: 0 auto; padding: 0 16px 80px; }
-
-/* ── HEADER ── */
-.hdr { padding: 52px 0 40px; text-align: center; }
-
-.hdr-eyebrow {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 4px;
-  color: var(--gold); text-transform: uppercase;
-  border: 1px solid rgba(201,168,76,0.25); border-radius: 100px;
-  padding: 5px 16px; margin-bottom: 20px;
-  background: rgba(201,168,76,0.06);
-  animation: fadeUp 1s ease both;
-}
-
-.hdr-eyebrow-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--gold); box-shadow: 0 0 8px var(--gold);
-  animation: blink 2s infinite;
-}
-
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-.hdr-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(60px, 18vw, 88px);
-  letter-spacing: 8px;
-  line-height: 0.9;
-  display: block;
-  background: linear-gradient(160deg, #fff 0%, var(--gold2) 30%, var(--gold) 55%, #8b6520 80%, var(--gold) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 40px rgba(201,168,76,0.25));
-  animation: fadeUp 1s 0.1s ease both;
-}
-
-.hdr-tagline {
-  font-family: 'DM Mono', monospace; font-size: 10px;
-  letter-spacing: 6px; color: var(--muted); text-transform: uppercase;
-  margin-top: 8px; animation: fadeUp 1s 0.2s ease both;
-}
-
-.hdr-rule {
-  display: flex; align-items: center; gap: 0; margin: 28px auto 0; width: 180px;
-  animation: fadeUp 1s 0.3s ease both;
-}
-.hdr-rule-line { flex:1; height:1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent); }
-.hdr-rule-gem { width:7px;height:7px; background:var(--gold); transform:rotate(45deg); box-shadow:0 0 12px var(--gold); }
-
-/* ── COIN BAR ── */
-.coin-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  background: var(--glass); border: 1px solid var(--rim);
-  border-radius: 16px; padding: 14px 20px; margin-bottom: 20px;
-  backdrop-filter: blur(20px); animation: fadeUp 1s 0.4s ease both;
-}
-
-.coin-bar-left { display: flex; align-items: center; gap: 10px; }
-
-.coin-icon {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: conic-gradient(var(--gold) 0deg, var(--gold2) 90deg, var(--gold) 180deg, #7a5010 270deg, var(--gold) 360deg);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; position: relative;
-  box-shadow: 0 0 20px rgba(201,168,76,0.3);
-  animation: spinSlow 6s linear infinite;
-}
-.coin-icon::before {
-  content:''; position:absolute; inset:3px; border-radius:50%;
-  background: var(--deep);
-}
-.coin-icon span { position:relative; z-index:1; font-size:14px; }
-
-@keyframes spinSlow { from{box-shadow:0 0 20px rgba(201,168,76,0.3)} 50%{box-shadow:0 0 35px rgba(201,168,76,0.5)} to{box-shadow:0 0 20px rgba(201,168,76,0.3)} }
-
-.coin-info-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:2px; }
-.coin-info-val { font-size:20px; font-weight:800; background:linear-gradient(135deg,var(--gold2),var(--gold)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
-
-.coin-bar-btns { display:flex; gap:6px; }
-
-.btn-topup-quick {
-  padding:8px 16px; border:1px solid rgba(201,168,76,0.3); border-radius:10px;
-  background:rgba(201,168,76,0.08); color:var(--gold); font-family:'Syne',sans-serif;
-  font-size:11px; font-weight:700; letter-spacing:1px; cursor:pointer;
-  transition:all 0.25s;
-}
-.btn-topup-quick:hover { background:rgba(201,168,76,0.15); border-color:rgba(201,168,76,0.6); transform:translateY(-1px); }
-
-/* ── TABS ── */
-.tabs {
-  display:flex; gap:2px; padding:4px;
-  background:var(--glass); border:1px solid var(--rim);
-  border-radius:18px; margin-bottom:20px;
-  backdrop-filter:blur(20px);
-  animation: fadeUp 1s 0.5s ease both;
-  position:relative;
-}
-
-.tab-slider {
-  position:absolute; top:4px; height:calc(100% - 8px);
-  border-radius:14px;
-  background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
-  border:1px solid rgba(201,168,76,0.3);
-  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
-  z-index:0;
-  box-shadow: 0 0 20px rgba(201,168,76,0.1);
-}
-
-.tab-btn {
-  flex:1; padding:12px 6px; border:none; background:none;
-  color:var(--muted); font-family:'Syne',sans-serif;
-  font-size:10px; font-weight:700; letter-spacing:1.5px;
-  text-transform:uppercase; cursor:pointer; border-radius:14px;
-  transition:color 0.3s; position:relative; z-index:1;
-  display:flex; align-items:center; justify-content:center; gap:5px;
-}
-.tab-btn.active { color:var(--gold2); }
-.tab-btn:not(.active):hover { color:var(--muted2); }
-.tab-btn .ti { font-size:13px; }
-
-/* ── PANEL ── */
-.panel { display:none; animation: fadeUp 0.5s ease both; }
-.panel.active { display:block; }
-
-/* ── CARD ── */
-.card {
-  background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-  border:1px solid var(--rim); border-radius:24px; padding:28px;
-  backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px);
-  position:relative; overflow:hidden; margin-bottom:16px;
-}
-
-.card::before {
-  content:''; position:absolute; top:0; left:15%; right:15%; height:1px;
-  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.7),transparent);
-}
-
-.card-corner {
-  position:absolute; width:40px; height:40px;
-  border-color:rgba(201,168,76,0.2); border-style:solid; border-width:0;
-}
-.card-corner.tl { top:12px; left:12px; border-top-width:1px; border-left-width:1px; border-top-left-radius:6px; }
-.card-corner.tr { top:12px; right:12px; border-top-width:1px; border-right-width:1px; border-top-right-radius:6px; }
-.card-corner.bl { bottom:12px; left:12px; border-bottom-width:1px; border-left-width:1px; border-bottom-left-radius:6px; }
-.card-corner.br { bottom:12px; right:12px; border-bottom-width:1px; border-right-width:1px; border-bottom-right-radius:6px; }
-
-.card-glow {
-  position:absolute; top:-100px; right:-100px; width:280px; height:280px;
-  background:radial-gradient(circle,rgba(201,168,76,0.04) 0%,transparent 70%);
-  pointer-events:none;
-}
-
-/* ── CARD TITLE ── */
-.ctitle {
-  display:flex; align-items:center; gap:12px; margin-bottom:24px;
-}
-.ctitle-icon {
-  width:40px;height:40px; border-radius:12px;
-  background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));
-  border:1px solid rgba(201,168,76,0.25);
-  display:flex;align-items:center;justify-content:center;font-size:18px;
-  flex-shrink:0;
-}
-.ctitle-text { font-size:13px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase; }
-.ctitle-sub { font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);margin-top:2px; }
-
-/* ── INFO BOX ── */
-.infobox {
-  background:rgba(0,229,200,0.05); border:1px solid rgba(0,229,200,0.15);
-  border-radius:12px; padding:14px 16px; margin-bottom:22px;
-  font-family:'DM Mono',monospace;font-size:11px;color:rgba(0,229,200,0.7);line-height:1.7;
-}
-.infobox a { color:var(--teal); border-bottom:1px solid rgba(0,229,200,0.3); text-decoration:none; }
-
-/* ── FIELD ── */
-.field { margin-bottom:18px; }
-
-.flabel {
-  display:flex;align-items:center;gap:6px;
-  font-family:'DM Mono',monospace;font-size:9px;
-  letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;
-}
-.flabel-gem { width:4px;height:4px;background:var(--gold);border-radius:50%; }
-
-.finput {
-  width:100%; background:rgba(255,255,255,0.025); border:1px solid var(--rim);
-  border-radius:12px; padding:13px 16px; color:var(--text);
-  font-family:'DM Mono',monospace;font-size:13px;
-  transition:all 0.25s; outline:none; -webkit-appearance:none;
-}
-.finput::placeholder { color:var(--muted); }
-.finput:focus {
-  border-color:rgba(201,168,76,0.5);
-  background:rgba(201,168,76,0.03);
-  box-shadow:0 0 0 3px rgba(201,168,76,0.07), 0 0 24px rgba(201,168,76,0.04);
-}
-.finput:hover:not(:focus) { border-color:var(--rim2); }
-
-select.finput {
-  cursor:pointer;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a6080'/%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:right 14px center;
-  padding-right:36px;
-}
-select.finput option { background:#0b1525; color:var(--text); }
-
-/* ── DIVIDER ── */
-.div { height:1px;background:linear-gradient(90deg,transparent,var(--rim),transparent);margin:22px 0; }
-
-/* ── DROPZONE ── */
-.dz {
-  position:relative; border:1.5px dashed rgba(255,255,255,0.08);
-  border-radius:18px; padding:34px 20px; text-align:center;
-  cursor:pointer; transition:all 0.35s;
-  background:rgba(255,255,255,0.01); overflow:hidden;
-}
-.dz::before {
-  content:''; position:absolute; inset:0;
-  background:radial-gradient(ellipse at 50% 110%,rgba(201,168,76,0.06) 0%,transparent 65%);
-  opacity:0;transition:opacity 0.35s;
-}
-.dz:hover,.dz.over { border-color:rgba(201,168,76,0.4); background:rgba(201,168,76,0.025); }
-.dz:hover::before,.dz.over::before { opacity:1; }
-.dz input { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
-
-.dz-orb {
-  width:64px;height:64px;margin:0 auto 16px;
-  border-radius:20px;
-  background:linear-gradient(135deg,rgba(201,168,76,0.12),rgba(201,168,76,0.04));
-  border:1px solid rgba(201,168,76,0.2);
-  display:flex;align-items:center;justify-content:center;font-size:26px;
-  transition:all 0.35s;
-  box-shadow:0 8px 32px rgba(0,0,0,0.3);
-}
-.dz:hover .dz-orb { transform:translateY(-4px) scale(1.05); box-shadow:0 16px 40px rgba(201,168,76,0.15); }
-
-.dz-title { font-size:15px;font-weight:700;margin-bottom:5px; }
-.dz-sub { font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px; }
-
-.dz-formats {
-  display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:12px;
-}
-.dz-fmt {
-  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;
-  background:rgba(255,255,255,0.04);border:1px solid var(--rim);
-  border-radius:5px;padding:3px 8px;color:var(--muted);
-}
-.dz-fmt.rbxm { border-color:rgba(255,68,102,0.2);color:rgba(255,68,102,0.6); }
-.dz-fmt.img { border-color:rgba(0,229,200,0.2);color:rgba(0,229,200,0.6); }
-.dz-fmt.audio { border-color:rgba(201,168,76,0.2);color:rgba(201,168,76,0.6); }
-.dz-fmt.mesh { border-color:rgba(139,92,246,0.2);color:rgba(139,92,246,0.6); }
-
-/* ── FILE CHIP ── */
-.fchip {
-  display:none;align-items:center;gap:10px;
-  background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.2);
-  border-radius:14px;padding:12px 14px;margin-top:10px;
-}
-.fchip.show { display:flex;animation:chipIn 0.35s cubic-bezier(0.22,1,0.36,1); }
-@keyframes chipIn { from{opacity:0;transform:translateY(8px)scale(0.96)} to{opacity:1;transform:none} }
-.fchip-ico { width:38px;height:38px;background:rgba(0,229,160,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0; }
-.fchip-info { flex:1;min-width:0; }
-.fchip-name { font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.fchip-size { font-family:'DM Mono',monospace;font-size:10px;color:var(--green);margin-top:2px; }
-.fchip-rm { width:30px;height:30px;background:var(--red-dim);border:1px solid rgba(255,68,102,0.2);border-radius:8px;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:background 0.2s; }
-.fchip-rm:hover { background:rgba(255,68,102,0.25); }
-
-/* ── RBXM NOTICE ── */
-.rbxm-notice {
-  display:none;background:rgba(255,68,102,0.07);border:1px solid rgba(255,68,102,0.2);
-  border-radius:12px;padding:14px 16px;margin-top:10px;
-  font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,68,102,0.8);line-height:1.7;
-}
-.rbxm-notice.show { display:block;animation:chipIn 0.35s ease; }
-.rbxm-notice strong { color:var(--red); }
-
-/* ── COST PREVIEW ── */
-.cost-preview {
-  display:flex;align-items:center;justify-content:space-between;
-  background:rgba(255,255,255,0.02);border:1px solid var(--rim);
-  border-radius:12px;padding:12px 16px;margin-bottom:18px;
-}
-.cost-label { font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px; }
-.cost-val { display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--gold); }
-
-/* ── UPLOAD BUTTON ── */
-.btn-up {
-  width:100%;padding:17px;border:none;border-radius:16px;
-  background:linear-gradient(100deg,#8b6520 0%,var(--gold) 25%,var(--gold2) 50%,var(--gold) 75%,#8b6520 100%);
-  background-size:300% 100%;
-  color:#07050a;font-family:'Bebas Neue',sans-serif;
-  font-size:18px;letter-spacing:4px;cursor:pointer;
-  position:relative;overflow:hidden;transition:all 0.4s;
-  box-shadow:0 4px 30px rgba(201,168,76,0.25), inset 0 1px 0 rgba(255,255,255,0.25);
-}
-.btn-up:hover:not(:disabled) {
-  background-position:100% 0;transform:translateY(-2px);
-  box-shadow:0 10px 50px rgba(201,168,76,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
-}
-.btn-up:active:not(:disabled) { transform:translateY(0); }
-.btn-up:disabled { opacity:0.35;cursor:not-allowed; }
-.btn-up .shim {
-  position:absolute;top:0;left:-100%;width:40%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
-  transform:skewX(-20deg);animation:shim 3.5s infinite;
-}
-@keyframes shim { 0%{left:-100%} 35%,100%{left:160%} }
-
-/* ── RESULT ── */
-.result {
-  display:none;margin-top:18px;border-radius:18px;overflow:hidden;
-  animation:resultIn 0.5s cubic-bezier(0.22,1,0.36,1);
-}
-.result.show { display:block; }
-@keyframes resultIn { from{opacity:0;transform:translateY(14px)scale(0.97)} to{opacity:1;transform:none} }
-.result.ok { border:1px solid rgba(0,229,160,0.2);background:rgba(0,229,160,0.03); }
-.result.fail { border:1px solid rgba(255,68,102,0.2);background:rgba(255,68,102,0.03); }
-.result-hdr {
-  padding:12px 20px;font-size:10px;font-weight:700;letter-spacing:2.5px;
-  text-transform:uppercase;display:flex;align-items:center;gap:8px;
-}
-.result.ok .result-hdr { color:var(--green);border-bottom:1px solid rgba(0,229,160,0.12); }
-.result.fail .result-hdr { color:var(--red);border-bottom:1px solid rgba(255,68,102,0.12); }
-.result-body { padding:16px 20px; }
-.rrow { display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04); }
-.rrow:last-child { border-bottom:none; }
-.rkey { font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase; }
-.rval { font-family:'DM Mono',monospace;font-size:12px;color:var(--gold2);cursor:pointer;max-width:220px;word-break:break-all;text-align:right; }
-.rval:hover { color:var(--teal); }
-.badge-proc {
-  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;
-  background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);
-  color:#f59e0b;padding:3px 10px;border-radius:5px;
-  animation:blink 1.5s infinite;
-}
-
-/* ── WARN BOX ── */
-.warnbox {
-  margin-top:18px;background:rgba(245,158,11,0.04);
-  border:1px solid rgba(245,158,11,0.15);border-radius:14px;
-  padding:14px 18px;font-family:'DM Mono',monospace;
-  font-size:11px;color:rgba(245,158,11,0.65);line-height:1.8;
-}
-.warnbox-t { color:#f59e0b;font-weight:500;margin-bottom:4px;font-size:11px; }
-
-/* ════════════════════════════════
-   TOPUP PANEL
-════════════════════════════════ */
-.topup-hero {
-  text-align:center;padding:30px 0 24px;
-}
-.topup-ring-wrap {
-  position:relative;width:120px;height:120px;margin:0 auto 20px;
-}
-.topup-ring {
-  width:120px;height:120px;border-radius:50%;
-  background:conic-gradient(var(--gold) 0deg,var(--gold2) 60deg,var(--gold) 120deg,#6a4010 180deg,var(--gold) 240deg,var(--gold2) 300deg,var(--gold) 360deg);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 50px rgba(201,168,76,0.35),0 0 100px rgba(201,168,76,0.1);
-  animation:ringPulse 3s ease-in-out infinite;
-}
-@keyframes ringPulse {
-  0%,100%{box-shadow:0 0 50px rgba(201,168,76,0.35),0 0 100px rgba(201,168,76,0.1)}
-  50%{box-shadow:0 0 70px rgba(201,168,76,0.55),0 0 130px rgba(201,168,76,0.2)}
-}
-.topup-ring::before { content:'';position:absolute;inset:8px;border-radius:50%;background:var(--deep);z-index:0; }
-.topup-ring-inner { position:relative;z-index:1;text-align:center; }
-.topup-ring-num { font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1; }
-.topup-ring-lbl { font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--muted);margin-top:-2px; }
-
-.topup-title { font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--gold2);margin-bottom:6px; }
-.topup-sub { font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);line-height:1.6; }
-
-/* ── PACKAGES ── */
-.pkg-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0; }
-
-.pkg {
-  background:rgba(255,255,255,0.02);border:1px solid var(--rim);
-  border-radius:16px;padding:18px 14px;text-align:center;
-  cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;
-}
-.pkg::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,0.06),transparent);opacity:0;transition:opacity 0.3s; }
-.pkg:hover { border-color:rgba(201,168,76,0.4);transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,168,76,0.1); }
-.pkg:hover::before { opacity:1; }
-.pkg.hot { border-color:rgba(201,168,76,0.3); }
-.pkg.hot::after { content:'POPULER';position:absolute;top:0;right:0;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#07050a;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;font-weight:700;padding:4px 10px;border-radius:0 14px 0 10px; }
-
-.pkg-coins { font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1; }
-.pkg-coins-lbl { font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:10px; }
-.pkg-price { font-size:15px;font-weight:700;color:var(--text); }
-.pkg-price-note { font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px; }
-.pkg-bonus { font-family:'DM Mono',monospace;font-size:9px;color:var(--green);margin-top:4px; }
-
-/* ── PAYMENT MODAL ── */
-.modal-bg {
-  position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;
-  display:none;align-items:center;justify-content:center;padding:16px;
-  backdrop-filter:blur(8px);
-}
-.modal-bg.show { display:flex;animation:fadeIn 0.3s ease; }
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
-
-.modal {
-  background:linear-gradient(145deg,#0e1828,#080f1a);
-  border:1px solid rgba(201,168,76,0.25);border-radius:24px;
-  padding:32px 28px;width:100%;max-width:420px;
-  position:relative;overflow:hidden;
-  animation:modalIn 0.4s cubic-bezier(0.22,1,0.36,1);
-}
-@keyframes modalIn { from{opacity:0;transform:translateY(30px)scale(0.95)} to{opacity:1;transform:none} }
-.modal::before { content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.8),transparent); }
-
-.modal-close {
-  position:absolute;top:16px;right:16px;width:32px;height:32px;
-  background:rgba(255,255,255,0.05);border:1px solid var(--rim);
-  border-radius:8px;color:var(--muted);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;transition:all 0.2s;
-}
-.modal-close:hover { background:var(--red-dim);color:var(--red);border-color:rgba(255,68,102,0.3); }
-
-.modal-title { font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--gold2);margin-bottom:6px; }
-.modal-sub { font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:24px;line-height:1.6; }
-
-.modal-order {
-  background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);
-  border-radius:12px;padding:14px 16px;margin-bottom:20px;
-  display:flex;justify-content:space-between;align-items:center;
-}
-.modal-order-left .label { font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted); }
-.modal-order-left .val { font-size:20px;font-weight:800;color:var(--gold2); }
-.modal-order-right { text-align:right; }
-.modal-order-right .label { font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted); }
-.modal-order-right .val { font-size:20px;font-weight:800;color:var(--text); }
-
-.bank-cards { display:flex;flex-direction:column;gap:10px;margin-bottom:20px; }
-.bank-card {
-  background:rgba(255,255,255,0.025);border:1px solid var(--rim);
-  border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;
-  cursor:pointer;transition:all 0.25s;
-}
-.bank-card:hover,.bank-card.selected { border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.04); }
-.bank-logo { width:44px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;letter-spacing:0.5px;flex-shrink:0; }
-.bank-logo.bca { background:#005baa;color:#fff; }
-.bank-logo.bri { background:#00529c;color:#fff;font-size:9px; }
-.bank-logo.mandiri { background:#003d7a;color:#f0a500;font-size:9px; }
-.bank-logo.dana { background:#118eea;color:#fff;font-size:11px; }
-.bank-logo.ovo { background:#4c3494;color:#fff; }
-.bank-info { flex:1; }
-.bank-name { font-size:13px;font-weight:700; }
-.bank-num { font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px; }
-.bank-holder { font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);margin-top:1px; }
-.bank-radio { width:18px;height:18px;border-radius:50%;border:2px solid var(--rim2);transition:all 0.2s;flex-shrink:0; }
-.bank-card.selected .bank-radio { border-color:var(--gold);background:var(--gold);box-shadow:0 0 10px rgba(201,168,76,0.5); }
-
-.modal-note {
-  background:rgba(255,255,255,0.02);border:1px solid var(--rim);
-  border-radius:12px;padding:14px 16px;margin-bottom:20px;
-  font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7;
-}
-.modal-note strong { color:var(--gold2); }
-
-.btn-confirm {
-  width:100%;padding:16px;border:none;border-radius:14px;
-  background:linear-gradient(100deg,#8b6520,var(--gold),var(--gold2),var(--gold),#8b6520);
-  background-size:300% 100%;color:#07050a;
-  font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;
-  cursor:pointer;position:relative;overflow:hidden;transition:all 0.4s;
-  box-shadow:0 4px 30px rgba(201,168,76,0.25);
-}
-.btn-confirm:hover { background-position:100% 0;transform:translateY(-1px);box-shadow:0 8px 40px rgba(201,168,76,0.4); }
-.btn-confirm .shim { position:absolute;top:0;left:-100%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),transparent);transform:skewX(-20deg);animation:shim 3s infinite; }
-
-/* ── SUCCESS MODAL ── */
-.success-modal {
-  text-align:center;padding:10px 0;
-}
-.success-icon {
-  width:70px;height:70px;border-radius:50%;
-  background:rgba(0,229,160,0.1);border:2px solid rgba(0,229,160,0.3);
-  display:flex;align-items:center;justify-content:center;
-  font-size:30px;margin:0 auto 18px;
-  box-shadow:0 0 40px rgba(0,229,160,0.2);
-  animation:successPop 0.5s cubic-bezier(0.22,1,0.36,1);
-}
-@keyframes successPop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
-.success-title { font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--green);margin-bottom:8px; }
-.success-text { font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px; }
-.order-id { font-family:'DM Mono',monospace;font-size:13px;color:var(--gold);background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:8px 14px;margin:0 auto 20px;display:inline-block; }
-
-/* ════════════════════════════════
-   HISTORY PANEL
-════════════════════════════════ */
-.hist-stats {
-  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;
-}
-.stat-box {
-  background:rgba(255,255,255,0.02);border:1px solid var(--rim);
-  border-radius:14px;padding:14px 12px;text-align:center;
-}
-.stat-num { font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1; }
-.stat-lbl { font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--muted);margin-top:3px; }
-
-.hist-item {
-  background:rgba(255,255,255,0.02);border:1px solid var(--rim);
-  border-radius:16px;padding:16px;margin-bottom:10px;
-  cursor:pointer;transition:all 0.25s;
-}
-.hist-item:hover { border-color:rgba(201,168,76,0.2);background:rgba(201,168,76,0.02); }
-.hist-item-top { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px; }
-.hist-name { font-size:14px;font-weight:700; }
-.hist-time { font-family:'DM Mono',monospace;font-size:9px;color:var(--muted); }
-.hist-id { font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);margin-bottom:6px; }
-.hist-tags { display:flex;gap:6px;flex-wrap:wrap; }
-.hist-tag { font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.5px;background:rgba(255,255,255,0.04);border:1px solid var(--rim);border-radius:4px;padding:2px 8px;color:var(--muted2); }
-
-.hist-empty { text-align:center;padding:52px 20px;color:var(--muted); }
-.hist-empty-ico { font-size:44px;opacity:0.3;margin-bottom:14px; }
-.hist-empty-t { font-family:'DM Mono',monospace;font-size:12px;line-height:1.7; }
-
-/* ════════════════════════════════
-   SETTINGS PANEL
-════════════════════════════════ */
-.settings-section { margin-bottom:20px; }
-.settings-label { font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;padding-left:4px; }
-
-.setting-row {
-  display:flex;align-items:center;justify-content:space-between;
-  background:rgba(255,255,255,0.02);border:1px solid var(--rim);
-  border-radius:14px;padding:14px 16px;margin-bottom:8px;
-}
-.setting-info .setting-title { font-size:13px;font-weight:600; }
-.setting-info .setting-desc { font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:3px; }
-
-.toggle {
-  width:44px;height:24px;background:rgba(255,255,255,0.08);border-radius:12px;
-  position:relative;cursor:pointer;transition:background 0.3s;border:none;flex-shrink:0;
-}
-.toggle.on { background:linear-gradient(135deg,rgba(201,168,76,0.8),rgba(201,168,76,0.5)); }
-.toggle::after { content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform 0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.3); }
-.toggle.on::after { transform:translateX(20px); }
-
-.cred-saved { font-family:'DM Mono',monospace;font-size:10px;color:var(--green);display:none; }
-.cred-saved.show { display:inline; }
-
-/* ════════════════════════════════
-   MISC
-════════════════════════════════ */
-.btn-wa {
-  width:100%;padding:16px;border:none;border-radius:14px;
-  background:linear-gradient(135deg,#25d366,#128c7e);
-  color:#fff;font-family:'Bebas Neue',sans-serif;
-  font-size:18px;letter-spacing:4px;cursor:pointer;
-  position:relative;overflow:hidden;transition:all 0.4s;
-  box-shadow:0 4px 30px rgba(37,211,102,0.3);
-  display:block;text-align:center;text-decoration:none;
-}
-.btn-wa:hover { transform:translateY(-2px);box-shadow:0 10px 40px rgba(37,211,102,0.45); }
-
-.wa-preview {
-  background:rgba(37,211,102,0.05);border:1px solid rgba(37,211,102,0.2);
-  border-radius:14px;padding:16px;margin-bottom:16px;
-  font-family:'DM Mono',monospace;font-size:11px;color:rgba(37,211,102,0.7);
-  line-height:1.8;white-space:pre-wrap;word-break:break-word;
-}
-.wa-preview-title { color:var(--green);font-size:10px;letter-spacing:2px;margin-bottom:8px;display:block; }
-
-.admin-wa-badge {
-  display:flex;align-items:center;gap:12px;
-  background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.2);
-  border-radius:14px;padding:14px 16px;margin-bottom:16px;cursor:pointer;
-  transition:all 0.25s;
-}
-.admin-wa-badge:hover { background:rgba(37,211,102,0.1);border-color:rgba(37,211,102,0.4); }
-.admin-wa-icon { width:42px;height:42px;background:#25d366;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0; }
-.admin-wa-info .name { font-size:13px;font-weight:700;color:var(--text); }
-.admin-wa-info .num { font-family:'DM Mono',monospace;font-size:11px;color:var(--green);margin-top:2px; }
-.admin-wa-info .status { font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:1px; }
-
-.spinner { display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,0.2);border-top-color:rgba(0,0,0,0.7);border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:8px; }
-@keyframes spin { to{transform:rotate(360deg)} }
-
-.toast {
-  position:fixed;bottom:30px;left:50%;transform:translateX(-50%)translateY(20px);
-  background:rgba(10,15,25,0.95);border:1px solid rgba(201,168,76,0.2);
-  border-radius:100px;padding:10px 22px;
-  font-family:'DM Mono',monospace;font-size:12px;color:var(--text);
-  z-index:200;opacity:0;transition:all 0.35s cubic-bezier(0.22,1,0.36,1);
-  backdrop-filter:blur(20px);white-space:nowrap;
-  box-shadow:0 8px 30px rgba(0,0,0,0.5);
-}
-.toast.show { opacity:1;transform:translateX(-50%)translateY(0); }
-
-.footer { text-align:center;padding-top:40px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;line-height:2; }
-.footer-gem { color:var(--gold);font-size:10px; }
-
-@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
-</style>
-</head>
-<body>
-
-<canvas id="c"></canvas>
-<div class="scanlines"></div>
-<div class="vignette"></div>
-<div class="toast" id="toast"></div>
-
-<!-- PAYMENT MODAL -->
-<div class="modal-bg" id="modalBg">
-  <div class="modal" id="modalContent">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div id="modalInner"></div>
-  </div>
-</div>
-
-<div class="wrap">
-  <!-- HEADER -->
-  <div class="hdr">
-    <div class="hdr-eyebrow"><div class="hdr-eyebrow-dot"></div> Premium Asset Platform</div>
-    <span class="hdr-logo">DEV</span>
-    <div class="hdr-tagline">Roblox Open Cloud · Asset Upload Tool</div>
-    <div class="hdr-rule"><div class="hdr-rule-line"></div><div class="hdr-rule-gem"></div><div class="hdr-rule-line"></div></div>
-  </div>
-
-  <!-- COIN BAR -->
-  <div class="coin-bar">
-    <div class="coin-bar-left">
-      <div class="coin-icon"><span>✦</span></div>
-      <div>
-        <div class="coin-info-label">Saldo Coin</div>
-        <div class="coin-info-val" id="coinVal">0</div>
-      </div>
-    </div>
-    <div class="coin-bar-btns">
-      <button class="btn-topup-quick" onclick="switchTab(document.querySelectorAll('.tab-btn')[1],'topup')">+ Topup</button>
-    </div>
-  </div>
-
-  <!-- TABS -->
-  <div class="tabs" id="tabs">
-    <div class="tab-slider" id="tabSlider"></div>
-    <button class="tab-btn active" data-panel="upload" onclick="switchTab(this,'upload')"><span class="ti">⬆</span> Upload</button>
-    <button class="tab-btn" data-panel="topup" onclick="switchTab(this,'topup')"><span class="ti">◈</span> Topup</button>
-    <button class="tab-btn" data-panel="history" onclick="switchTab(this,'history')"><span class="ti">◎</span> History</button>
-    <button class="tab-btn" data-panel="settings" onclick="switchTab(this,'settings')"><span class="ti">⚙</span> Setting</button>
-  </div>
-
-  <!-- ═══════ UPLOAD PANEL ═══════ -->
-  <div class="panel active" id="panel-upload">
-    <div class="card">
-      <div class="card-corner tl"></div><div class="card-corner tr"></div>
-      <div class="card-corner bl"></div><div class="card-corner br"></div>
-      <div class="card-glow"></div>
-
-      <div class="ctitle">
-        <div class="ctitle-icon">📤</div>
-        <div>
-          <div class="ctitle-text">Upload Asset</div>
-          <div class="ctitle-sub">Roblox Open Cloud API v1</div>
-        </div>
-      </div>
-
-      <div class="infobox">
-        API Key → <a href="https://create.roblox.com/settings/credentials" target="_blank">create.roblox.com/settings/credentials</a><br>
-        Buat API Key baru · Permission: <strong>Assets: Read + Write</strong>
-      </div>
-
-      <div class="field">
-        <div class="flabel"><span class="flabel-gem"></span> Roblox User ID</div>
-        <input class="finput" type="text" id="userId" placeholder="Contoh: 3493541426" inputmode="numeric">
-      </div>
-
-      <div class="field">
-        <div class="flabel"><span class="flabel-gem"></span> Open Cloud API Key</div>
-        <input class="finput" type="password" id="apiKey" placeholder="••••••••••••••••••••••••••••••">
-      </div>
-
-      <div class="div"></div>
-
-      <div class="field">
-        <div class="flabel"><span class="flabel-gem"></span> File Asset</div>
-        <div class="dz" id="dz">
-          <input type="file" id="fi" accept=".png,.jpg,.jpeg,.mp3,.ogg,.wav,.fbx,.rbxm" onchange="handleFile(this)">
-          <div class="dz-orb">☁️</div>
-          <div class="dz-title">Tap atau Drop File Di Sini</div>
-          <div class="dz-sub">Semua format didukung</div>
-          <div class="dz-formats">
-            <span class="dz-fmt img">PNG</span>
-            <span class="dz-fmt img">JPG</span>
-            <span class="dz-fmt audio">MP3</span>
-            <span class="dz-fmt audio">OGG</span>
-            <span class="dz-fmt audio">WAV</span>
-            <span class="dz-fmt mesh">FBX</span>
-            <span class="dz-fmt rbxm">RBXM ⚠</span>
-          </div>
-        </div>
-        <div class="fchip" id="fchip">
-          <div class="fchip-ico" id="fchipIco">📄</div>
-          <div class="fchip-info">
-            <div class="fchip-name" id="fName">—</div>
-            <div class="fchip-size" id="fSize">—</div>
-          </div>
-          <button class="fchip-rm" onclick="removeFile()">✕</button>
-        </div>
-        <div class="rbxm-notice" id="rbxmNotice">
-          <strong>⚠ File .rbxm tidak bisa diupload via API!</strong><br>
-          Roblox Open Cloud API belum support .rbxm (Model).<br>
-          Upload .rbxm hanya bisa lewat Roblox Studio secara langsung.<br>
-          Format yang didukung: Image (PNG/JPG), Audio (MP3/OGG/WAV), Mesh (FBX)
-        </div>
-      </div>
-
-      <div class="field">
-        <div class="flabel"><span class="flabel-gem"></span> Nama Asset</div>
-        <input class="finput" type="text" id="assetName" placeholder="Nama asset kamu...">
-      </div>
-
-      <div class="field">
-        <div class="flabel"><span class="flabel-gem"></span> Tipe Asset</div>
-        <select class="finput" id="assetType">
-          <option value="Decal">🖼 Image / Decal (.png .jpg)</option>
-          <option value="Audio">🎵 Audio (.mp3 .ogg .wav)</option>
-          <option value="MeshPart">📦 Mesh (.fbx)</option>
-        </select>
-      </div>
-
-      <div class="cost-preview">
-        <div class="cost-label">Biaya Upload</div>
-        <div class="cost-val">✦ <span id="costAmt">1</span> Coin</div>
-      </div>
-
-      <button class="btn-up" id="btnUp" onclick="doUpload()">
-        <div class="shim"></div>
-        🚀 &nbsp; UPLOAD SEKARANG
-      </button>
-
-      <div class="result" id="result">
-        <div class="result-hdr" id="resultHdr"></div>
-        <div class="result-body" id="resultBody"></div>
-      </div>
-
-      <div class="warnbox">
-        <div class="warnbox-t">⚠ Info Penting</div>
-        File .rbxm belum support Roblox Open Cloud API. Yang support: Image, Audio, Mesh (.fbx). Coin dipotong hanya jika upload berhasil.
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════ TOPUP PANEL ═══════ -->
-  <div class="panel" id="panel-topup">
-    <div class="card">
-      <div class="card-corner tl"></div><div class="card-corner tr"></div>
-      <div class="card-corner bl"></div><div class="card-corner br"></div>
-      <div class="card-glow"></div>
-
-      <div class="topup-hero">
-        <div class="topup-ring-wrap">
-          <div class="topup-ring">
-            <div class="topup-ring-inner">
-              <div class="topup-ring-num" id="ringNum">0</div>
-              <div class="topup-ring-lbl">COINS</div>
-            </div>
-          </div>
-        </div>
-        <div class="topup-title">Topup Coins</div>
-        <div class="topup-sub">1 Coin = 1x Upload Asset<br>Bayar via Transfer Bank / E-Wallet</div>
-      </div>
-
-      <div class="pkg-grid">
-        <div class="pkg" onclick="openPayment(10,'Rp 5.000')">
-          <div class="pkg-coins">10</div>
-          <div class="pkg-coins-lbl">COINS</div>
-          <div class="pkg-price">Rp 5.000</div>
-          <div class="pkg-price-note">Rp 500 / coin</div>
-        </div>
-        <div class="pkg hot" onclick="openPayment(25,'Rp 10.000')">
-          <div class="pkg-coins">25</div>
-          <div class="pkg-coins-lbl">COINS</div>
-          <div class="pkg-price">Rp 10.000</div>
-          <div class="pkg-price-note">Rp 400 / coin</div>
-          <div class="pkg-bonus">+5 Bonus Coins</div>
-        </div>
-        <div class="pkg" onclick="openPayment(60,'Rp 20.000')">
-          <div class="pkg-coins">60</div>
-          <div class="pkg-coins-lbl">COINS</div>
-          <div class="pkg-price">Rp 20.000</div>
-          <div class="pkg-price-note">Rp 333 / coin</div>
-          <div class="pkg-bonus">+10 Bonus Coins</div>
-        </div>
-        <div class="pkg" onclick="openPayment(150,'Rp 40.000')">
-          <div class="pkg-coins">150</div>
-          <div class="pkg-coins-lbl">COINS</div>
-          <div class="pkg-price">Rp 40.000</div>
-          <div class="pkg-price-note">Rp 267 / coin</div>
-          <div class="pkg-bonus">+30 Bonus Coins</div>
-        </div>
-      </div>
-
-      <div class="warnbox">
-        <div class="warnbox-t">📋 Cara Topup</div>
-        1. Pilih paket coin yang diinginkan<br>
-        2. Pilih metode pembayaran (DANA ONLY)<br>
-        3. Transfer sesuai nominal<br>
-        4. Klik <strong style="color:var(--green)">Tombol Chat WA Admin</strong> yang muncul<br>
-        5. Kirim screenshot bukti transfer ke admin<br>
-        <strong style="color:var(--gold)">✦ Coin aktif dalam 1×24 jam setelah konfirmasi</strong>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════ HISTORY PANEL ═══════ -->
-  <div class="panel" id="panel-history">
-    <div class="card">
-      <div class="card-corner tl"></div><div class="card-corner tr"></div>
-      <div class="card-corner bl"></div><div class="card-corner br"></div>
-      <div class="card-glow"></div>
-
-      <div class="ctitle">
-        <div class="ctitle-icon">📋</div>
-        <div>
-          <div class="ctitle-text">History Upload</div>
-          <div class="ctitle-sub">Semua riwayat upload kamu</div>
-        </div>
-      </div>
-
-      <div class="hist-stats">
-        <div class="stat-box">
-          <div class="stat-num" id="statTotal">0</div>
-          <div class="stat-lbl">Total Upload</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num" id="statSuccess">0</div>
-          <div class="stat-lbl">Berhasil</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num" id="statCoins">0</div>
-          <div class="stat-lbl">Coin Dipakai</div>
-        </div>
-      </div>
-
-      <div id="histList"></div>
-    </div>
-  </div>
-
-  <!-- ═══════ SETTINGS PANEL ═══════ -->
-  <div class="panel" id="panel-settings">
-    <div class="card">
-      <div class="card-corner tl"></div><div class="card-corner tr"></div>
-      <div class="card-corner bl"></div><div class="card-corner br"></div>
-      <div class="card-glow"></div>
-
-      <div class="ctitle">
-        <div class="ctitle-icon">⚙️</div>
-        <div>
-          <div class="ctitle-text">Pengaturan</div>
-          <div class="ctitle-sub">Konfigurasi akun & preferensi</div>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <div class="settings-label">📱 Nomor WhatsApp Admin</div>
-        <div class="field">
-          <div class="flabel"><span class="flabel-gem"></span> Nomor WA Admin (Format: 628xxx)</div>
-          <input class="finput" type="text" id="waNumber" placeholder="Contoh: 6281234567890" inputmode="numeric">
-        </div>
-        <button class="btn-topup-quick" style="width:100%;padding:12px;font-size:12px;letter-spacing:2px" onclick="saveWA()">
-          💾 &nbsp;Simpan Nomor WA &nbsp;<span class="cred-saved" id="waSaved">✓ Tersimpan!</span>
-        </button>
-      </div>
-
-      <div class="div"></div>
-
-      <div class="settings-section">
-        <div class="settings-label">Kredensial Tersimpan</div>
-        <div class="field">
-          <div class="flabel"><span class="flabel-gem"></span> User ID Tersimpan</div>
-          <input class="finput" type="text" id="savedUserId" placeholder="Belum ada" inputmode="numeric">
-        </div>
-        <div class="field">
-          <div class="flabel"><span class="flabel-gem"></span> API Key Tersimpan</div>
-          <input class="finput" type="password" id="savedApiKey" placeholder="Belum ada">
-        </div>
-        <button class="btn-topup-quick" style="width:100%;padding:12px;font-size:12px;letter-spacing:2px" onclick="saveCreds()">
-          💾 &nbsp;Simpan Kredensial &nbsp;<span class="cred-saved" id="credSaved">✓ Tersimpan!</span>
-        </button>
-      </div>
-
-      <div class="div"></div>
-
-      <div class="settings-section">
-        <div class="settings-label">Preferensi</div>
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-title">Auto-isi Kredensial</div>
-            <div class="setting-desc">Otomatis isi User ID & API Key</div>
-          </div>
-          <button class="toggle on" id="toggleAutofill" onclick="toggleSetting(this)"></button>
-        </div>
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-title">Notifikasi Upload</div>
-            <div class="setting-desc">Tampilkan toast saat upload selesai</div>
-          </div>
-          <button class="toggle on" id="toggleNotif" onclick="toggleSetting(this)"></button>
-        </div>
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-title">Konfirmasi Sebelum Upload</div>
-            <div class="setting-desc">Tampilkan dialog konfirmasi</div>
-          </div>
-          <button class="toggle" id="toggleConfirm" onclick="toggleSetting(this)"></button>
-        </div>
-      </div>
-
-      <div class="div"></div>
-
-      <div class="settings-section">
-        <div class="settings-label">Kontak Admin</div>
-        <div class="admin-wa-badge" onclick="window.open('https://wa.me/'+ADMIN_WA_NUM,'_blank')">
-          <div class="admin-wa-icon">💬</div>
-          <div class="admin-wa-info">
-            <div class="name" id="adminNameDisplay">ADMIN DEV</div>
-            <div class="num" id="adminWaDisplay">+62 812-3456-7890</div>
-            <div class="status">● ONLINE · Tap untuk chat</div>
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="flabel"><span class="flabel-gem"></span> Nomor WA Admin (format: 628xxx)</div>
-          <input class="finput" type="text" id="adminWaInput" placeholder="628xxxxxxxxxx" inputmode="numeric">
-        </div>
-        <button class="btn-topup-quick" style="width:100%;padding:12px;font-size:12px;letter-spacing:2px" onclick="saveAdminWa()">
-          💾 &nbsp;Simpan Nomor Admin
-        </button>
-      </div>
-
-      <div class="div"></div>
-        <div class="setting-row" style="cursor:pointer" onclick="clearHistory()">
-          <div class="setting-info">
-            <div class="setting-title" style="color:var(--red)">Hapus Semua History</div>
-            <div class="setting-desc">Tidak bisa dibatalkan</div>
-          </div>
-          <span style="color:var(--red);font-size:18px">🗑</span>
-        </div>
-        <div class="setting-row" style="cursor:pointer" onclick="clearCreds()">
-          <div class="setting-info">
-            <div class="setting-title" style="color:var(--red)">Hapus Kredensial</div>
-            <div class="setting-desc">Hapus User ID & API Key tersimpan</div>
-          </div>
-          <span style="color:var(--red);font-size:18px">🔑</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="text-align:center;padding:20px">
-      <div class="card-glow"></div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);line-height:2">
-        DEV UPLOADER v2.0<br>
-        Built with Roblox Open Cloud API<br>
-        <span style="color:var(--gold)">✦ Premium Edition ✦</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer">
-    <span class="footer-gem">✦</span> DEV UPLOADER <span class="footer-gem">✦</span><br>
-    creator by DEV Open Cloud API · Premium Edition V1.0
-  </div>
-</div>
-
-<script>
-/* ══ CANVAS BACKGROUND ══ */
-const cv = document.getElementById('c');
-const cx = cv.getContext('2d');
-let W, H;
-function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
-resize(); addEventListener('resize', resize);
-
-// Particles
-const pts = Array.from({length:120}, () => ({
-  x: Math.random()*1200, y: Math.random()*900,
-  vx: (Math.random()-.5)*.2, vy: -(Math.random()*.4+.05),
-  r: Math.random()*1.2+.2, a: Math.random()*.35+.05,
-  c: Math.random()>.65 ? '#c9a84c' : Math.random()>.5 ? '#00e5c8' : '#ffffff',
-  life: Math.random(), decay: Math.random()*.0012+.0004
-}));
-
-// Orbs
-const orbs = [
-  {bx:.15,by:.35,cr:'rgba(201,168,76,0.07)',t:0,s:90},
-  {bx:.85,by:.65,cr:'rgba(0,229,200,0.05)',t:2,s:80},
-  {bx:.5,by:.95,cr:'rgba(100,60,200,0.04)',t:1.3,s:100},
-  {bx:.7,by:.1,cr:'rgba(201,168,76,0.04)',t:.7,s:70},
-];
-let ot=0;
-
-function drawBg() {
-  cx.clearRect(0,0,W,H);
-  ot+=.003;
-  // base gradient
-  const g=cx.createRadialGradient(W*.3,H*.2,0,W*.3,H*.2,H*.8);
-  g.addColorStop(0,'rgba(12,20,40,0.9)'); g.addColorStop(1,'rgba(2,4,8,0)');
-  cx.fillStyle=g; cx.fillRect(0,0,W,H);
-  // orbs
-  orbs.forEach(o=>{
-    const ox=o.bx*W+Math.sin(ot+o.t)*o.s, oy=o.by*H+Math.cos(ot*.7+o.t)*60;
-    const rg=cx.createRadialGradient(ox,oy,0,ox,oy,.38*Math.min(W,H));
-    rg.addColorStop(0,o.cr); rg.addColorStop(1,'transparent');
-    cx.fillStyle=rg; cx.fillRect(0,0,W,H);
-  });
-  // particles
-  pts.forEach(p=>{
-    p.x+=p.vx; p.y+=p.vy; p.life-=p.decay;
-    if(p.life<=0||p.y<-10){p.x=Math.random()*W;p.y=H+10;p.life=1;}
-    cx.save();cx.globalAlpha=p.a*p.life;cx.fillStyle=p.c;
-    cx.shadowColor=p.c;cx.shadowBlur=6;
-    cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fill();cx.restore();
-  });
-  requestAnimationFrame(drawBg);
-}
-drawBg();
-
-/* ══ CONFIG ADMIN ══ */
-let ADMIN_WA = localStorage.getItem('nx_admin_wa') || '6287729035761'; // ← GANTI dengan nomor WA admin (format: 628xxx)
-let ADMIN_WA_NUM = ADMIN_WA;
-const ADMIN_NAME = 'ADMIN DEV';
-
-/* ══ STATE ══ */
-let coins = parseInt(localStorage.getItem('nx_coins')||'0');
-let hist = JSON.parse(localStorage.getItem('nx_hist')||'[]');
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, getDocs, addDoc, serverTimestamp, increment, onSnapshot, where, limit } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ══════════════════════════════════════
+// 🔥 FIREBASE CONFIG — GANTI DENGAN MILIK KAMU
+// ══════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyDyi8FXoJDf-_VvMkmnHcQ7dBGKPJULnmc",
+  authDomain: "dev-uploader-5bd4b.firebaseapp.com",
+  projectId: "dev-uploader-5bd4b",
+  storageBucket: "dev-uploader-5bd4b.firebasestorage.app",
+  messagingSenderId: "534864483602",
+  appId: "1:534864483602:web:965fdae6f377e2239b0fcb"
+};
+
+// ══════════════════════════════════════
+// ADMIN CONFIG — Ganti dengan email admin kamu
+// ══════════════════════════════════════
+const ADMIN_EMAIL = 'rhokimkecil@gmail.com'; // ← GANTI EMAIL ADMIN
+const ADMIN_WA = '6287729035761'; // ← GANTI NOMOR WA ADMIN
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
+
+let currentUser = null;
+let currentUserData = null;
+let isAdmin = false;
+
+// ══ AUTH STATE ══
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
+    await loadUserData(user);
+    showApp();
+  } else {
+    currentUser = null;
+    currentUserData = null;
+    isAdmin = false;
+    showAuth();
+  }
+});
+
+async function loadUserData(user) {
+  const ref = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    // New user — create profile
+    const isAdm = user.email === ADMIN_EMAIL;
+    await setDoc(ref, {
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName || user.email.split('@')[0],
+      coins: isAdm ? 999 : 0,
+      totalUploads: 0,
+      createdAt: serverTimestamp(),
+      isAdmin: isAdm
+    });
+    currentUserData = { coins: isAdm ? 999 : 0, name: user.displayName || user.email.split('@')[0], isAdmin: isAdm, totalUploads: 0 };
+  } else {
+    currentUserData = snap.data();
+    // Auto set admin if email matches
+    if (user.email === ADMIN_EMAIL && !currentUserData.isAdmin) {
+      await updateDoc(ref, { isAdmin: true });
+      currentUserData.isAdmin = true;
+    }
+  }
+  isAdmin = currentUserData.isAdmin === true;
+}
+
+// ══ SHOW/HIDE SCREENS ══
+function showAuth() {
+  document.getElementById('screen-auth').style.display = 'flex';
+  document.getElementById('screen-app').style.display = 'none';
+  document.getElementById('screen-admin').style.display = 'none';
+  stopCanvas();
+}
+
+function showApp() {
+  document.getElementById('screen-auth').style.display = 'none';
+  document.getElementById('screen-app').style.display = 'block';
+  document.getElementById('screen-admin').style.display = 'none';
+  startCanvas();
+  updateUI();
+  loadHistory();
+  if (isAdmin) document.getElementById('adminTabBtn').style.display = 'flex';
+  else document.getElementById('adminTabBtn').style.display = 'none';
+}
+
+function showAdmin() {
+  document.getElementById('screen-auth').style.display = 'none';
+  document.getElementById('screen-app').style.display = 'none';
+  document.getElementById('screen-admin').style.display = 'block';
+  loadAdminData();
+}
+
+function updateUI() {
+  if (!currentUserData) return;
+  document.getElementById('coinVal').textContent = currentUserData.coins || 0;
+  document.getElementById('ringNum').textContent = currentUserData.coins || 0;
+  document.getElementById('userName').textContent = currentUserData.name || 'User';
+  document.getElementById('userEmail').textContent = currentUser?.email || '';
+  document.getElementById('userAvatar').textContent = (currentUserData.name || 'U')[0].toUpperCase();
+}
+
+// ══ REGISTER ══
+window.doRegister = async function() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  if (!name || !email || !pass) return showAuthErr('Semua field harus diisi!');
+  if (pass !== pass2) return showAuthErr('Password tidak sama!');
+  if (pass.length < 6) return showAuthErr('Password minimal 6 karakter!');
+  setBtnLoading('btnRegister', true);
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(cred.user, { displayName: name });
+  } catch(e) {
+    showAuthErr(getAuthError(e.code));
+  }
+  setBtnLoading('btnRegister', false);
+}
+
+// ══ LOGIN ══
+window.doLogin = async function() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if (!email || !pass) return showAuthErr('Email dan password harus diisi!');
+  setBtnLoading('btnLogin', true);
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    showAuthErr(getAuthError(e.code));
+  }
+  setBtnLoading('btnLogin', false);
+}
+
+// ══ GOOGLE LOGIN ══
+window.doGoogle = async function() {
+  try {
+    await signInWithPopup(auth, googleProvider);
+  } catch(e) {
+    showAuthErr('Login Google gagal: ' + e.message);
+  }
+}
+
+// ══ LOGOUT ══
+window.doLogout = async function() {
+  if (!confirm('Yakin mau logout?')) return;
+  await signOut(auth);
+}
+
+function getAuthError(code) {
+  const map = {
+    'auth/email-already-in-use': 'Email sudah terdaftar!',
+    'auth/invalid-email': 'Format email tidak valid!',
+    'auth/weak-password': 'Password terlalu lemah!',
+    'auth/user-not-found': 'Email tidak ditemukan!',
+    'auth/wrong-password': 'Password salah!',
+    'auth/invalid-credential': 'Email atau password salah!',
+    'auth/too-many-requests': 'Terlalu banyak percobaan, coba lagi nanti!',
+  };
+  return map[code] || 'Terjadi error, coba lagi!';
+}
+
+function showAuthErr(msg) {
+  const el = document.getElementById('authErr');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+// ══ UPLOAD ══
 let selFile = null;
-let pendingPkg = null;
-let selectedBank = null;
 
-/* ══ INIT ══ */
-updateCoins();
-loadSettings();
-initTabSlider();
-renderHistory();
-
-function updateCoins() {
-  document.getElementById('coinVal').textContent = coins;
-  document.getElementById('ringNum').textContent = coins;
-}
-
-function initTabSlider() {
-  setTimeout(()=>{ moveSlider(document.querySelector('.tab-btn.active')); },50);
-}
-
-function moveSlider(btn) {
-  const tabs = document.getElementById('tabs');
-  const slider = document.getElementById('tabSlider');
-  const tr = tabs.getBoundingClientRect(), br = btn.getBoundingClientRect();
-  slider.style.left = (br.left - tr.left - 4) + 'px';
-  slider.style.width = br.width + 'px';
-}
-
-function switchTab(btn, panel) {
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('panel-'+panel).classList.add('active');
-  moveSlider(btn);
-  if(panel==='history') renderHistory();
-}
-
-/* ══ FILE ══ */
-function handleFile(inp) {
-  const f = inp.files[0]; if(!f) return;
+window.handleFile = function(inp) {
+  const f = inp.files[0]; if (!f) return;
   selFile = f;
   const ext = f.name.split('.').pop().toLowerCase();
   const ico = ['png','jpg','jpeg'].includes(ext)?'🖼️':['mp3','ogg','wav'].includes(ext)?'🎵':ext==='fbx'?'📦':ext==='rbxm'?'🧱':'📄';
@@ -1131,364 +195,1087 @@ function handleFile(inp) {
   document.getElementById('fName').textContent = f.name;
   document.getElementById('fSize').textContent = fmtBytes(f.size);
   document.getElementById('fchip').classList.add('show');
-  if(!document.getElementById('assetName').value)
-    document.getElementById('assetName').value = f.name.replace(/\.[^.]+$/,'');
+  if (!document.getElementById('assetName').value)
+    document.getElementById('assetName').value = f.name.replace(/\.[^.]+$/, '');
   const sel = document.getElementById('assetType');
-  const rbxmNotice = document.getElementById('rbxmNotice');
-  if(['png','jpg','jpeg'].includes(ext)){sel.value='Decal';rbxmNotice.classList.remove('show');}
-  else if(['mp3','ogg','wav'].includes(ext)){sel.value='Audio';rbxmNotice.classList.remove('show');}
-  else if(ext==='fbx'){sel.value='MeshPart';rbxmNotice.classList.remove('show');}
-  else if(ext==='rbxm'){rbxmNotice.classList.add('show');}
-  else {rbxmNotice.classList.remove('show');}
+  const notice = document.getElementById('rbxmNotice');
+  if (['png','jpg','jpeg'].includes(ext)) { sel.value='Decal'; notice.classList.remove('show'); }
+  else if (['mp3','ogg','wav'].includes(ext)) { sel.value='Audio'; notice.classList.remove('show'); }
+  else if (ext==='fbx') { sel.value='MeshPart'; notice.classList.remove('show'); }
+  else if (ext==='rbxm') { notice.classList.add('show'); }
+  else notice.classList.remove('show');
 }
 
-function removeFile() {
-  selFile=null;
-  document.getElementById('fi').value='';
+window.removeFile = function() {
+  selFile = null;
+  document.getElementById('fi').value = '';
   document.getElementById('fchip').classList.remove('show');
   document.getElementById('rbxmNotice').classList.remove('show');
 }
 
-function fmtBytes(b) {
-  if(b<1024) return b+' B';
-  if(b<1048576) return (b/1024).toFixed(1)+' KB';
-  return (b/1048576).toFixed(1)+' MB';
-}
-
-/* ══ UPLOAD ══ */
-async function doUpload() {
+window.doUpload = async function() {
+  if (!currentUser) return toast('⚠ Login dulu!');
   const userId = document.getElementById('userId').value.trim();
   const apiKey = document.getElementById('apiKey').value.trim();
   const assetName = document.getElementById('assetName').value.trim();
   const assetType = document.getElementById('assetType').value;
-  if(!userId) return toast('⚠ Masukkan Roblox User ID!');
-  if(!apiKey) return toast('⚠ Masukkan API Key!');
-  if(!selFile) return toast('⚠ Pilih file terlebih dahulu!');
-  if(!assetName) return toast('⚠ Masukkan nama asset!');
+  if (!userId) return toast('⚠ Masukkan Roblox User ID!');
+  if (!apiKey) return toast('⚠ Masukkan API Key!');
+  if (!selFile) return toast('⚠ Pilih file!');
+  if (!assetName) return toast('⚠ Masukkan nama asset!');
   const ext = selFile.name.split('.').pop().toLowerCase();
-  if(ext==='rbxm') return toast('✕ .rbxm tidak bisa diupload via API!');
-  if(coins<=0) return toast('✕ Coin tidak cukup! Topup dulu.');
+  if (ext==='rbxm') return toast('✕ .rbxm tidak bisa diupload via API!');
+
+  // Reload user coins from Firestore
+  const userRef = doc(db, 'users', currentUser.uid);
+  const snap = await getDoc(userRef);
+  const freshCoins = snap.data()?.coins || 0;
+  if (freshCoins <= 0) return toast('✕ Coin tidak cukup! Topup dulu.');
 
   const btn = document.getElementById('btnUp');
-  btn.disabled=true;
-  btn.innerHTML='<span class="spinner"></span> Uploading...';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Uploading...';
   showResult('','','');
 
   try {
     const fd = new FormData();
     fd.append('request', JSON.stringify({
-      assetType, displayName:assetName,
-      description:'Uploaded via DEV Uploader',
-      creationContext:{creator:{userId}}
+      assetType, displayName: assetName,
+      description: 'Uploaded via DEV Uploader',
+      creationContext: { creator: { userId } }
     }));
     fd.append('fileContent', selFile, selFile.name);
 
-    const res = await fetch('https://apis.roblox.com/assets/v1/assets',{
-      method:'POST', headers:{'x-api-key':apiKey}, body:fd
+    const res = await fetch('https://apis.roblox.com/assets/v1/assets', {
+      method: 'POST', headers: { 'x-api-key': apiKey }, body: fd
     });
     const data = await res.json();
 
-    if(res.ok) {
-      coins--; localStorage.setItem('nx_coins',coins); updateCoins();
-      const assetId = data.assetId||null;
-      const opId = data.operationId||data.path||null;
-      hist.unshift({name:assetName,type:assetType,assetId:assetId||'Processing',opId,time:new Date().toLocaleString('id-ID'),file:selFile.name});
-      localStorage.setItem('nx_hist',JSON.stringify(hist.slice(0,100)));
+    if (res.ok) {
+      // Deduct coin in Firestore
+      await updateDoc(userRef, {
+        coins: increment(-1),
+        totalUploads: increment(1)
+      });
+      currentUserData.coins = freshCoins - 1;
+      currentUserData.totalUploads = (currentUserData.totalUploads || 0) + 1;
+      updateUI();
+
+      const assetId = data.assetId || null;
+      const opId = data.operationId || data.path || null;
+
+      // Save to Firestore history
+      await addDoc(collection(db, 'uploads'), {
+        uid: currentUser.uid,
+        userEmail: currentUser.email,
+        userName: currentUserData.name,
+        assetName, assetType,
+        assetId: assetId || 'Processing',
+        operationId: opId || '',
+        fileName: selFile.name,
+        createdAt: serverTimestamp()
+      });
+
+      loadHistory();
+
       const rows = `
         <div class="rrow"><span class="rkey">Asset Name</span><span class="rval">${assetName}</span></div>
         <div class="rrow"><span class="rkey">Asset ID</span><span>${assetId?`<span class="rval" onclick="cp('${assetId}')">${assetId}</span>`:'<span class="badge-proc">Processing…</span>'}</span></div>
         <div class="rrow"><span class="rkey">Insert URL</span><span>${assetId?`<span class="rval" onclick="cp('rbxassetid://${assetId}')">rbxassetid://${assetId}</span>`:'<span style="font-size:10px;color:var(--muted);font-family:DM Mono,monospace">Cek Inventory</span>'}</span></div>
         ${opId?`<div class="rrow"><span class="rkey">Operation ID</span><span class="rval" onclick="cp('${opId}')" style="font-size:10px">${opId}</span></div>`:''}
       `;
-      showResult('ok','✦ UPLOAD BERHASIL', rows);
+      showResult('ok', '✦ UPLOAD BERHASIL', rows);
       toast('✓ Asset berhasil diupload!');
     } else {
-      const msg = data.message||data.error||JSON.stringify(data);
-      showResult('fail','✕ UPLOAD GAGAL',`<div style="font-family:DM Mono,monospace;font-size:12px;color:rgba(255,68,102,0.8);line-height:1.7">${msg}</div>`);
+      const msg = data.message || data.error || JSON.stringify(data);
+      showResult('fail', '✕ UPLOAD GAGAL', `<div style="font-family:DM Mono,monospace;font-size:12px;color:rgba(255,68,102,0.8);line-height:1.7">${msg}</div>`);
     }
   } catch(e) {
-    showResult('fail','✕ CONNECTION ERROR',`<div style="font-family:DM Mono,monospace;font-size:12px;color:rgba(255,68,102,0.8);line-height:1.7">${e.message}</div>`);
+    showResult('fail', '✕ CONNECTION ERROR', `<div style="font-family:DM Mono,monospace;font-size:12px;color:rgba(255,68,102,0.8);line-height:1.7">${e.message}</div>`);
   }
-  btn.disabled=false;
-  btn.innerHTML='<div class="shim"></div>🚀 &nbsp; UPLOAD SEKARANG';
+  btn.disabled = false;
+  btn.innerHTML = '<div class="shim"></div>🚀 &nbsp; UPLOAD SEKARANG';
 }
 
-function showResult(type, hdr, body) {
-  const el = document.getElementById('result');
-  if(!type){el.className='result';return;}
-  el.className='result show '+type;
-  document.getElementById('resultHdr').innerHTML=hdr;
-  document.getElementById('resultBody').innerHTML=body;
+// ══ HISTORY ══
+async function loadHistory() {
+  if (!currentUser) return;
+  const el = document.getElementById('histList');
+  el.innerHTML = '<div class="hist-empty"><div class="hist-empty-ico">⏳</div><div class="hist-empty-t">Memuat history...</div></div>';
+  try {
+    const q = query(collection(db,'uploads'), where('uid','==',currentUser.uid), orderBy('createdAt','desc'), limit(50));
+    const snap = await getDocs(q);
+    const items = [];
+    snap.forEach(d => items.push(d.data()));
+    document.getElementById('statTotal').textContent = items.length;
+    document.getElementById('statSuccess').textContent = items.filter(i=>i.assetId!=='Processing').length;
+    document.getElementById('statCoins').textContent = currentUserData.totalUploads || items.length;
+    if (!items.length) {
+      el.innerHTML = '<div class="hist-empty"><div class="hist-empty-ico">◎</div><div class="hist-empty-t">Belum ada history upload.</div></div>';
+      return;
+    }
+    el.innerHTML = items.map(h => `
+      <div class="hist-item" onclick="cp('${h.assetId}')">
+        <div class="hist-item-top">
+          <span class="hist-name">${h.assetName}</span>
+          <span class="hist-time">${h.createdAt?.toDate ? h.createdAt.toDate().toLocaleString('id-ID') : 'Baru saja'}</span>
+        </div>
+        <div class="hist-id">ID: ${h.assetId}</div>
+        <div class="hist-tags"><span class="hist-tag">${h.assetType}</span><span class="hist-tag">${h.fileName}</span></div>
+      </div>
+    `).join('');
+  } catch(e) {
+    el.innerHTML = '<div class="hist-empty"><div class="hist-empty-t">Gagal memuat history.<br>Pastikan Firestore rules sudah diset.</div></div>';
+  }
 }
 
-/* ══ TOPUP / PAYMENT ══ */
-function openPayment(coins, price) {
-  pendingPkg = {coins, price};
+// ══ TOPUP ══
+let pendingPkg = null;
+let selectedBank = null;
+
+window.openPayment = function(c, p) {
+  pendingPkg = { coins: c, price: p };
   selectedBank = null;
-  document.getElementById('modalInner').innerHTML = buildPaymentModal(coins, price);
+  document.getElementById('modalInner').innerHTML = buildPaymentModal(c, p);
   document.getElementById('modalBg').classList.add('show');
 }
 
 function buildPaymentModal(c, p) {
   return `
     <div class="modal-title">Konfirmasi Topup</div>
-    <div class="modal-sub">Pilih metode pembayaran dan selesaikan transfer dana only</div>
+    <div class="modal-sub">Pilih metode pembayaran</div>
     <div class="modal-order">
-      <div class="modal-order-left">
-        <div class="label">Paket</div>
-        <div class="val">${c} Coins</div>
-      </div>
-      <div class="modal-order-right">
-        <div class="label">Total Bayar</div>
-        <div class="val">${p}</div>
-      </div>
+      <div class="modal-order-left"><div class="label">Paket</div><div class="val">${c} Coins</div></div>
+      <div class="modal-order-right"><div class="label">Total</div><div class="val">${p}</div></div>
     </div>
     <div class="bank-cards">
-      <div class="bank-card" onclick="selectBank(this,'BCA')">
+      <div class="bank-card" onclick="selBank(this,'BCA','123 4567 890','ADMIN DEV')">
         <div class="bank-logo bca">BCA</div>
-        <div class="bank-info">
-          <div class="bank-name">Bank BCA</div>
-          <div class="bank-num">123 4567 890</div>
-          <div class="bank-holder">a.n. ADMIN DEV</div>
-        </div>
+        <div class="bank-info"><div class="bank-name">Bank BCA</div><div class="bank-num">123 4567 890</div><div class="bank-holder">a.n. ADMIN DEV</div></div>
         <div class="bank-radio"></div>
       </div>
-      <div class="bank-card" onclick="selectBank(this,'BRI')">
-        <div class="bank-logo bri">BRI</div>
-        <div class="bank-info">
-          <div class="bank-name">Bank BRI</div>
-          <div class="bank-num">123 4567 890</div>
-          <div class="bank-holder">a.n. ADMIN DEV</div>
-        </div>
-        <div class="bank-radio"></div>
-      </div>
-      <div class="bank-card" onclick="selectBank(this,'DANA')">
+      <div class="bank-card" onclick="selBank(this,'DANA','0877-2903-5761','ADMIN DEV')">
         <div class="bank-logo dana">DANA</div>
-        <div class="bank-info">
-          <div class="bank-name">DANA</div>
-          <div class="bank-num">0877-2903-5761</div>
-          <div class="bank-holder">ADMIN DEV</div>
-        </div>
+        <div class="bank-info"><div class="bank-name">DANA</div><div class="bank-num">0877-2903-5761</div><div class="bank-holder">ADMIN DEV</div></div>
         <div class="bank-radio"></div>
       </div>
-      <div class="bank-card" onclick="selectBank(this,'OVO')">
+      <div class="bank-card" onclick="selBank(this,'OVO','0877-2903-5761','ADMIN DEV')">
         <div class="bank-logo ovo">OVO</div>
-        <div class="bank-info">
-          <div class="bank-name">OVO</div>
-          <div class="bank-num">123 4567 890</div>
-          <div class="bank-holder">ADMIN DEV</div>
-        </div>
+        <div class="bank-info"><div class="bank-name">OVO</div><div class="bank-num">0877-2903-5761</div><div class="bank-holder">ADMIN DEV</div></div>
         <div class="bank-radio"></div>
       </div>
     </div>
-    <div class="modal-note">
-      Setelah transfer, klik <strong style="color:var(--green)">tombol WhatsApp hijau</strong> untuk langsung chat admin dengan pesan otomatis + kirim bukti transfer.<br>
-      Coin aktif dalam <strong>1×24 jam</strong>.
-    </div>
-    <button class="btn-confirm" onclick="confirmPayment()">
-      <div class="shim"></div>
-      KONFIRMASI PEMBAYARAN
-    </button>
+    <div class="modal-note">Setelah transfer, klik tombol WA hijau untuk konfirmasi ke admin. Coin aktif dalam <strong>1×24 jam</strong>.</div>
+    <button class="btn-confirm" onclick="confirmPay()"><div class="shim"></div>KONFIRMASI</button>
   `;
 }
 
-function selectBank(el, bank) {
+window.selBank = function(el, bank, num, holder) {
   document.querySelectorAll('.bank-card').forEach(b=>b.classList.remove('selected'));
   el.classList.add('selected');
-  selectedBank = bank;
+  selectedBank = { bank, num, holder };
 }
 
-function confirmPayment() {
-  if(!selectedBank) return toast('⚠ Pilih metode pembayaran dulu!');
-  const orderId = 'NX-'+Date.now().toString(36).toUpperCase();
+window.confirmPay = async function() {
+  if (!selectedBank) return toast('⚠ Pilih metode dulu!');
+  const orderId = 'DEV-' + Date.now().toString(36).toUpperCase();
 
-  // Rekening berdasarkan metode yang dipilih
-  const bankInfo = {
-    BCA:  { num:'1234 5678 90',  holder:'ADMIN DEV' },
-    BRI:  { num:'1234 5678 90', holder:'ADMIN DEV' },
-    DANA: { num:'0877-2903-5761',holder:'ADMIN DEV' },
-    OVO:  { num:'1234 5678 90',holder:'ADMIN DEV' },
-  };
-  const b = bankInfo[selectedBank];
+  // Save order to Firestore
+  try {
+    await addDoc(collection(db, 'orders'), {
+      uid: currentUser.uid,
+      userEmail: currentUser.email,
+      userName: currentUserData.name,
+      orderId,
+      coins: pendingPkg.coins,
+      price: pendingPkg.price,
+      method: selectedBank.bank,
+      status: 'pending',
+      createdAt: serverTimestamp()
+    });
+  } catch(e) { console.log('Order save error:', e); }
 
-  // Pesan WA otomatis
   const waMsg = encodeURIComponent(
 `Halo Admin DEV! 👋
 
-Saya ingin konfirmasi topup coin:
+Konfirmasi topup coin:
 
 ━━━━━━━━━━━━━━━━━━━
+👤 User    : ${currentUserData.name}
+📧 Email   : ${currentUser.email}
 📦 Paket   : ${pendingPkg.coins} Coins
 💰 Nominal : ${pendingPkg.price}
-🏦 Via     : ${selectedBank} (${b.num})
+🏦 Via     : ${selectedBank.bank} (${selectedBank.num})
 🆔 Order ID: ${orderId}
 ━━━━━━━━━━━━━━━━━━━
 
-Berikut saya lampirkan bukti transfer nya.
-Mohon segera dikonfirmasi, terima kasih! 🙏`
-  );
-  const waUrl = `https://wa.me/${ADMIN_WA_NUM}?text=${waMsg}`;
+Bukti transfer terlampir.
+Mohon dikonfirmasi! 🙏`);
+
+  const waUrl = `https://wa.me/${ADMIN_WA}?text=${waMsg}`;
 
   document.getElementById('modalInner').innerHTML = `
     <div class="success-modal">
       <div class="success-icon">✓</div>
       <div class="success-title">Order Dibuat!</div>
       <div class="success-text">
-        Transfer <strong style="color:var(--gold)">${pendingPkg.price}</strong> ke <strong style="color:var(--teal)">${selectedBank}</strong><br>
-        No. Rekening: <strong style="color:var(--gold2)">${b.num}</strong><br>
-        a.n. <strong>${b.holder}</strong>
+        Transfer <strong style="color:var(--gold)">${pendingPkg.price}</strong> ke <strong style="color:var(--teal)">${selectedBank.bank}</strong><br>
+        No: <strong style="color:var(--gold2)">${selectedBank.num}</strong> a.n. ${selectedBank.holder}
       </div>
-
       <div class="order-id" onclick="cp('${orderId}')">🆔 ${orderId} <span style="font-size:9px;opacity:0.5">TAP TO COPY</span></div>
-
       <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;margin:14px 0;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9;text-align:left">
         <span style="color:var(--gold2)">LANGKAH SELANJUTNYA:</span><br>
-        1️⃣ Transfer <strong style="color:var(--text)">${pendingPkg.price}</strong> ke ${selectedBank}<br>
+        1️⃣ Transfer ${pendingPkg.price} ke ${selectedBank.bank}<br>
         2️⃣ Screenshot bukti transfer<br>
-        3️⃣ Klik tombol WA di bawah<br>
-        4️⃣ Kirim screenshot ke admin<br>
+        3️⃣ Klik tombol WA hijau di bawah<br>
+        4️⃣ Kirim screenshot + Order ID ke admin<br>
         5️⃣ Coin aktif dalam <strong style="color:var(--green)">1×24 jam</strong>
       </div>
-
       <a href="${waUrl}" target="_blank" style="display:block;text-decoration:none;margin-bottom:10px">
         <button class="btn-confirm" style="background:linear-gradient(135deg,#25d366,#128c7e);box-shadow:0 4px 30px rgba(37,211,102,0.3)">
-          <div class="shim"></div>
-          <span style="font-size:16px">💬</span> &nbsp; CHAT ADMIN WA
+          <div class="shim"></div>💬 &nbsp; CHAT ADMIN WA
         </button>
       </a>
-
-      <button class="btn-confirm" onclick="closeModal()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted2);box-shadow:none;font-size:13px">
-        Tutup
-      </button>
-    </div>
-  `;
-  toast('✓ Order dibuat: '+orderId+' — Tap tombol WA hijau!');
+      <button class="btn-confirm" onclick="closeModal()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted2);box-shadow:none;font-size:13px">Tutup</button>
+    </div>`;
+  toast('✓ Order dibuat: ' + orderId);
 }
 
-function closeModal() {
+window.closeModal = function() {
   document.getElementById('modalBg').classList.remove('show');
 }
 
-/* ══ HISTORY ══ */
-function renderHistory() {
-  const s = hist.filter(h=>h.assetId!=='Processing').length;
-  const c = hist.length;
-  document.getElementById('statTotal').textContent = c;
-  document.getElementById('statSuccess').textContent = s;
-  document.getElementById('statCoins').textContent = c;
+// ══ ADMIN PANEL ══
+async function loadAdminData() {
+  document.getElementById('adminLoading').style.display = 'block';
+  document.getElementById('adminContent').style.display = 'none';
 
-  const el = document.getElementById('histList');
-  if(!hist.length) {
-    el.innerHTML=`<div class="hist-empty"><div class="hist-empty-ico">◎</div><div class="hist-empty-t">Belum ada history upload.<br>Upload asset pertamamu!</div></div>`;
-    return;
-  }
-  el.innerHTML = hist.map(h=>`
-    <div class="hist-item" onclick="cp('${h.assetId}')">
-      <div class="hist-item-top">
-        <span class="hist-name">${h.name}</span>
-        <span class="hist-time">${h.time}</span>
+  try {
+    // Load users
+    const usersSnap = await getDocs(collection(db, 'users'));
+    const users = [];
+    usersSnap.forEach(d => users.push({ id: d.id, ...d.data() }));
+
+    // Load orders
+    const ordersQ = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(50));
+    const ordersSnap = await getDocs(ordersQ);
+    const orders = [];
+    ordersSnap.forEach(d => orders.push({ id: d.id, ...d.data() }));
+
+    // Load uploads
+    const uploadsQ = query(collection(db, 'uploads'), orderBy('createdAt', 'desc'), limit(50));
+    const uploadsSnap = await getDocs(uploadsQ);
+    const uploads = [];
+    uploadsSnap.forEach(d => uploads.push({ id: d.id, ...d.data() }));
+
+    // Stats
+    document.getElementById('adminStatUsers').textContent = users.length;
+    document.getElementById('adminStatOrders').textContent = orders.length;
+    document.getElementById('adminStatUploads').textContent = uploads.length;
+    document.getElementById('adminStatPending').textContent = orders.filter(o => o.status === 'pending').length;
+
+    // Render users
+    document.getElementById('adminUserList').innerHTML = users.map(u => `
+      <div class="admin-user-card">
+        <div class="admin-user-top">
+          <div class="admin-user-avatar">${(u.name||'U')[0].toUpperCase()}</div>
+          <div class="admin-user-info">
+            <div class="admin-user-name">${u.name || 'Unknown'} ${u.isAdmin ? '<span class="badge-admin">ADMIN</span>' : ''}</div>
+            <div class="admin-user-email">${u.email}</div>
+          </div>
+          <div class="admin-user-coins">
+            <span class="coins-display">✦ ${u.coins || 0}</span>
+          </div>
+        </div>
+        <div class="admin-user-actions">
+          <input class="finput" type="number" id="coinInp_${u.id}" placeholder="Jumlah coin" style="flex:1;padding:8px 12px;font-size:12px">
+          <button class="btn-add-coin" onclick="addCoins('${u.id}','${u.name}')">+ Add</button>
+          <button class="btn-sub-coin" onclick="subCoins('${u.id}','${u.name}')">- Sub</button>
+          <button class="btn-set-coin" onclick="setCoins('${u.id}','${u.name}')">Set</button>
+        </div>
       </div>
-      <div class="hist-id">ID: ${h.assetId}</div>
-      <div class="hist-tags">
-        <span class="hist-tag">${h.type}</span>
-        <span class="hist-tag">${h.file}</span>
+    `).join('');
+
+    // Render orders
+    document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => `
+      <div class="admin-order-card ${o.status}">
+        <div class="admin-order-top">
+          <div>
+            <div class="admin-order-id">${o.orderId}</div>
+            <div class="admin-order-user">${o.userName} · ${o.userEmail}</div>
+          </div>
+          <div class="admin-order-status ${o.status}">${o.status === 'pending' ? '⏳ PENDING' : '✓ CONFIRMED'}</div>
+        </div>
+        <div class="admin-order-detail">
+          ${o.coins} Coins · ${o.price} · ${o.method}<br>
+          <span style="font-size:9px;color:var(--muted)">${o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString('id-ID') : 'Baru saja'}</span>
+        </div>
+        ${o.status === 'pending' ? `<button class="btn-confirm-order" onclick="confirmOrder('${o.id}','${o.uid}',${o.coins},'${o.orderId}')">✓ Konfirmasi & Tambah Coin</button>` : ''}
+      </div>
+    `).join('') : '<div style="text-align:center;padding:30px;color:var(--muted);font-family:DM Mono,monospace;font-size:12px">Belum ada order</div>';
+
+    // Render uploads
+    document.getElementById('adminUploadList').innerHTML = uploads.length ? uploads.map(u => `
+      <div class="hist-item" style="margin-bottom:8px">
+        <div class="hist-item-top">
+          <span class="hist-name">${u.assetName}</span>
+          <span class="hist-time">${u.createdAt?.toDate ? u.createdAt.toDate().toLocaleString('id-ID') : ''}</span>
+        </div>
+        <div style="font-family:DM Mono,monospace;font-size:10px;color:var(--muted2);margin-bottom:4px">${u.userName} · ${u.userEmail}</div>
+        <div class="hist-id" style="cursor:pointer" onclick="cp('${u.assetId}')">ID: ${u.assetId}</div>
+        <div class="hist-tags"><span class="hist-tag">${u.assetType}</span><span class="hist-tag">${u.fileName}</span></div>
+      </div>
+    `).join('') : '<div style="text-align:center;padding:30px;color:var(--muted);font-family:DM Mono,monospace;font-size:12px">Belum ada upload</div>';
+
+  } catch(e) {
+    console.error(e);
+    document.getElementById('adminContent').innerHTML = `<div style="color:var(--red);font-family:DM Mono,monospace;padding:20px;font-size:12px">Error: ${e.message}<br><br>Pastikan Firestore rules sudah diset dengan benar.</div>`;
+  }
+
+  document.getElementById('adminLoading').style.display = 'none';
+  document.getElementById('adminContent').style.display = 'block';
+}
+
+window.addCoins = async function(uid, name) {
+  const val = parseInt(document.getElementById('coinInp_'+uid).value);
+  if (!val || val <= 0) return toast('⚠ Masukkan jumlah coin!');
+  await updateDoc(doc(db,'users',uid), { coins: increment(val) });
+  toast(`✓ +${val} Coin ditambahkan ke ${name}`);
+  loadAdminData();
+}
+
+window.subCoins = async function(uid, name) {
+  const val = parseInt(document.getElementById('coinInp_'+uid).value);
+  if (!val || val <= 0) return toast('⚠ Masukkan jumlah coin!');
+  await updateDoc(doc(db,'users',uid), { coins: increment(-val) });
+  toast(`✓ -${val} Coin dikurangi dari ${name}`);
+  loadAdminData();
+}
+
+window.setCoins = async function(uid, name) {
+  const val = parseInt(document.getElementById('coinInp_'+uid).value);
+  if (val === undefined || isNaN(val)) return toast('⚠ Masukkan jumlah coin!');
+  await updateDoc(doc(db,'users',uid), { coins: val });
+  toast(`✓ Coin ${name} diset ke ${val}`);
+  loadAdminData();
+}
+
+window.confirmOrder = async function(orderId, uid, coins, orderCode) {
+  if (!confirm(`Konfirmasi order ${orderCode} dan tambah ${coins} coins?`)) return;
+  await updateDoc(doc(db,'orders',orderId), { status: 'confirmed', confirmedAt: serverTimestamp() });
+  await updateDoc(doc(db,'users',uid), { coins: increment(coins) });
+  toast(`✓ Order dikonfirmasi! +${coins} Coins ditambahkan`);
+  loadAdminData();
+}
+
+// ══ UTILS ══
+window.cp = function(text) {
+  navigator.clipboard.writeText(text).then(() => toast('✓ Copied: ' + text));
+}
+
+window.toast = function(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function showResult(type, hdr, body) {
+  const el = document.getElementById('result');
+  if (!type) { el.className = 'result'; return; }
+  el.className = 'result show ' + type;
+  document.getElementById('resultHdr').innerHTML = hdr;
+  document.getElementById('resultBody').innerHTML = body;
+}
+
+function fmtBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+
+function setBtnLoading(id, loading) {
+  const btn = document.getElementById(id);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.dataset.orig = btn.dataset.orig || btn.innerHTML;
+  btn.innerHTML = loading ? '<span class="spinner"></span> Memproses...' : btn.dataset.orig;
+}
+
+// ══ TAB SWITCHING ══
+window.switchTab = function(btn, panel) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + panel).classList.add('active');
+  moveSlider(btn);
+  if (panel === 'history') loadHistory();
+}
+
+function moveSlider(btn) {
+  const tabs = document.getElementById('tabs');
+  const slider = document.getElementById('tabSlider');
+  if (!tabs || !slider) return;
+  const tr = tabs.getBoundingClientRect(), br = btn.getBoundingClientRect();
+  slider.style.left = (br.left - tr.left - 4) + 'px';
+  slider.style.width = br.width + 'px';
+}
+
+setTimeout(() => {
+  const active = document.querySelector('.tab-btn.active');
+  if (active) moveSlider(active);
+}, 200);
+
+window.switchAuthTab = function(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('form-' + tab).classList.add('active');
+  document.getElementById('authErr').style.display = 'none';
+}
+
+window.goAdmin = function() { showAdmin(); }
+window.goApp = function() { showApp(); }
+
+// ══ DRAG DROP ══
+const dzEl = document.getElementById('dz');
+if (dzEl) {
+  dzEl.addEventListener('dragover', e => { e.preventDefault(); dzEl.classList.add('over'); });
+  dzEl.addEventListener('dragleave', () => dzEl.classList.remove('over'));
+  dzEl.addEventListener('drop', e => {
+    e.preventDefault(); dzEl.classList.remove('over');
+    const f = e.dataTransfer.files[0]; if (!f) return;
+    const dt = new DataTransfer(); dt.items.add(f);
+    document.getElementById('fi').files = dt.files;
+    window.handleFile(document.getElementById('fi'));
+  });
+}
+
+// ══ CANVAS ══
+let canvasRunning = false;
+let animFrame;
+function startCanvas() {
+  if (canvasRunning) return;
+  canvasRunning = true;
+  const cv = document.getElementById('c');
+  if (!cv) return;
+  const cx = cv.getContext('2d');
+  let W, H;
+  function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+  const pts = Array.from({length:100}, () => ({
+    x: Math.random()*1400, y: Math.random()*900,
+    vx: (Math.random()-.5)*.2, vy: -(Math.random()*.35+.04),
+    r: Math.random()*1.2+.2, a: Math.random()*.3+.05,
+    c: Math.random()>.65?'#c9a84c':Math.random()>.5?'#00e5c8':'#fff',
+    life: Math.random(), decay: Math.random()*.001+.0004
+  }));
+  const orbs = [
+    {bx:.15,by:.35,cr:'rgba(201,168,76,0.07)',t:0,s:90},
+    {bx:.85,by:.65,cr:'rgba(0,229,200,0.05)',t:2,s:80},
+    {bx:.5,by:.95,cr:'rgba(100,60,200,0.04)',t:1.3,s:100},
+  ];
+  let ot = 0;
+  function draw() {
+    if (!canvasRunning) return;
+    cx.clearRect(0,0,W,H); ot+=.003;
+    const g=cx.createRadialGradient(W*.3,H*.2,0,W*.3,H*.2,H*.8);
+    g.addColorStop(0,'rgba(12,20,40,0.9)'); g.addColorStop(1,'rgba(2,4,8,0)');
+    cx.fillStyle=g; cx.fillRect(0,0,W,H);
+    orbs.forEach(o=>{
+      const ox=o.bx*W+Math.sin(ot+o.t)*o.s, oy=o.by*H+Math.cos(ot*.7+o.t)*60;
+      const rg=cx.createRadialGradient(ox,oy,0,ox,oy,.38*Math.min(W,H));
+      rg.addColorStop(0,o.cr); rg.addColorStop(1,'transparent');
+      cx.fillStyle=rg; cx.fillRect(0,0,W,H);
+    });
+    pts.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.life-=p.decay;
+      if(p.life<=0||p.y<-10){p.x=Math.random()*W;p.y=H+10;p.life=1;}
+      cx.save();cx.globalAlpha=p.a*p.life;cx.fillStyle=p.c;cx.shadowColor=p.c;cx.shadowBlur=6;
+      cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fill();cx.restore();
+    });
+    animFrame = requestAnimationFrame(draw);
+  }
+  draw();
+}
+function stopCanvas() { canvasRunning = false; if (animFrame) cancelAnimationFrame(animFrame); }
+
+</script>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --void: #020408; --deep: #060d18; --surface: #0b1525;
+  --glass: rgba(255,255,255,0.03); --rim: rgba(255,255,255,0.07); --rim2: rgba(255,255,255,0.12);
+  --gold: #c9a84c; --gold2: #f0d080;
+  --teal: #00e5c8; --red: #ff4466; --red-dim: rgba(255,68,102,0.15);
+  --green: #00e5a0; --text: #dde6f0; --muted: #4a6080; --muted2: #7a90a8;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--void); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; overflow-x: hidden; }
+#c { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.scanlines { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px); }
+.vignette { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,0.7) 100%); }
+
+/* ══ AUTH SCREEN ══ */
+#screen-auth {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--void); padding: 20px;
+}
+.auth-box {
+  width: 100%; max-width: 400px;
+  background: linear-gradient(145deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02));
+  border: 1px solid var(--rim); border-radius: 28px; padding: 36px 28px;
+  position: relative; overflow: hidden;
+  animation: fadeUp 0.6s ease;
+}
+.auth-box::before { content:''; position:absolute; top:0; left:15%; right:15%; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,0.8),transparent); }
+.auth-logo { font-family:'Bebas Neue',sans-serif; font-size:52px; letter-spacing:8px; text-align:center; display:block; margin-bottom:4px; background:linear-gradient(160deg,#fff 0%,var(--gold2) 30%,var(--gold) 60%,#8b6520 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.auth-tagline { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:4px; color:var(--muted); text-align:center; text-transform:uppercase; margin-bottom:28px; }
+.auth-tabs { display:flex; gap:2px; background:rgba(255,255,255,0.03); border:1px solid var(--rim); border-radius:12px; padding:3px; margin-bottom:24px; }
+.auth-tab { flex:1; padding:10px; border:none; background:none; color:var(--muted); font-family:'Syne',sans-serif; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; border-radius:10px; transition:all 0.25s; }
+.auth-tab.active { background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(201,168,76,0.05)); color:var(--gold2); border:1px solid rgba(201,168,76,0.3); }
+.auth-form { display:none; }
+.auth-form.active { display:block; animation:fadeUp 0.3s ease; }
+.auth-field { margin-bottom:14px; }
+.auth-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; display:block; }
+.auth-input { width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--rim); border-radius:10px; padding:12px 14px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; outline:none; transition:all 0.25s; }
+.auth-input::placeholder { color:var(--muted); }
+.auth-input:focus { border-color:rgba(201,168,76,0.5); background:rgba(201,168,76,0.03); box-shadow:0 0 0 3px rgba(201,168,76,0.07); }
+.auth-err { background:rgba(255,68,102,0.1); border:1px solid rgba(255,68,102,0.25); border-radius:8px; padding:10px 14px; font-family:'DM Mono',monospace; font-size:11px; color:var(--red); margin-bottom:14px; display:none; }
+.btn-auth { width:100%; padding:15px; border:none; border-radius:12px; background:linear-gradient(100deg,#8b6520,var(--gold),var(--gold2),var(--gold),#8b6520); background-size:300% 100%; color:#07050a; font-family:'Bebas Neue',sans-serif; font-size:17px; letter-spacing:3px; cursor:pointer; position:relative; overflow:hidden; transition:all 0.4s; box-shadow:0 4px 25px rgba(201,168,76,0.25); margin-bottom:10px; }
+.btn-auth:hover:not(:disabled) { background-position:100% 0; transform:translateY(-1px); box-shadow:0 8px 35px rgba(201,168,76,0.4); }
+.btn-auth:disabled { opacity:0.4; cursor:not-allowed; }
+.btn-google { width:100%; padding:13px; border:1px solid var(--rim2); border-radius:12px; background:rgba(255,255,255,0.04); color:var(--text); font-family:'Syne',sans-serif; font-size:12px; font-weight:700; letter-spacing:1px; cursor:pointer; transition:all 0.25s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-google:hover { background:rgba(255,255,255,0.08); border-color:var(--rim2); }
+.auth-divider { display:flex; align-items:center; gap:10px; margin:14px 0; }
+.auth-divider-line { flex:1; height:1px; background:var(--rim); }
+.auth-divider-txt { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:1px; }
+
+/* ══ APP SCREEN ══ */
+#screen-app { display:none; }
+#screen-admin { display:none; }
+.wrap { position: relative; z-index: 2; max-width: 500px; margin: 0 auto; padding: 0 16px 80px; }
+
+/* ══ TOP BAR ══ */
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:16px 0 8px; }
+.topbar-user { display:flex; align-items:center; gap:10px; }
+.user-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#07050a; flex-shrink:0; }
+.user-name { font-size:13px; font-weight:700; }
+.user-email { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); margin-top:1px; }
+.topbar-btns { display:flex; gap:6px; }
+.btn-sm { padding:7px 14px; border-radius:8px; font-family:'Syne',sans-serif; font-size:10px; font-weight:700; letter-spacing:1px; cursor:pointer; transition:all 0.2s; border:1px solid; }
+.btn-sm-gold { background:rgba(201,168,76,0.1); border-color:rgba(201,168,76,0.3); color:var(--gold); }
+.btn-sm-gold:hover { background:rgba(201,168,76,0.2); }
+.btn-sm-red { background:rgba(255,68,102,0.08); border-color:rgba(255,68,102,0.2); color:var(--red); }
+.btn-sm-red:hover { background:rgba(255,68,102,0.15); }
+
+/* ══ HEADER ══ */
+.hdr { padding:24px 0 28px; text-align:center; }
+.hdr-eyebrow { display:inline-flex; align-items:center; gap:8px; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; border:1px solid rgba(201,168,76,0.25); border-radius:100px; padding:5px 16px; margin-bottom:16px; background:rgba(201,168,76,0.06); animation:fadeUp 1s ease both; }
+.hdr-eyebrow-dot { width:5px; height:5px; border-radius:50%; background:var(--gold); box-shadow:0 0 8px var(--gold); animation:blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.hdr-logo { font-family:'Bebas Neue',sans-serif; font-size:clamp(52px,16vw,78px); letter-spacing:8px; line-height:0.9; display:block; background:linear-gradient(160deg,#fff 0%,var(--gold2) 30%,var(--gold) 55%,#8b6520 80%,var(--gold) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 40px rgba(201,168,76,0.25)); animation:fadeUp 1s 0.1s ease both; }
+.hdr-tagline { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:6px; color:var(--muted); text-transform:uppercase; margin-top:8px; }
+.hdr-rule { display:flex; align-items:center; margin:20px auto 0; width:180px; }
+.hdr-rule-line { flex:1; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,0.5),transparent); }
+.hdr-rule-gem { width:7px; height:7px; background:var(--gold); transform:rotate(45deg); box-shadow:0 0 12px var(--gold); }
+
+/* ══ COIN BAR ══ */
+.coin-bar { display:flex; align-items:center; justify-content:space-between; background:var(--glass); border:1px solid var(--rim); border-radius:16px; padding:14px 20px; margin-bottom:20px; backdrop-filter:blur(20px); }
+.coin-bar-left { display:flex; align-items:center; gap:10px; }
+.coin-icon { width:38px; height:38px; border-radius:50%; background:conic-gradient(var(--gold) 0deg,var(--gold2) 90deg,var(--gold) 180deg,#7a5010 270deg,var(--gold) 360deg); display:flex; align-items:center; justify-content:center; font-size:16px; position:relative; box-shadow:0 0 20px rgba(201,168,76,0.3); }
+.coin-icon::before { content:''; position:absolute; inset:3px; border-radius:50%; background:var(--deep); }
+.coin-icon span { position:relative; z-index:1; font-size:14px; }
+.coin-info-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:2px; }
+.coin-info-val { font-size:20px; font-weight:800; background:linear-gradient(135deg,var(--gold2),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.btn-topup-quick { padding:8px 16px; border:1px solid rgba(201,168,76,0.3); border-radius:10px; background:rgba(201,168,76,0.08); color:var(--gold); font-family:'Syne',sans-serif; font-size:11px; font-weight:700; letter-spacing:1px; cursor:pointer; transition:all 0.25s; }
+.btn-topup-quick:hover { background:rgba(201,168,76,0.15); border-color:rgba(201,168,76,0.6); transform:translateY(-1px); }
+
+/* ══ TABS ══ */
+.tabs { display:flex; gap:2px; padding:4px; background:var(--glass); border:1px solid var(--rim); border-radius:18px; margin-bottom:20px; backdrop-filter:blur(20px); position:relative; }
+.tab-slider { position:absolute; top:4px; height:calc(100% - 8px); border-radius:14px; background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05)); border:1px solid rgba(201,168,76,0.3); transition:all 0.4s cubic-bezier(0.4,0,0.2,1); z-index:0; box-shadow:0 0 20px rgba(201,168,76,0.1); }
+.tab-btn { flex:1; padding:12px 4px; border:none; background:none; color:var(--muted); font-family:'Syne',sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; cursor:pointer; border-radius:14px; transition:color 0.3s; position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:4px; }
+.tab-btn.active { color:var(--gold2); }
+.tab-btn .ti { font-size:12px; }
+
+/* ══ PANEL ══ */
+.panel { display:none; animation:fadeUp 0.5s ease both; }
+.panel.active { display:block; }
+
+/* ══ CARD ══ */
+.card { background:linear-gradient(145deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01)); border:1px solid var(--rim); border-radius:24px; padding:28px; backdrop-filter:blur(30px); position:relative; overflow:hidden; margin-bottom:16px; }
+.card::before { content:''; position:absolute; top:0; left:15%; right:15%; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,0.7),transparent); }
+.card-corner { position:absolute; width:40px; height:40px; border-color:rgba(201,168,76,0.2); border-style:solid; border-width:0; }
+.card-corner.tl { top:12px; left:12px; border-top-width:1px; border-left-width:1px; border-top-left-radius:6px; }
+.card-corner.tr { top:12px; right:12px; border-top-width:1px; border-right-width:1px; border-top-right-radius:6px; }
+.card-corner.bl { bottom:12px; left:12px; border-bottom-width:1px; border-left-width:1px; border-bottom-left-radius:6px; }
+.card-corner.br { bottom:12px; right:12px; border-bottom-width:1px; border-right-width:1px; border-bottom-right-radius:6px; }
+.card-glow { position:absolute; top:-100px; right:-100px; width:280px; height:280px; background:radial-gradient(circle,rgba(201,168,76,0.04) 0%,transparent 70%); pointer-events:none; }
+.ctitle { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+.ctitle-icon { width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05)); border:1px solid rgba(201,168,76,0.25); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.ctitle-text { font-size:13px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; }
+.ctitle-sub { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1.5px; color:var(--muted); margin-top:2px; }
+.infobox { background:rgba(0,229,200,0.05); border:1px solid rgba(0,229,200,0.15); border-radius:12px; padding:14px 16px; margin-bottom:22px; font-family:'DM Mono',monospace; font-size:11px; color:rgba(0,229,200,0.7); line-height:1.7; }
+.infobox a { color:var(--teal); border-bottom:1px solid rgba(0,229,200,0.3); text-decoration:none; }
+.field { margin-bottom:18px; }
+.flabel { display:flex; align-items:center; gap:6px; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2.5px; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+.flabel-gem { width:4px; height:4px; background:var(--gold); border-radius:50%; }
+.finput { width:100%; background:rgba(255,255,255,0.025); border:1px solid var(--rim); border-radius:12px; padding:13px 16px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; transition:all 0.25s; outline:none; -webkit-appearance:none; }
+.finput::placeholder { color:var(--muted); }
+.finput:focus { border-color:rgba(201,168,76,0.5); background:rgba(201,168,76,0.03); box-shadow:0 0 0 3px rgba(201,168,76,0.07); }
+select.finput { cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a6080'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; }
+select.finput option { background:#0b1525; color:var(--text); }
+.div { height:1px; background:linear-gradient(90deg,transparent,var(--rim),transparent); margin:22px 0; }
+
+/* ══ DROPZONE ══ */
+.dz { position:relative; border:1.5px dashed rgba(255,255,255,0.08); border-radius:18px; padding:30px 20px; text-align:center; cursor:pointer; transition:all 0.35s; background:rgba(255,255,255,0.01); overflow:hidden; }
+.dz:hover,.dz.over { border-color:rgba(201,168,76,0.4); background:rgba(201,168,76,0.025); }
+.dz input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.dz-orb { width:60px; height:60px; margin:0 auto 14px; border-radius:18px; background:linear-gradient(135deg,rgba(201,168,76,0.12),rgba(201,168,76,0.04)); border:1px solid rgba(201,168,76,0.2); display:flex; align-items:center; justify-content:center; font-size:24px; transition:all 0.35s; box-shadow:0 8px 32px rgba(0,0,0,0.3); }
+.dz:hover .dz-orb { transform:translateY(-4px) scale(1.05); box-shadow:0 16px 40px rgba(201,168,76,0.15); }
+.dz-title { font-size:14px; font-weight:700; margin-bottom:4px; }
+.dz-sub { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; }
+.dz-formats { display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-top:10px; }
+.dz-fmt { font-family:'DM Mono',monospace; font-size:9px; background:rgba(255,255,255,0.04); border:1px solid var(--rim); border-radius:5px; padding:3px 8px; color:var(--muted); }
+.dz-fmt.rbxm { border-color:rgba(255,68,102,0.2); color:rgba(255,68,102,0.6); }
+.dz-fmt.img { border-color:rgba(0,229,200,0.2); color:rgba(0,229,200,0.6); }
+.dz-fmt.audio { border-color:rgba(201,168,76,0.2); color:rgba(201,168,76,0.6); }
+.dz-fmt.mesh { border-color:rgba(139,92,246,0.2); color:rgba(139,92,246,0.6); }
+
+/* ══ FILE CHIP ══ */
+.fchip { display:none; align-items:center; gap:10px; background:rgba(0,229,160,0.06); border:1px solid rgba(0,229,160,0.2); border-radius:14px; padding:12px 14px; margin-top:10px; }
+.fchip.show { display:flex; animation:chipIn 0.35s cubic-bezier(0.22,1,0.36,1); }
+@keyframes chipIn { from{opacity:0;transform:translateY(8px)scale(0.96)} to{opacity:1;transform:none} }
+.fchip-ico { width:38px; height:38px; background:rgba(0,229,160,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.fchip-info { flex:1; min-width:0; }
+.fchip-name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.fchip-size { font-family:'DM Mono',monospace; font-size:10px; color:var(--green); margin-top:2px; }
+.fchip-rm { width:30px; height:30px; background:var(--red-dim); border:1px solid rgba(255,68,102,0.2); border-radius:8px; color:var(--red); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; transition:background 0.2s; }
+
+/* ══ RBXM NOTICE ══ */
+.rbxm-notice { display:none; background:rgba(255,68,102,0.07); border:1px solid rgba(255,68,102,0.2); border-radius:12px; padding:14px 16px; margin-top:10px; font-family:'DM Mono',monospace; font-size:11px; color:rgba(255,68,102,0.8); line-height:1.7; }
+.rbxm-notice.show { display:block; animation:chipIn 0.35s ease; }
+
+/* ══ COST / UPLOAD ══ */
+.cost-preview { display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.02); border:1px solid var(--rim); border-radius:12px; padding:12px 16px; margin-bottom:18px; }
+.cost-label { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1.5px; }
+.cost-val { display:flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:var(--gold); }
+.btn-up { width:100%; padding:17px; border:none; border-radius:16px; background:linear-gradient(100deg,#8b6520 0%,var(--gold) 25%,var(--gold2) 50%,var(--gold) 75%,#8b6520 100%); background-size:300% 100%; color:#07050a; font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:4px; cursor:pointer; position:relative; overflow:hidden; transition:all 0.4s; box-shadow:0 4px 30px rgba(201,168,76,0.25),inset 0 1px 0 rgba(255,255,255,0.25); }
+.btn-up:hover:not(:disabled) { background-position:100% 0; transform:translateY(-2px); box-shadow:0 10px 50px rgba(201,168,76,0.4); }
+.btn-up:disabled { opacity:0.35; cursor:not-allowed; }
+.btn-up .shim,.btn-confirm .shim,.btn-auth .shim { position:absolute; top:0; left:-100%; width:40%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent); transform:skewX(-20deg); animation:shim 3.5s infinite; }
+@keyframes shim { 0%{left:-100%} 35%,100%{left:160%} }
+
+/* ══ RESULT ══ */
+.result { display:none; margin-top:18px; border-radius:18px; overflow:hidden; }
+.result.show { display:block; animation:resultIn 0.5s cubic-bezier(0.22,1,0.36,1); }
+@keyframes resultIn { from{opacity:0;transform:translateY(14px)scale(0.97)} to{opacity:1;transform:none} }
+.result.ok { border:1px solid rgba(0,229,160,0.2); background:rgba(0,229,160,0.03); }
+.result.fail { border:1px solid rgba(255,68,102,0.2); background:rgba(255,68,102,0.03); }
+.result-hdr { padding:12px 20px; font-size:10px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; display:flex; align-items:center; gap:8px; }
+.result.ok .result-hdr { color:var(--green); border-bottom:1px solid rgba(0,229,160,0.12); }
+.result.fail .result-hdr { color:var(--red); border-bottom:1px solid rgba(255,68,102,0.12); }
+.result-body { padding:16px 20px; }
+.rrow { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+.rrow:last-child { border-bottom:none; }
+.rkey { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+.rval { font-family:'DM Mono',monospace; font-size:12px; color:var(--gold2); cursor:pointer; max-width:220px; word-break:break-all; text-align:right; }
+.rval:hover { color:var(--teal); }
+.badge-proc { font-family:'DM Mono',monospace; font-size:9px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.25); color:#f59e0b; padding:3px 10px; border-radius:5px; animation:blink 1.5s infinite; }
+.warnbox { margin-top:18px; background:rgba(245,158,11,0.04); border:1px solid rgba(245,158,11,0.15); border-radius:14px; padding:14px 18px; font-family:'DM Mono',monospace; font-size:11px; color:rgba(245,158,11,0.65); line-height:1.8; }
+.warnbox-t { color:#f59e0b; font-weight:500; margin-bottom:4px; font-size:11px; }
+
+/* ══ TOPUP ══ */
+.topup-hero { text-align:center; padding:24px 0 20px; }
+.topup-ring { width:110px; height:110px; border-radius:50%; background:conic-gradient(var(--gold) 0deg,var(--gold2) 60deg,var(--gold) 120deg,#6a4010 180deg,var(--gold) 240deg,var(--gold2) 300deg,var(--gold) 360deg); display:flex; align-items:center; justify-content:center; box-shadow:0 0 50px rgba(201,168,76,0.35); margin:0 auto 16px; position:relative; animation:ringPulse 3s ease-in-out infinite; }
+@keyframes ringPulse { 0%,100%{box-shadow:0 0 50px rgba(201,168,76,0.35)} 50%{box-shadow:0 0 70px rgba(201,168,76,0.55)} }
+.topup-ring::before { content:''; position:absolute; inset:8px; border-radius:50%; background:var(--deep); z-index:0; }
+.topup-ring-inner { position:relative; z-index:1; text-align:center; }
+.topup-ring-num { font-family:'Bebas Neue',sans-serif; font-size:34px; letter-spacing:2px; background:linear-gradient(135deg,var(--gold2),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+.topup-ring-lbl { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:2px; color:var(--muted); }
+.topup-title { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:3px; color:var(--gold2); margin-bottom:4px; }
+.topup-sub { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); line-height:1.6; }
+.pkg-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:18px 0; }
+.pkg { background:rgba(255,255,255,0.02); border:1px solid var(--rim); border-radius:16px; padding:18px 14px; text-align:center; cursor:pointer; transition:all 0.3s; position:relative; overflow:hidden; }
+.pkg:hover { border-color:rgba(201,168,76,0.4); transform:translateY(-2px); box-shadow:0 8px 30px rgba(201,168,76,0.1); }
+.pkg.hot { border-color:rgba(201,168,76,0.3); }
+.pkg.hot::after { content:'POPULER'; position:absolute; top:0; right:0; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#07050a; font-family:'DM Mono',monospace; font-size:8px; font-weight:700; padding:4px 10px; border-radius:0 14px 0 10px; }
+.pkg-coins { font-family:'Bebas Neue',sans-serif; font-size:34px; letter-spacing:2px; background:linear-gradient(135deg,var(--gold2),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+.pkg-coins-lbl { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--muted); margin-bottom:8px; }
+.pkg-price { font-size:14px; font-weight:700; color:var(--text); }
+.pkg-price-note { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); margin-top:3px; }
+.pkg-bonus { font-family:'DM Mono',monospace; font-size:9px; color:var(--green); margin-top:4px; }
+
+/* ══ MODAL ══ */
+.modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:100; display:none; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(8px); overflow-y:auto; }
+.modal-bg.show { display:flex; animation:fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.modal { background:linear-gradient(145deg,#0e1828,#080f1a); border:1px solid rgba(201,168,76,0.25); border-radius:24px; padding:28px; width:100%; max-width:400px; position:relative; overflow:hidden; animation:modalIn 0.4s cubic-bezier(0.22,1,0.36,1); margin:auto; }
+@keyframes modalIn { from{opacity:0;transform:translateY(30px)scale(0.95)} to{opacity:1;transform:none} }
+.modal::before { content:''; position:absolute; top:0; left:20%; right:20%; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,0.8),transparent); }
+.modal-close { position:absolute; top:14px; right:14px; width:30px; height:30px; background:rgba(255,255,255,0.05); border:1px solid var(--rim); border-radius:8px; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; transition:all 0.2s; }
+.modal-close:hover { background:var(--red-dim); color:var(--red); }
+.modal-title { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:3px; color:var(--gold2); margin-bottom:4px; }
+.modal-sub { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-bottom:20px; line-height:1.6; }
+.modal-order { background:rgba(201,168,76,0.06); border:1px solid rgba(201,168,76,0.2); border-radius:12px; padding:14px 16px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; }
+.modal-order-left .label,.modal-order-right .label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--muted); }
+.modal-order-left .val,.modal-order-right .val { font-size:18px; font-weight:800; color:var(--gold2); }
+.modal-order-right { text-align:right; }
+.bank-cards { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.bank-card { background:rgba(255,255,255,0.025); border:1px solid var(--rim); border-radius:12px; padding:14px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:all 0.25s; }
+.bank-card:hover,.bank-card.selected { border-color:rgba(201,168,76,0.4); background:rgba(201,168,76,0.04); }
+.bank-logo { width:42px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; }
+.bank-logo.bca { background:#005baa; color:#fff; }
+.bank-logo.dana { background:#118eea; color:#fff; font-size:11px; }
+.bank-logo.ovo { background:#4c3494; color:#fff; }
+.bank-info { flex:1; }
+.bank-name { font-size:12px; font-weight:700; }
+.bank-num { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:1px; }
+.bank-holder { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted2); margin-top:1px; }
+.bank-radio { width:16px; height:16px; border-radius:50%; border:2px solid var(--rim2); transition:all 0.2s; flex-shrink:0; }
+.bank-card.selected .bank-radio { border-color:var(--gold); background:var(--gold); box-shadow:0 0 10px rgba(201,168,76,0.5); }
+.modal-note { background:rgba(255,255,255,0.02); border:1px solid var(--rim); border-radius:10px; padding:12px 14px; margin-bottom:16px; font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); line-height:1.7; }
+.btn-confirm { width:100%; padding:15px; border:none; border-radius:13px; background:linear-gradient(100deg,#8b6520,var(--gold),var(--gold2),var(--gold),#8b6520); background-size:300% 100%; color:#07050a; font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:3px; cursor:pointer; position:relative; overflow:hidden; transition:all 0.4s; box-shadow:0 4px 25px rgba(201,168,76,0.25); }
+.btn-confirm:hover { background-position:100% 0; transform:translateY(-1px); }
+
+/* ══ SUCCESS MODAL ══ */
+.success-modal { text-align:center; padding:8px 0; }
+.success-icon { width:65px; height:65px; border-radius:50%; background:rgba(0,229,160,0.1); border:2px solid rgba(0,229,160,0.3); display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 16px; box-shadow:0 0 40px rgba(0,229,160,0.2); animation:successPop 0.5s cubic-bezier(0.22,1,0.36,1); }
+@keyframes successPop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+.success-title { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:3px; color:var(--green); margin-bottom:8px; }
+.success-text { font-family:'DM Mono',monospace; font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:14px; }
+.order-id { font-family:'DM Mono',monospace; font-size:12px; color:var(--gold); background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.2); border-radius:8px; padding:8px 14px; margin:0 auto 14px; display:inline-block; cursor:pointer; }
+
+/* ══ HISTORY ══ */
+.hist-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+.stat-box { background:rgba(255,255,255,0.02); border:1px solid var(--rim); border-radius:14px; padding:14px 12px; text-align:center; }
+.stat-num { font-family:'Bebas Neue',sans-serif; font-size:28px; background:linear-gradient(135deg,var(--gold2),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+.stat-lbl { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:1.5px; color:var(--muted); margin-top:3px; }
+.hist-item { background:rgba(255,255,255,0.02); border:1px solid var(--rim); border-radius:16px; padding:16px; margin-bottom:10px; cursor:pointer; transition:all 0.25s; }
+.hist-item:hover { border-color:rgba(201,168,76,0.2); background:rgba(201,168,76,0.02); }
+.hist-item-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.hist-name { font-size:14px; font-weight:700; }
+.hist-time { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); }
+.hist-id { font-family:'DM Mono',monospace; font-size:11px; color:var(--gold); margin-bottom:6px; }
+.hist-tags { display:flex; gap:6px; flex-wrap:wrap; }
+.hist-tag { font-family:'DM Mono',monospace; font-size:9px; background:rgba(255,255,255,0.04); border:1px solid var(--rim); border-radius:4px; padding:2px 8px; color:var(--muted2); }
+.hist-empty { text-align:center; padding:40px 20px; color:var(--muted); }
+.hist-empty-ico { font-size:40px; opacity:0.3; margin-bottom:12px; }
+.hist-empty-t { font-family:'DM Mono',monospace; font-size:12px; line-height:1.7; }
+
+/* ══ ADMIN PANEL ══ */
+.admin-wrap { position:relative; z-index:2; max-width:700px; margin:0 auto; padding:20px 16px 60px; }
+.admin-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; padding-top:16px; }
+.admin-title { font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:5px; background:linear-gradient(135deg,#fff,var(--gold2),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.admin-stats { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:24px; }
+.admin-stat { background:var(--glass); border:1px solid var(--rim); border-radius:16px; padding:18px; position:relative; overflow:hidden; }
+.admin-stat::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.admin-stat.users::before { background:linear-gradient(90deg,var(--teal),transparent); }
+.admin-stat.orders::before { background:linear-gradient(90deg,var(--gold),transparent); }
+.admin-stat.uploads::before { background:linear-gradient(90deg,var(--green),transparent); }
+.admin-stat.pending::before { background:linear-gradient(90deg,var(--red),transparent); }
+.admin-stat-num { font-family:'Bebas Neue',sans-serif; font-size:40px; letter-spacing:2px; line-height:1; background:linear-gradient(135deg,var(--gold2),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.admin-stat-lbl { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-top:4px; }
+.admin-section { margin-bottom:24px; }
+.admin-section-title { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:3px; color:var(--gold2); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+.admin-section-title::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(201,168,76,0.3),transparent); }
+.admin-user-card { background:rgba(255,255,255,0.02); border:1px solid var(--rim); border-radius:16px; padding:16px; margin-bottom:10px; transition:border-color 0.2s; }
+.admin-user-card:hover { border-color:rgba(201,168,76,0.2); }
+.admin-user-top { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.admin-user-avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#07050a; flex-shrink:0; }
+.admin-user-info { flex:1; }
+.admin-user-name { font-size:14px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.admin-user-email { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:2px; }
+.admin-user-coins { text-align:right; }
+.coins-display { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; background:linear-gradient(135deg,var(--gold2),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.admin-user-actions { display:flex; gap:6px; align-items:center; }
+.btn-add-coin,.btn-sub-coin,.btn-set-coin { padding:8px 12px; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.btn-add-coin { background:rgba(0,229,160,0.1); border:1px solid rgba(0,229,160,0.3); color:var(--green); }
+.btn-add-coin:hover { background:rgba(0,229,160,0.2); }
+.btn-sub-coin { background:rgba(255,68,102,0.1); border:1px solid rgba(255,68,102,0.3); color:var(--red); }
+.btn-sub-coin:hover { background:rgba(255,68,102,0.2); }
+.btn-set-coin { background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.3); color:var(--gold); }
+.btn-set-coin:hover { background:rgba(201,168,76,0.2); }
+.badge-admin { background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); color:var(--gold); font-family:'DM Mono',monospace; font-size:8px; letter-spacing:1px; padding:2px 8px; border-radius:4px; }
+.admin-order-card { background:rgba(255,255,255,0.02); border:1px solid var(--rim); border-radius:14px; padding:16px; margin-bottom:10px; }
+.admin-order-card.pending { border-color:rgba(245,158,11,0.2); }
+.admin-order-card.confirmed { border-color:rgba(0,229,160,0.15); }
+.admin-order-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.admin-order-id { font-family:'DM Mono',monospace; font-size:12px; color:var(--gold); font-weight:600; }
+.admin-order-user { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:3px; }
+.admin-order-status { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; padding:4px 10px; border-radius:6px; }
+.admin-order-status.pending { background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.25); color:#f59e0b; }
+.admin-order-status.confirmed { background:rgba(0,229,160,0.1); border:1px solid rgba(0,229,160,0.25); color:var(--green); }
+.admin-order-detail { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); line-height:1.6; margin-bottom:10px; }
+.btn-confirm-order { width:100%; padding:10px; border:none; border-radius:10px; background:linear-gradient(135deg,rgba(0,229,160,0.15),rgba(0,229,160,0.05)); border:1px solid rgba(0,229,160,0.3); color:var(--green); font-family:'Syne',sans-serif; font-size:11px; font-weight:700; letter-spacing:1.5px; cursor:pointer; transition:all 0.25s; }
+.btn-confirm-order:hover { background:rgba(0,229,160,0.2); transform:translateY(-1px); }
+.admin-refresh { width:100%; padding:12px; border:1px solid rgba(201,168,76,0.3); border-radius:12px; background:rgba(201,168,76,0.06); color:var(--gold); font-family:'Syne',sans-serif; font-size:12px; font-weight:700; letter-spacing:2px; cursor:pointer; transition:all 0.25s; margin-bottom:20px; }
+.admin-refresh:hover { background:rgba(201,168,76,0.12); }
+#adminLoading { text-align:center; padding:60px; font-family:'DM Mono',monospace; font-size:12px; color:var(--muted); }
+
+/* ══ MISC ══ */
+.spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(0,0,0,0.2); border-top-color:rgba(0,0,0,0.7); border-radius:50%; animation:spin 0.6s linear infinite; vertical-align:middle; margin-right:8px; }
+.spinner-light { border-color:rgba(201,168,76,0.2); border-top-color:var(--gold); }
+@keyframes spin { to{transform:rotate(360deg)} }
+.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%)translateY(20px); background:rgba(10,15,25,0.95); border:1px solid rgba(201,168,76,0.2); border-radius:100px; padding:10px 22px; font-family:'DM Mono',monospace; font-size:12px; color:var(--text); z-index:300; opacity:0; transition:all 0.35s cubic-bezier(0.22,1,0.36,1); backdrop-filter:blur(20px); white-space:nowrap; box-shadow:0 8px 30px rgba(0,0,0,0.5); }
+.toast.show { opacity:1; transform:translateX(-50%)translateY(0); }
+.footer { text-align:center; padding-top:40px; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; line-height:2; }
+.footer-gem { color:var(--gold); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div class="toast" id="toast"></div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalInner"></div>
+  </div>
+</div>
+
+<!-- ══════════ AUTH SCREEN ══════════ -->
+<div id="screen-auth" style="display:flex">
+  <div style="position:fixed;inset:0;z:0;background:radial-gradient(ellipse at 30% 40%,rgba(201,168,76,0.06) 0%,transparent 60%),radial-gradient(ellipse at 70% 70%,rgba(0,229,200,0.04) 0%,transparent 50%)"></div>
+  <div class="auth-box" style="position:relative;z-index:1">
+    <span class="auth-logo">DEV</span>
+    <div class="auth-tagline">Premium Asset Platform</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Masuk</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Daftar</button>
+    </div>
+
+    <div class="auth-err" id="authErr"></div>
+
+    <!-- LOGIN -->
+    <div class="auth-form active" id="form-login">
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" type="email" id="loginEmail" placeholder="email@kamu.com">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn-auth" id="btnLogin" onclick="doLogin()">
+        <div class="shim"></div>
+        MASUK SEKARANG
+      </button>
+      <div class="auth-divider">
+        <div class="auth-divider-line"></div>
+        <div class="auth-divider-txt">ATAU</div>
+        <div class="auth-divider-line"></div>
+      </div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Masuk dengan Google
+      </button>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="auth-form" id="form-register">
+      <div class="auth-field">
+        <label class="auth-label">Nama</label>
+        <input class="auth-input" type="text" id="regName" placeholder="Nama kamu">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" type="email" id="regEmail" placeholder="email@kamu.com">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" id="regPass" placeholder="Minimal 6 karakter">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Ulangi Password</label>
+        <input class="auth-input" type="password" id="regPass2" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <button class="btn-auth" id="btnRegister" onclick="doRegister()">
+        <div class="shim"></div>
+        DAFTAR SEKARANG
+      </button>
+      <div class="auth-divider">
+        <div class="auth-divider-line"></div>
+        <div class="auth-divider-txt">ATAU</div>
+        <div class="auth-divider-line"></div>
+      </div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Daftar dengan Google
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ APP SCREEN ══════════ -->
+<div id="screen-app">
+  <div class="wrap">
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="topbar-user">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <div>
+          <div class="user-name" id="userName">Loading...</div>
+          <div class="user-email" id="userEmail"></div>
+        </div>
+      </div>
+      <div class="topbar-btns">
+        <button class="btn-sm btn-sm-gold" id="adminTabBtn" onclick="goAdmin()" style="display:none">👑 Admin</button>
+        <button class="btn-sm btn-sm-red" onclick="doLogout()">Logout</button>
       </div>
     </div>
-  `).join('');
-}
 
-/* ══ SETTINGS ══ */
-function loadSettings() {
-  const uid = localStorage.getItem('nx_uid')||'';
-  const ak = localStorage.getItem('nx_ak')||'';
-  if(uid) document.getElementById('savedUserId').value=uid;
-  if(ak) document.getElementById('savedApiKey').value=ak;
-  const autoFill = localStorage.getItem('nx_autofill')!=='false';
-  if(autoFill && uid) document.getElementById('userId').value=uid;
-  if(autoFill && ak) document.getElementById('apiKey').value=ak;
-  if(!autoFill) document.getElementById('toggleAutofill').classList.remove('on');
+    <!-- HEADER -->
+    <div class="hdr">
+      <div class="hdr-eyebrow"><div class="hdr-eyebrow-dot"></div> Premium Asset Platform</div>
+      <span class="hdr-logo">DEV</span>
+      <div class="hdr-tagline">Roblox Open Cloud · Asset Upload Tool</div>
+      <div class="hdr-rule"><div class="hdr-rule-line"></div><div class="hdr-rule-gem"></div><div class="hdr-rule-line"></div></div>
+    </div>
 
-  // Load admin WA
-  const savedWa = localStorage.getItem('nx_admin_wa');
-  if(savedWa) {
-    ADMIN_WA_NUM = savedWa;
-    document.getElementById('adminWaInput').value = savedWa;
-    document.getElementById('adminWaDisplay').textContent = '+'+savedWa.replace(/(\d{2})(\d{3})(\d{4})(\d+)/,'$1 $2-$3-$4');
-  } else {
-    document.getElementById('adminWaInput').value = ADMIN_WA;
-  }
-}
+    <!-- COIN BAR -->
+    <div class="coin-bar">
+      <div class="coin-bar-left">
+        <div class="coin-icon"><span>✦</span></div>
+        <div>
+          <div class="coin-info-label">Saldo Coin</div>
+          <div class="coin-info-val" id="coinVal">0</div>
+        </div>
+      </div>
+      <button class="btn-topup-quick" onclick="switchTab(document.querySelectorAll('.tab-btn')[1],'topup')">+ Topup</button>
+    </div>
 
-function saveAdminWa() {
-  const val = document.getElementById('adminWaInput').value.trim().replace(/\D/g,'');
-  if(!val.startsWith('62')) return toast('⚠ Format harus diawali 62 (contoh: 6281234567890)');
-  localStorage.setItem('nx_admin_wa', val);
-  ADMIN_WA_NUM = val;
-  document.getElementById('adminWaDisplay').textContent = '+'+val.replace(/(\d{2})(\d{3})(\d{4})(\d+)/,'$1 $2-$3-$4');
-  toast('✓ Nomor admin WA berhasil disimpan!');
-}
+    <!-- TABS -->
+    <div class="tabs" id="tabs">
+      <div class="tab-slider" id="tabSlider"></div>
+      <button class="tab-btn active" onclick="switchTab(this,'upload')"><span class="ti">⬆</span> Upload</button>
+      <button class="tab-btn" onclick="switchTab(this,'topup')"><span class="ti">◈</span> Topup</button>
+      <button class="tab-btn" onclick="switchTab(this,'history')"><span class="ti">◎</span> History</button>
+    </div>
 
-function saveCreds() {
-  const uid = document.getElementById('savedUserId').value.trim();
-  const ak = document.getElementById('savedApiKey').value.trim();
-  localStorage.setItem('nx_uid',uid);
-  localStorage.setItem('nx_ak',ak);
-  if(document.getElementById('toggleAutofill').classList.contains('on')) {
-    if(uid) document.getElementById('userId').value=uid;
-    if(ak) document.getElementById('apiKey').value=ak;
-  }
-  const s = document.getElementById('credSaved');
-  s.classList.add('show');
-  setTimeout(()=>s.classList.remove('show'),2000);
-  toast('✓ Kredensial berhasil disimpan!');
-}
+    <!-- UPLOAD -->
+    <div class="panel active" id="panel-upload">
+      <div class="card">
+        <div class="card-corner tl"></div><div class="card-corner tr"></div>
+        <div class="card-corner bl"></div><div class="card-corner br"></div>
+        <div class="card-glow"></div>
+        <div class="ctitle"><div class="ctitle-icon">📤</div><div><div class="ctitle-text">Upload Asset</div><div class="ctitle-sub">Roblox Open Cloud API v1</div></div></div>
+        <div class="infobox">API Key → <a href="https://create.roblox.com/settings/credentials" target="_blank">create.roblox.com/settings/credentials</a><br>Permission: <strong>Assets: Read + Write</strong></div>
+        <div class="field"><div class="flabel"><span class="flabel-gem"></span> Roblox User ID</div><input class="finput" type="text" id="userId" placeholder="Contoh: 3493541426" inputmode="numeric"></div>
+        <div class="field"><div class="flabel"><span class="flabel-gem"></span> Open Cloud API Key</div><input class="finput" type="password" id="apiKey" placeholder="••••••••••••••••••••••••••••••"></div>
+        <div class="div"></div>
+        <div class="field">
+          <div class="flabel"><span class="flabel-gem"></span> File Asset</div>
+          <div class="dz" id="dz">
+            <input type="file" id="fi" accept=".png,.jpg,.jpeg,.mp3,.ogg,.wav,.fbx,.rbxm" onchange="handleFile(this)">
+            <div class="dz-orb">☁️</div>
+            <div class="dz-title">Tap atau Drop File Di Sini</div>
+            <div class="dz-sub">Semua format didukung</div>
+            <div class="dz-formats">
+              <span class="dz-fmt img">PNG</span><span class="dz-fmt img">JPG</span>
+              <span class="dz-fmt audio">MP3</span><span class="dz-fmt audio">OGG</span><span class="dz-fmt audio">WAV</span>
+              <span class="dz-fmt mesh">FBX</span><span class="dz-fmt rbxm">RBXM ⚠</span>
+            </div>
+          </div>
+          <div class="fchip" id="fchip">
+            <div class="fchip-ico" id="fchipIco">📄</div>
+            <div class="fchip-info"><div class="fchip-name" id="fName">—</div><div class="fchip-size" id="fSize">—</div></div>
+            <button class="fchip-rm" onclick="removeFile()">✕</button>
+          </div>
+          <div class="rbxm-notice" id="rbxmNotice"><strong>⚠ File .rbxm tidak bisa diupload via API!</strong><br>Gunakan Roblox Studio untuk upload .rbxm. Format support: PNG/JPG, MP3/OGG/WAV, FBX</div>
+        </div>
+        <div class="field"><div class="flabel"><span class="flabel-gem"></span> Nama Asset</div><input class="finput" type="text" id="assetName" placeholder="Nama asset kamu..."></div>
+        <div class="field"><div class="flabel"><span class="flabel-gem"></span> Tipe Asset</div><select class="finput" id="assetType"><option value="Decal">🖼 Image / Decal (.png .jpg)</option><option value="Audio">🎵 Audio (.mp3 .ogg .wav)</option><option value="MeshPart">📦 Mesh (.fbx)</option></select></div>
+        <div class="cost-preview"><div class="cost-label">Biaya Upload</div><div class="cost-val">✦ 1 Coin</div></div>
+        <button class="btn-up" id="btnUp" onclick="doUpload()"><div class="shim"></div>🚀 &nbsp; UPLOAD SEKARANG</button>
+        <div class="result" id="result"><div class="result-hdr" id="resultHdr"></div><div class="result-body" id="resultBody"></div></div>
+        <div class="warnbox"><div class="warnbox-t">⚠ Info</div>Coin dipotong otomatis dari akun kamu setelah upload berhasil. Data tersimpan di cloud.</div>
+      </div>
+    </div>
 
-function toggleSetting(btn) {
-  btn.classList.toggle('on');
-  if(btn.id==='toggleAutofill') localStorage.setItem('nx_autofill',btn.classList.contains('on'));
-}
+    <!-- TOPUP -->
+    <div class="panel" id="panel-topup">
+      <div class="card">
+        <div class="card-corner tl"></div><div class="card-corner tr"></div><div class="card-corner bl"></div><div class="card-corner br"></div><div class="card-glow"></div>
+        <div class="topup-hero">
+          <div class="topup-ring"><div class="topup-ring-inner"><div class="topup-ring-num" id="ringNum">0</div><div class="topup-ring-lbl">COINS</div></div></div>
+          <div class="topup-title">Topup Coins</div>
+          <div class="topup-sub">1 Coin = 1x Upload · Bayar via Transfer Bank / E-Wallet</div>
+        </div>
+        <div class="pkg-grid">
+          <div class="pkg" onclick="openPayment(10,'Rp 5.000')"><div class="pkg-coins">10</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 5.000</div><div class="pkg-price-note">Rp 500/coin</div></div>
+          <div class="pkg hot" onclick="openPayment(25,'Rp 10.000')"><div class="pkg-coins">25</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 10.000</div><div class="pkg-price-note">Rp 400/coin</div><div class="pkg-bonus">+5 Bonus Coins</div></div>
+          <div class="pkg" onclick="openPayment(60,'Rp 20.000')"><div class="pkg-coins">60</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 20.000</div><div class="pkg-price-note">Rp 333/coin</div><div class="pkg-bonus">+10 Bonus Coins</div></div>
+          <div class="pkg" onclick="openPayment(150,'Rp 40.000')"><div class="pkg-coins">150</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 40.000</div><div class="pkg-price-note">Rp 267/coin</div><div class="pkg-bonus">+30 Bonus Coins</div></div>
+        </div>
+        <div class="warnbox"><div class="warnbox-t">📋 Cara Topup</div>1. Pilih paket → 2. Pilih metode bayar → 3. Transfer → 4. Chat Admin WA → 5. Kirim bukti transfer<br><strong style="color:var(--gold)">✦ Admin konfirmasi → Coin otomatis masuk ke akun</strong></div>
+      </div>
+    </div>
 
-/* ══ SAVE WA (ALIAS FOR saveAdminWa) ══ */
-function saveWA() {
-  saveAdminWa();
-}
+    <!-- HISTORY -->
+    <div class="panel" id="panel-history">
+      <div class="card">
+        <div class="card-corner tl"></div><div class="card-corner tr"></div><div class="card-corner bl"></div><div class="card-corner br"></div><div class="card-glow"></div>
+        <div class="ctitle"><div class="ctitle-icon">📋</div><div><div class="ctitle-text">History Upload</div><div class="ctitle-sub">Tersimpan di cloud</div></div></div>
+        <div class="hist-stats">
+          <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">Total Upload</div></div>
+          <div class="stat-box"><div class="stat-num" id="statSuccess">0</div><div class="stat-lbl">Berhasil</div></div>
+          <div class="stat-box"><div class="stat-num" id="statCoins">0</div><div class="stat-lbl">Coin Dipakai</div></div>
+        </div>
+        <div id="histList"><div class="hist-empty"><div class="hist-empty-ico">◎</div><div class="hist-empty-t">Belum ada history.</div></div></div>
+      </div>
+    </div>
 
-function clearHistory() {
-  if(!confirm('Hapus semua history?')) return;
-  hist=[]; localStorage.removeItem('nx_hist');
-  renderHistory(); toast('✓ History berhasil dihapus!');
-}
+    <div class="footer"><span class="footer-gem">✦</span> DEV UPLOADER <span class="footer-gem">✦</span><br>Premium Edition · Firebase Powered</div>
+  </div>
+</div>
 
-function clearCreds() {
-  if(!confirm('Hapus kredensial tersimpan?')) return;
-  localStorage.removeItem('nx_uid'); localStorage.removeItem('nx_ak');
-  document.getElementById('savedUserId').value='';
-  document.getElementById('savedApiKey').value='';
-  toast('✓ Kredensial berhasil dihapus!');
-}
+<!-- ══════════ ADMIN SCREEN ══════════ -->
+<div id="screen-admin">
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <div class="admin-title">👑 ADMIN PANEL</div>
+      <button class="btn-sm btn-sm-gold" onclick="goApp()">← Kembali</button>
+    </div>
 
-/* ══ UTILS ══ */
-function cp(text) {
-  navigator.clipboard.writeText(text).then(()=>toast('✓ Copied: '+text));
-}
+    <div id="adminLoading"><span class="spinner spinner-light"></span> Memuat data...</div>
+    <div id="adminContent" style="display:none">
 
-function toast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
-}
+      <div class="admin-stats">
+        <div class="admin-stat users"><div class="admin-stat-num" id="adminStatUsers">0</div><div class="admin-stat-lbl">Total Users</div></div>
+        <div class="admin-stat orders"><div class="admin-stat-num" id="adminStatOrders">0</div><div class="admin-stat-lbl">Total Orders</div></div>
+        <div class="admin-stat uploads"><div class="admin-stat-num" id="adminStatUploads">0</div><div class="admin-stat-lbl">Total Uploads</div></div>
+        <div class="admin-stat pending"><div class="admin-stat-num" id="adminStatPending">0</div><div class="admin-stat-lbl">Pending Orders</div></div>
+      </div>
 
-/* ══ DRAG DROP ══ */
-const dz = document.getElementById('dz');
-dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
-dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
-dz.addEventListener('drop',e=>{
-  e.preventDefault();dz.classList.remove('over');
-  const f=e.dataTransfer.files[0]; if(!f)return;
-  const dt=new DataTransfer();dt.items.add(f);
-  document.getElementById('fi').files=dt.files;
-  handleFile(document.getElementById('fi'));
-});
-</script>
+      <button class="admin-refresh" onclick="loadAdminData()">🔄 &nbsp; Refresh Data</button>
+
+      <div class="admin-section">
+        <div class="admin-section-title">📦 Orders Masuk</div>
+        <div id="adminOrderList"></div>
+      </div>
+
+      <div class="admin-section">
+        <div class="admin-section-title">👥 Manage Users & Coins</div>
+        <div id="adminUserList"></div>
+      </div>
+
+      <div class="admin-section">
+        <div class="admin-section-title">📤 Riwayat Upload Semua User</div>
+        <div id="adminUploadList"></div>
+      </div>
+
+    </div>
+
+    <div class="footer"><span class="footer-gem">✦</span> DEV UPLOADER ADMIN <span class="footer-gem">✦</span></div>
+  </div>
+</div>
+
 </body>
 </html>
