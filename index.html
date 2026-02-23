@@ -246,7 +246,7 @@ window.doUpload = async function() {
     }));
     fd.append('fileContent', selFile, selFile.name);
 
-    const res = await fetch('https://apis.roblox.com/assets/v1/assets', {
+    const res = await fetch('/api/upload', {
       method: 'POST', headers: { 'x-api-key': apiKey }, body: fd
     });
     const data = await res.json();
