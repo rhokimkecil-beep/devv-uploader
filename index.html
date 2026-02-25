@@ -423,7 +423,122 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
 .footer{text-align:center;padding-top:36px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;line-height:2;}
 .footer-gem{color:var(--gold);}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-</style>
+
+/* ── LIVE CHAT ── */
+.chat-fab{position:fixed;bottom:24px;right:20px;z-index:150;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#008a7a);border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 20px rgba(0,229,200,0.4);transition:all 0.3s;}
+.chat-fab:hover{transform:scale(1.1);}
+.chat-fab-badge{position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font-family:'DM Mono',monospace;font-size:9px;display:none;align-items:center;justify-content:center;padding:0 3px;}
+.chat-window{position:fixed;bottom:88px;right:16px;width:320px;max-width:calc(100vw - 32px);height:460px;background:linear-gradient(145deg,#0d1a2e,#06101c);border:1px solid rgba(0,229,200,0.2);border-radius:20px;z-index:150;display:none;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.7);overflow:hidden;}
+.chat-window.open{display:flex;animation:fadeUp 0.3s ease;}
+.chat-hdr{padding:14px 16px;border-bottom:1px solid rgba(0,229,200,0.1);display:flex;align-items:center;gap:10px;background:rgba(0,229,200,0.04);}
+.chat-hdr-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(0,229,200,0.3),rgba(0,229,200,0.1));display:flex;align-items:center;justify-content:center;font-size:16px;}
+.chat-hdr-info{flex:1;}
+.chat-hdr-name{font-size:12px;font-weight:700;color:var(--teal);}
+.chat-hdr-status{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);display:flex;align-items:center;gap:4px;}
+.chat-online-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
+.chat-close{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid var(--rim);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;}
+.chat-messages::-webkit-scrollbar{width:3px;}
+.chat-messages::-webkit-scrollbar-thumb{background:rgba(0,229,200,0.2);border-radius:3px;}
+.chat-msg{display:flex;gap:8px;max-width:85%;}
+.chat-msg.mine{align-self:flex-end;flex-direction:row-reverse;}
+.chat-msg-avatar{width:26px;height:26px;border-radius:50%;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;align-self:flex-end;}
+.chat-msg.mine .chat-msg-avatar{background:rgba(0,229,200,0.1);border-color:rgba(0,229,200,0.2);}
+.chat-msg-body{background:rgba(255,255,255,0.05);border:1px solid var(--rim);border-radius:14px 14px 14px 4px;padding:9px 12px;}
+.chat-msg.mine .chat-msg-body{background:rgba(0,229,200,0.1);border-color:rgba(0,229,200,0.2);border-radius:14px 14px 4px 14px;}
+.chat-msg-text{font-family:'DM Mono',monospace;font-size:11px;color:var(--text);line-height:1.5;}
+.chat-msg-time{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:3px;}
+.chat-msg-sender{font-family:'DM Mono',monospace;font-size:8px;color:var(--gold);margin-bottom:2px;}
+.chat-typing{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);padding:4px 8px;display:none;}
+.chat-typing.show{display:block;}
+.chat-input-row{padding:10px 12px;border-top:1px solid rgba(0,229,200,0.1);display:flex;gap:8px;align-items:center;}
+.chat-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--rim);border-radius:20px;padding:9px 14px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;outline:none;}
+.chat-input:focus{border-color:rgba(0,229,200,0.4);}
+.chat-input::placeholder{color:var(--muted);}
+.chat-send{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#008a7a);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:all 0.2s;}
+.chat-send:hover{transform:scale(1.1);}
+.chat-empty{text-align:center;padding:30px 16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7;}
+
+/* ── ADMIN CHAT ── */
+.admin-chat-list{display:flex;flex-direction:column;gap:8px;}
+.admin-chat-item{background:rgba(255,255,255,0.02);border:1px solid var(--rim);border-radius:14px;padding:13px;cursor:pointer;transition:all 0.2s;}
+.admin-chat-item:hover,.admin-chat-item.active{border-color:rgba(0,229,200,0.3);background:rgba(0,229,200,0.03);}
+.admin-chat-item-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.admin-chat-user{font-size:12px;font-weight:700;}
+.admin-chat-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.admin-chat-preview{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.admin-chat-unread{min-width:18px;height:18px;border-radius:9px;background:var(--teal);color:#07050a;font-family:'DM Mono',monospace;font-size:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;font-weight:700;}
+.admin-chat-window{background:rgba(255,255,255,0.02);border:1px solid rgba(0,229,200,0.2);border-radius:16px;padding:14px;margin-top:10px;}
+.admin-chat-msgs{height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;margin-bottom:10px;padding-right:4px;}
+.admin-chat-msgs::-webkit-scrollbar{width:3px;}
+.admin-chat-msgs::-webkit-scrollbar-thumb{background:rgba(0,229,200,0.2);border-radius:3px;}
+
+/* ── BADGES ── */
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.badge-card{background:rgba(255,255,255,0.02);border:1px solid var(--rim);border-radius:14px;padding:14px;text-align:center;transition:all 0.25s;}
+.badge-card.earned{border-color:rgba(201,168,76,0.35);background:rgba(201,168,76,0.05);}
+.badge-card.locked{opacity:0.4;}
+.badge-icon{font-size:28px;margin-bottom:6px;display:block;}
+.badge-name{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+.badge-desc{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);line-height:1.4;}
+.badge-earned-tag{font-family:'DM Mono',monospace;font-size:8px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:2px 7px;border-radius:4px;margin-top:5px;display:inline-block;}
+.badge-locked-tag{font-family:'DM Mono',monospace;font-size:8px;background:rgba(255,255,255,0.04);border:1px solid var(--rim);color:var(--muted);padding:2px 7px;border-radius:4px;margin-top:5px;display:inline-block;}
+.xp-bar-wrap{background:rgba(255,255,255,0.02);border:1px solid var(--rim);border-radius:14px;padding:14px;margin-bottom:12px;}
+.xp-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.xp-level{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold2);letter-spacing:2px;}
+.xp-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.xp-track{height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:4px;transition:width 0.8s ease;}
+.xp-nums{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px;}
+
+/* ── MISSIONS ── */
+.mission-tabs{display:flex;gap:4px;margin-bottom:12px;}
+.mission-tab{flex:1;padding:8px;border:1px solid var(--rim);border-radius:10px;background:rgba(255,255,255,0.02);color:var(--muted);font-family:'Syne',sans-serif;font-size:10px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.2s;}
+.mission-tab.active{border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.08);color:var(--gold2);}
+.mission-item{background:rgba(255,255,255,0.02);border:1px solid var(--rim);border-radius:14px;padding:13px;margin-bottom:8px;transition:all 0.25s;}
+.mission-item.done{border-color:rgba(0,229,160,0.3);background:rgba(0,229,160,0.03);}
+.mission-item.claimed{opacity:0.5;}
+.mission-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.mission-icon{width:36px;height:36px;border-radius:10px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.mission-info{flex:1;}
+.mission-name{font-size:12px;font-weight:700;margin-bottom:1px;}
+.mission-desc{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.mission-reward{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);font-weight:600;}
+.mission-progress-wrap{margin-bottom:6px;}
+.mission-progress-track{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
+.mission-progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:3px;transition:width 0.6s ease;}
+.mission-progress-nums{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;}
+.btn-claim{padding:8px 16px;border:none;border-radius:9px;background:linear-gradient(135deg,rgba(0,229,160,0.2),rgba(0,229,160,0.08));border:1px solid rgba(0,229,160,0.3);color:var(--green);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;width:100%;}
+.btn-claim:hover{background:rgba(0,229,160,0.2);}
+.btn-claim:disabled{opacity:0.4;cursor:not-allowed;}
+.mission-claimed-tag{text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);padding:6px;}
+.mission-reset{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:center;margin-bottom:12px;}
+.mission-reset span{color:var(--teal);}
+
+/* ── MIDTRANS ── */
+.payment-method-tabs{display:flex;gap:4px;margin-bottom:12px;}
+.payment-method-tab{flex:1;padding:8px;border:1px solid var(--rim);border-radius:10px;background:rgba(255,255,255,0.02);color:var(--muted);font-family:'Syne',sans-serif;font-size:9px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.2s;letter-spacing:0.5px;}
+.payment-method-tab.active{border-color:rgba(0,229,200,0.4);background:rgba(0,229,200,0.08);color:var(--teal);}
+.midtrans-box{background:rgba(0,229,200,0.04);border:1px solid rgba(0,229,200,0.15);border-radius:14px;padding:16px;margin-top:12px;}
+.midtrans-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--teal);margin-bottom:6px;}
+.midtrans-desc{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
+.btn-midtrans{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,rgba(0,229,200,0.2),rgba(0,229,200,0.08));border:1px solid rgba(0,229,200,0.3);color:var(--teal);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s;}
+.btn-midtrans:hover{background:rgba(0,229,200,0.2);}
+
+/* ── ADMIN ENHANCED DASHBOARD ── */
+.admin-dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.admin-dash-card{background:rgba(255,255,255,0.02);border:1px solid var(--rim);border-radius:14px;padding:14px;}
+.admin-dash-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:12px;}
+.retention-bar{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.retention-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);width:60px;flex-shrink:0;}
+.retention-track{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
+.retention-fill{height:100%;border-radius:3px;transition:width 0.6s ease;}
+.retention-pct{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);width:30px;text-align:right;flex-shrink:0;}
+.activity-heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.heatmap-cell{aspect-ratio:1;border-radius:3px;background:rgba(255,255,255,0.04);transition:all 0.2s;cursor:default;}
+.heatmap-cell:hover{transform:scale(1.3);}
+.heatmap-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);text-align:center;margin-bottom:4px;display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -524,6 +639,8 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
       <button class="tab-btn" onclick="switchTab(this,'dashboard')"><span class="ti">📊</span> Stats</button>
       <button class="tab-btn" onclick="switchTab(this,'leaderboard')"><span class="ti">🏆</span> Board</button>
       <button class="tab-btn" onclick="switchTab(this,'referral')"><span class="ti">🎁</span> Referral</button>
+      <button class="tab-btn" onclick="switchTab(this,'badges')"><span class="ti">🏅</span> Badge</button>
+      <button class="tab-btn" onclick="switchTab(this,'missions')"><span class="ti">🎯</span> Misi</button>
       <button class="tab-btn" onclick="switchTab(this,'support')"><span class="ti">💬</span> Support</button>
       <button class="tab-btn" onclick="switchTab(this,'settings')"><span class="ti">⚙</span> Settings</button>
     </div>
@@ -599,12 +716,35 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
           <button class="btn-apply-promo" onclick="applyPromoCode()">PAKAI</button>
         </div>
       </div>
-      <div class="pkg-grid">
-        <div class="pkg" onclick="openPayment(10,'Rp 3.000')"><div class="pkg-coins">10</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 3.000</div><div class="pkg-price-note">Rp 500/coin</div></div>
-        <div class="pkg hot" onclick="openPayment(25,'Rp 7.000')"><div class="pkg-coins">25</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 7.000</div><div class="pkg-price-note">Rp 400/coin</div><div class="pkg-bonus">+5 Bonus</div></div>
-        <div class="pkg" onclick="openPayment(60,'Rp 12.000')"><div class="pkg-coins">60</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 12.000</div><div class="pkg-price-note">Rp 333/coin</div><div class="pkg-bonus">+10 Bonus</div></div>
-        <div class="pkg" onclick="openPayment(150,'Rp 25.000')"><div class="pkg-coins">150</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 25.000</div><div class="pkg-price-note">Rp 267/coin</div><div class="pkg-bonus">+30 Bonus</div></div>
+      <!-- Payment Method Toggle -->
+      <div class="payment-method-tabs">
+        <button class="payment-method-tab active" id="pmTabManual" onclick="switchPaymentMethod('manual')">🏦 Transfer Manual</button>
+        <button class="payment-method-tab" id="pmTabMidtrans" onclick="switchPaymentMethod('midtrans')">⚡ Auto (Midtrans)</button>
       </div>
+      <!-- MANUAL TOPUP -->
+      <div id="manualPaySection">
+      <div class="pkg-grid">
+        <div class="pkg" onclick="openPayment(10,'Rp 5.000')"><div class="pkg-coins">10</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 5.000</div><div class="pkg-price-note">Rp 500/coin</div></div>
+        <div class="pkg hot" onclick="openPayment(25,'Rp 10.000')"><div class="pkg-coins">25</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 10.000</div><div class="pkg-price-note">Rp 400/coin</div><div class="pkg-bonus">+5 Bonus</div></div>
+        <div class="pkg" onclick="openPayment(60,'Rp 20.000')"><div class="pkg-coins">60</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 20.000</div><div class="pkg-price-note">Rp 333/coin</div><div class="pkg-bonus">+10 Bonus</div></div>
+        <div class="pkg" onclick="openPayment(150,'Rp 40.000')"><div class="pkg-coins">150</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 40.000</div><div class="pkg-price-note">Rp 267/coin</div><div class="pkg-bonus">+30 Bonus</div></div>
+      </div>
+      </div>
+      <!-- MIDTRANS TOPUP -->
+      <div id="midtransSection" style="display:none">
+      <div class="midtrans-box">
+        <div class="midtrans-logo">⚡ AUTO PAYMENT</div>
+        <div class="midtrans-desc">Bayar otomatis via Midtrans. Coin langsung masuk setelah pembayaran berhasil!<br>Tersedia: GoPay, OVO, QRIS, VA Bank, dll.</div>
+        <div class="pkg-grid" style="margin-bottom:12px">
+          <div class="pkg" onclick="openMidtrans(10,5000)"><div class="pkg-coins">10</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 5.000</div></div>
+          <div class="pkg hot" onclick="openMidtrans(25,10000)"><div class="pkg-coins">25</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 10.000</div><div class="pkg-bonus">+5 Bonus</div></div>
+          <div class="pkg" onclick="openMidtrans(60,20000)"><div class="pkg-coins">60</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 20.000</div><div class="pkg-bonus">+10 Bonus</div></div>
+          <div class="pkg" onclick="openMidtrans(150,40000)"><div class="pkg-coins">150</div><div class="pkg-coins-lbl">COINS</div><div class="pkg-price">Rp 40.000</div><div class="pkg-bonus">+30 Bonus</div></div>
+        </div>
+        <div style="background:rgba(0,229,200,0.05);border:1px solid rgba(0,229,200,0.15);border-radius:10px;padding:10px 13px;font-family:'DM Mono',monospace;font-size:10px;color:rgba(0,229,200,0.6);line-height:1.7;">⚡ Pembayaran langsung diproses. Coin masuk otomatis + notifikasi email & WA!</div>
+      </div>
+      </div>
+
       <div class="warnbox"><div class="warnbox-t">📋 Cara Topup</div>Pilih paket → Pilih bank → Transfer → Chat Admin WA → Kirim bukti<br><strong style="color:var(--gold)">✦ Coin masuk + Notifikasi otomatis</strong></div>
     </div>
   </div>
@@ -664,7 +804,38 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
     </div>
   </div>
 
-  <!-- SUPPORT -->
+  <!-- BADGES -->
+  <div class="panel" id="panel-badges">
+    <div class="card"><div class="card-glow"></div>
+      <div class="ctitle"><div class="ctitle-icon">🏅</div><div><div class="ctitle-text">Badge & Achievement</div><div class="ctitle-sub">Kumpulkan badge, naik level!</div></div></div>
+      <div class="xp-bar-wrap">
+        <div class="xp-bar-top">
+          <div><div class="xp-level">LVL <span id="userLevel">1</span></div><div class="xp-label">LEVEL KAMU</div></div>
+          <div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold2)"><span id="userXP">0</span> XP</div><div class="xp-label">TOTAL EXP</div></div>
+        </div>
+        <div class="xp-track"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+        <div class="xp-nums"><span id="xpCurrent">0</span><span id="xpNext">100</span></div>
+      </div>
+      <div class="badge-grid" id="badgeGrid">
+        <div class="hist-empty" style="grid-column:1/-1"><div class="hist-empty-ico">⏳</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MISSIONS -->
+  <div class="panel" id="panel-missions">
+    <div class="card"><div class="card-glow"></div>
+      <div class="ctitle"><div class="ctitle-icon">🎯</div><div><div class="ctitle-text">Daily & Weekly Mission</div><div class="ctitle-sub">Selesaikan misi, dapat coin!</div></div></div>
+      <div class="mission-tabs">
+        <button class="mission-tab active" onclick="switchMissionTab(this,'daily')">☀️ Harian</button>
+        <button class="mission-tab" onclick="switchMissionTab(this,'weekly')">📅 Mingguan</button>
+      </div>
+      <div class="mission-reset" id="missionReset">Reset dalam: <span id="missionCountdown">—</span></div>
+      <div id="missionList"></div>
+    </div>
+  </div>
+
+
   <div class="panel" id="panel-support">
     <div class="card"><div class="card-glow"></div>
       <div class="ctitle"><div class="ctitle-icon">💬</div><div><div class="ctitle-text">Support</div><div class="ctitle-sub">Kirim ticket ke admin</div></div></div>
@@ -726,7 +897,30 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
 </div>
 </div>
 
-<!-- ══ ADMIN ══ -->
+<!-- LIVE CHAT FAB -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()">💬<div class="chat-fab-badge" id="chatFabBadge">0</div></button>
+
+<!-- LIVE CHAT WINDOW -->
+<div class="chat-window" id="chatWindow">
+  <div class="chat-hdr">
+    <div class="chat-hdr-avatar">👑</div>
+    <div class="chat-hdr-info">
+      <div class="chat-hdr-name">Admin DEV</div>
+      <div class="chat-hdr-status"><div class="chat-online-dot"></div> Online · Biasanya balas cepat</div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-empty">💬 Chat langsung dengan Admin.<br>Tanya apapun tentang DEV Uploader!</div>
+  </div>
+  <div class="chat-typing" id="chatTyping">Admin sedang mengetik...</div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="Ketik pesan..." onkeydown="if(event.key==='Enter')sendChatMsg()">
+    <button class="chat-send" onclick="sendChatMsg()">➤</button>
+  </div>
+</div>
+
+
 <div id="screen-admin">
 <div class="admin-wrap">
   <div class="admin-header">
@@ -745,7 +939,48 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
     </div>
     <button class="admin-refresh" onclick="loadAdminData()">🔄 &nbsp; Refresh Data</button>
 
-    <!-- REVENUE CHART -->
+    <!-- ENHANCED DASHBOARD -->
+    <div class="admin-section">
+      <div class="admin-section-title">📊 Analytics Dashboard</div>
+      <div class="admin-dash-grid">
+        <div class="admin-dash-card">
+          <div class="admin-dash-title">User Retention (7 Hari)</div>
+          <div id="retentionChart"></div>
+        </div>
+        <div class="admin-dash-card">
+          <div class="admin-dash-title">Upload Heatmap (28 Hari)</div>
+          <div class="heatmap-label" id="heatmapDays"></div>
+          <div class="activity-heatmap" id="activityHeatmap"></div>
+          <div style="display:flex;gap:6px;margin-top:8px;align-items:center;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">
+            Sedikit <div style="width:10px;height:10px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
+            <div style="width:10px;height:10px;border-radius:2px;background:rgba(201,168,76,0.3)"></div>
+            <div style="width:10px;height:10px;border-radius:2px;background:rgba(201,168,76,0.6)"></div>
+            <div style="width:10px;height:10px;border-radius:2px;background:var(--gold)"></div> Banyak
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE CHAT ADMIN -->
+    <div class="admin-section">
+      <div class="admin-section-title">💬 Live Chat</div>
+      <div id="adminChatList"><div style="text-align:center;padding:20px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">Belum ada percakapan</div></div>
+      <div id="adminChatWindowWrap" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:13px;font-weight:700" id="adminChatTarget">—</div>
+          <button class="btn-set-coin" onclick="document.getElementById('adminChatWindowWrap').style.display='none'">✕ Tutup</button>
+        </div>
+        <div class="admin-chat-window">
+          <div class="admin-chat-msgs" id="adminChatMsgs"></div>
+          <div style="display:flex;gap:7px">
+            <input class="finput" id="adminChatInput" placeholder="Balas..." style="flex:1;padding:8px 12px;font-size:12px" onkeydown="if(event.key==='Enter')adminSendChat()">
+            <button class="btn-confirm-order" style="white-space:nowrap" onclick="adminSendChat()">Kirim</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <div class="admin-section">
       <div class="admin-section-title">💹 Laporan Revenue</div>
       <div class="chart-wrap"><div class="chart-title">Revenue per Bulan</div><div class="bar-chart" id="revenueChart"></div></div>
@@ -804,10 +1039,12 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
 </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="YOUR_MIDTRANS_CLIENT_KEY"></script>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, getDocs, addDoc, serverTimestamp, increment, where, limit, writeBatch } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, getDocs, addDoc, serverTimestamp, increment, where, limit, writeBatch, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig={apiKey:"AIzaSyDyi8FXoJDf-_VvMkmnHcQ7dBGKPJULnmc",authDomain:"dev-uploader-5bd4b.firebaseapp.com",projectId:"dev-uploader-5bd4b",storageBucket:"dev-uploader-5bd4b.firebasestorage.app",messagingSenderId:"534864483602",appId:"1:534864483602:web:965fdae6f377e2239b0fcb"};
 const ADMIN_EMAIL='rhokimkecil@gmail.com',ADMIN_WA='6287729035761';
@@ -845,7 +1082,381 @@ async function loadUserData(user){
 }
 function genCode(uid){return'DEV'+uid.slice(-6).toUpperCase();}
 function showAuth(){document.getElementById('screen-auth').style.display='flex';document.getElementById('screen-app').style.display='none';document.getElementById('screen-admin').style.display='none';stopCanvas();}
-function showApp(){document.getElementById('screen-auth').style.display='none';document.getElementById('screen-app').style.display='block';document.getElementById('screen-admin').style.display='none';startCanvas();updateUI();loadHistory();loadSettings();loadNotifications();document.getElementById('adminTabBtn').style.display=isAdmin?'flex':'none';}
+function showApp(){
+  document.getElementById('screen-auth').style.display='none';
+  document.getElementById('screen-app').style.display='block';
+  document.getElementById('screen-admin').style.display='none';
+  startCanvas(); updateUI(); loadHistory(); loadSettings(); loadNotifications();
+  document.getElementById('adminTabBtn').style.display=isAdmin?'flex':'none';
+  document.getElementById('chatFab').style.display='flex';
+  initChat(); checkMissionProgress(); checkBadges();
+  startMissionCountdown();
+}
+
+// ══ EMAILJS INIT ══
+// Setup: https://www.emailjs.com/ — ganti dengan Service ID & Template ID kamu
+const EMAILJS_SERVICE = 'service_ne5bhne';
+const EMAILJS_TEMPLATE = 'dmotyqo';
+const EMAILJS_PUBLIC = 'hnWg_zpMGjDGuFn2T';
+async function sendEmailNotif(toEmail, toName, subject, message) {
+  try {
+    if (typeof emailjs === 'undefined') return;
+    emailjs.init(EMAILJS_PUBLIC);
+    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      to_email: toEmail, to_name: toName, subject, message,
+      from_name: 'DEV Uploader'
+    });
+  } catch(e) { console.log('EmailJS:', e.message); }
+}
+window.sendEmailNotif = sendEmailNotif;
+
+// ══ PAYMENT METHOD TOGGLE ══
+window.switchPaymentMethod = function(method) {
+  document.getElementById('pmTabManual').classList.toggle('active', method==='manual');
+  document.getElementById('pmTabMidtrans').classList.toggle('active', method==='midtrans');
+  document.getElementById('manualPaySection').style.display = method==='manual'?'block':'none';
+  document.getElementById('midtransSection').style.display = method==='midtrans'?'block':'none';
+}
+
+// ══ MIDTRANS INTEGRATION ══
+window.openMidtrans = async function(coins, amount) {
+  if (!currentUser) return toast('⚠ Login dulu!');
+  const orderId = 'DEV-'+Date.now().toString(36).toUpperCase();
+  // Create pending order in Firestore
+  await addDoc(collection(db,'orders'),{
+    uid:currentUser.uid, userEmail:currentUser.email, userName:currentUserData.name,
+    orderId, coins, price:'Rp '+amount.toLocaleString('id-ID'),
+    method:'Midtrans', status:'pending_midtrans', createdAt:serverTimestamp()
+  });
+  // Call your backend to get Snap token
+  // For now show instructions to setup backend
+  document.getElementById('modalBg').classList.add('show');
+  document.getElementById('modalInner').innerHTML = `
+    <div class="modal-title">⚡ Auto Payment</div>
+    <div class="modal-sub">Midtrans Payment Gateway</div>
+    <div class="modal-order">
+      <div class="modal-order-left"><div class="label">Paket</div><div class="val">${coins} Coins</div></div>
+      <div class="modal-order-right"><div class="label">Total</div><div class="val">Rp ${amount.toLocaleString('id-ID')}</div></div>
+    </div>
+    <div style="background:rgba(0,229,200,0.05);border:1px solid rgba(0,229,200,0.2);border-radius:12px;padding:14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:11px;color:rgba(0,229,200,0.7);line-height:1.8">
+      <strong style="color:var(--teal)">🔧 Setup Midtrans:</strong><br>
+      1. Daftar di <a href="https://midtrans.com" target="_blank" style="color:var(--teal)">midtrans.com</a><br>
+      2. Ganti <code>YOUR_MIDTRANS_CLIENT_KEY</code> di script tag<br>
+      3. Buat endpoint <code>/api/midtrans-token</code> di Vercel<br>
+      4. Endpoint generate Snap token → kirim ke frontend<br><br>
+      <strong style="color:var(--gold)">Order ID: ${orderId}</strong><br>
+      Coins akan otomatis masuk setelah bayar! ✨
+    </div>
+    <button class="btn-confirm" onclick="closeModal()" style="background:rgba(255,255,255,0.05);border:1px solid var(--rim);color:var(--muted)">Tutup</button>
+  `;
+  toast('Order dibuat: '+orderId);
+}
+
+// ══ LIVE CHAT ══
+let chatUnsubscribe = null, currentChatRoom = null;
+
+function getChatRoomId(uid) { return ['chat', uid].sort().join('_'); }
+
+async function initChat() {
+  if (!currentUser) return;
+  const roomId = isAdmin ? null : getChatRoomId(currentUser.uid);
+  if (!isAdmin && roomId) {
+    // Listen for new messages for badge
+    const chatRef = collection(db, 'chats', currentUser.uid, 'messages');
+    const adminChatRef = collection(db, 'chats', 'admin_'+currentUser.uid, 'messages');
+  }
+  // Check unread
+  checkChatUnread();
+}
+
+async function checkChatUnread() {
+  if (!currentUser || isAdmin) return;
+  try {
+    const q = query(collection(db,'chats',currentUser.uid,'messages'), where('sender','==','admin'), where('read','==',false));
+    const snap = await getDocs(q);
+    const badge = document.getElementById('chatFabBadge');
+    if (badge) { badge.textContent = snap.size; badge.style.display = snap.size > 0 ? 'flex' : 'none'; }
+  } catch(e) {}
+}
+
+window.toggleChat = function() {
+  const win = document.getElementById('chatWindow');
+  win.classList.toggle('open');
+  if (win.classList.contains('open')) { loadChatMessages(); markChatRead(); }
+}
+
+async function loadChatMessages() {
+  if (!currentUser) return;
+  const el = document.getElementById('chatMessages');
+  try {
+    const q = query(collection(db,'chats',currentUser.uid,'messages'), orderBy('createdAt','asc'), limit(50));
+    if (chatUnsubscribe) chatUnsubscribe();
+    chatUnsubscribe = onSnapshot(q, snap => {
+      const msgs = []; snap.forEach(d => msgs.push({id:d.id,...d.data()}));
+      if (!msgs.length) {
+        el.innerHTML = '<div class="chat-empty">💬 Chat langsung dengan Admin.<br>Tanya apapun tentang DEV Uploader!</div>';
+        return;
+      }
+      el.innerHTML = msgs.map(m => `
+        <div class="chat-msg ${m.sender==='user'?'mine':''}">
+          <div class="chat-msg-avatar">${m.sender==='user'?(currentUserData?.avatarEmoji||'⚡'):'👑'}</div>
+          <div>
+            ${m.sender==='admin'?`<div class="chat-msg-sender">Admin DEV</div>`:''}
+            <div class="chat-msg-body">
+              <div class="chat-msg-text">${m.text}</div>
+              <div class="chat-msg-time">${m.createdAt?.toDate?m.createdAt.toDate().toLocaleString('id-ID',{hour:'2-digit',minute:'2-digit'}):'Baru saja'}</div>
+            </div>
+          </div>
+        </div>`).join('');
+      el.scrollTop = el.scrollHeight;
+      checkChatUnread();
+    });
+  } catch(e) { el.innerHTML = '<div class="chat-empty">Gagal memuat chat.</div>'; }
+}
+
+async function markChatRead() {
+  if (!currentUser) return;
+  try {
+    const q = query(collection(db,'chats',currentUser.uid,'messages'), where('sender','==','admin'), where('read','==',false));
+    const snap = await getDocs(q);
+    const batch = writeBatch(db);
+    snap.docs.forEach(d => batch.update(d.ref, {read:true}));
+    await batch.commit();
+    checkChatUnread();
+  } catch(e) {}
+}
+
+window.sendChatMsg = async function() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || !currentUser) return;
+  input.value = '';
+  try {
+    await addDoc(collection(db,'chats',currentUser.uid,'messages'), {
+      text, sender:'user', senderName:currentUserData.name,
+      senderAvatar:currentUserData.avatarEmoji||'⚡',
+      read:false, createdAt:serverTimestamp()
+    });
+    // Update chat meta for admin to see
+    await setDoc(doc(db,'chatMeta',currentUser.uid), {
+      uid:currentUser.uid, userEmail:currentUser.email, userName:currentUserData.name,
+      avatarEmoji:currentUserData.avatarEmoji||'⚡', lastMsg:text,
+      lastMsgAt:serverTimestamp(), unreadAdmin:increment(1)
+    }, {merge:true});
+    // Check mission: send first chat
+    await updateMissionProgress('send_chat', 1);
+  } catch(e) { toast('⚠ Gagal kirim pesan'); }
+}
+
+// Admin chat functions
+window.openAdminChat = async function(uid, userName) {
+  document.getElementById('adminChatWindowWrap').style.display = 'block';
+  document.getElementById('adminChatTarget').textContent = '💬 Chat dengan: '+userName;
+  currentChatRoom = uid;
+  const msgsEl = document.getElementById('adminChatMsgs');
+  // Mark admin unread as read
+  try { await updateDoc(doc(db,'chatMeta',uid), {unreadAdmin:0}); } catch(e) {}
+  const q = query(collection(db,'chats',uid,'messages'), orderBy('createdAt','asc'), limit(50));
+  if (chatUnsubscribe) chatUnsubscribe();
+  chatUnsubscribe = onSnapshot(q, snap => {
+    const msgs=[]; snap.forEach(d=>msgs.push({id:d.id,...d.data()}));
+    msgsEl.innerHTML = msgs.map(m=>`
+      <div class="chat-msg ${m.sender==='admin'?'mine':''}">
+        <div class="chat-msg-avatar">${m.sender==='admin'?'👑':(m.senderAvatar||'⚡')}</div>
+        <div>
+          <div class="chat-msg-body">
+            <div class="chat-msg-text">${m.text}</div>
+            <div class="chat-msg-time">${m.createdAt?.toDate?m.createdAt.toDate().toLocaleString('id-ID',{hour:'2-digit',minute:'2-digit'}):'—'}</div>
+          </div>
+        </div>
+      </div>`).join('');
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  });
+}
+window.adminSendChat = async function() {
+  if (!currentChatRoom) return;
+  const input = document.getElementById('adminChatInput');
+  const text = input.value.trim(); if (!text) return;
+  input.value = '';
+  try {
+    await addDoc(collection(db,'chats',currentChatRoom,'messages'), {
+      text, sender:'admin', senderName:'Admin DEV', read:false, createdAt:serverTimestamp()
+    });
+    await updateDoc(doc(db,'chatMeta',currentChatRoom), {lastMsg:'[Admin] '+text, lastMsgAt:serverTimestamp()});
+    // Get user's email and send notif
+    const userSnap = await getDoc(doc(db,'users',currentChatRoom));
+    const ud = userSnap.data();
+    await addDoc(collection(db,'notifications'), {uid:currentChatRoom, title:'💬 Pesan dari Admin!', message:text.slice(0,80), icon:'💬', read:false, createdAt:serverTimestamp()});
+    if (ud?.email) await sendEmailNotif(ud.email, ud.name, '💬 Pesan Baru dari Admin DEV', text);
+    if (ud?.waNumber) { const wm=encodeURIComponent(`💬 *DEV Uploader*\n\nHai ${ud.name}! Ada pesan dari Admin:\n\n"${text}"\n\nBuka: devv-uploader.vercel.app`); window.open(`https://wa.me/${ud.waNumber}?text=${wm}`,'_blank'); }
+  } catch(e) { toast('⚠ Gagal kirim'); }
+}
+
+// ══ BADGE SYSTEM ══
+const BADGE_DEFS = [
+  { id:'first_upload', icon:'🚀', name:'Launcher', desc:'Upload pertama!', req:1, type:'uploads', xp:50 },
+  { id:'upload_5', icon:'⭐', name:'Rising Star', desc:'5 kali upload', req:5, type:'uploads', xp:100 },
+  { id:'upload_25', icon:'💫', name:'Uploader Pro', desc:'25 kali upload', req:25, type:'uploads', xp:250 },
+  { id:'upload_100', icon:'💎', name:'Diamond', desc:'100 kali upload', req:100, type:'uploads', xp:1000 },
+  { id:'topup_first', icon:'💰', name:'Supporter', desc:'Topup pertama', req:1, type:'topups', xp:75 },
+  { id:'referral_1', icon:'👥', name:'Recruiter', desc:'Ajak 1 teman', req:1, type:'referrals', xp:150 },
+  { id:'referral_5', icon:'🌟', name:'Ambassador', desc:'Ajak 5 teman', req:5, type:'referrals', xp:500 },
+  { id:'rating_10', icon:'⭐', name:'Critic', desc:'Rating 10 upload', req:10, type:'ratings', xp:200 },
+  { id:'chat_first', icon:'💬', name:'Communicator', desc:'Kirim pesan pertama', req:1, type:'chats', xp:30 },
+  { id:'login_streak_7', icon:'🔥', name:'Consistent', desc:'Login 7 hari berturut', req:7, type:'streak', xp:300 },
+  { id:'bulk_first', icon:'📎', name:'Bulk Master', desc:'Bulk upload pertama', req:1, type:'bulk', xp:80 },
+  { id:'coins_100', icon:'🏆', name:'Whale', desc:'Kumpulkan 100 coin', req:100, type:'coins', xp:400 },
+];
+
+function calcLevel(xp) {
+  const thresholds = [0,100,250,500,900,1400,2000,3000,4500,6500,9000];
+  let level = 1;
+  for (let i=0; i<thresholds.length; i++) { if (xp >= thresholds[i]) level = i+1; }
+  const curThresh = thresholds[Math.min(level-1, thresholds.length-1)];
+  const nextThresh = thresholds[Math.min(level, thresholds.length-1)] || curThresh+1000;
+  return { level, xp, curThresh, nextThresh, pct: Math.min(100, Math.round((xp-curThresh)/(nextThresh-curThresh)*100)) };
+}
+
+async function checkBadges() {
+  if (!currentUser || !currentUserData) return;
+  try {
+    const badgeSnap = await getDocs(collection(db,'users',currentUser.uid,'badges'));
+    const earned = new Set(); badgeSnap.forEach(d=>earned.add(d.id));
+    const uploads = currentUserData.totalUploads||0;
+    const referrals = currentUserData.referralCount||0;
+    const coins = currentUserData.coins||0;
+    const xp = currentUserData.xp||0;
+    const info = calcLevel(xp);
+    // Update XP bar
+    const lvlEl=document.getElementById('userLevel'); if(lvlEl)lvlEl.textContent=info.level;
+    const xpEl=document.getElementById('userXP'); if(xpEl)xpEl.textContent=xp;
+    const fillEl=document.getElementById('xpFill'); if(fillEl)fillEl.style.width=info.pct+'%';
+    const curEl=document.getElementById('xpCurrent'); if(curEl)curEl.textContent=xp;
+    const nxtEl=document.getElementById('xpNext'); if(nxtEl)nxtEl.textContent=info.nextThresh;
+    // Render badges
+    const grid = document.getElementById('badgeGrid'); if(!grid)return;
+    const stats = { uploads, topups:currentUserData.totalTopups||0, referrals, ratings:currentUserData.totalRatings||0, chats:currentUserData.totalChats||0, streak:currentUserData.loginStreak||0, bulk:currentUserData.totalBulk||0, coins };
+    grid.innerHTML = BADGE_DEFS.map(b => {
+      const val = stats[b.type]||0;
+      const isEarned = earned.has(b.id);
+      const pct = Math.min(100, Math.round(val/b.req*100));
+      return `<div class="badge-card ${isEarned?'earned':'locked'}">
+        <span class="badge-icon">${b.icon}</span>
+        <div class="badge-name">${b.name}</div>
+        <div class="badge-desc">${b.desc}</div>
+        <div style="margin-top:5px;font-family:'DM Mono',monospace;font-size:8px;color:var(--muted)">${val}/${b.req}</div>
+        ${isEarned?`<div class="badge-earned-tag">✓ +${b.xp} XP</div>`:`<div class="badge-locked-tag">${pct}%</div>`}
+      </div>`;
+    }).join('');
+    // Auto-award new badges
+    for (const b of BADGE_DEFS) {
+      if (!earned.has(b.id) && (stats[b.type]||0) >= b.req) {
+        await setDoc(doc(db,'users',currentUser.uid,'badges',b.id), {earnedAt:serverTimestamp(), xp:b.xp});
+        await updateDoc(doc(db,'users',currentUser.uid), {xp:increment(b.xp)});
+        currentUserData.xp = (currentUserData.xp||0)+b.xp;
+        toast(`🏅 Badge baru: ${b.icon} ${b.name}! +${b.xp} XP`);
+        await addDoc(collection(db,'notifications'), {uid:currentUser.uid, title:`🏅 Badge: ${b.name}!`, message:`${b.desc} · +${b.xp} XP`, icon:b.icon, read:false, createdAt:serverTimestamp()});
+        earned.add(b.id);
+      }
+    }
+  } catch(e) {}
+}
+
+// ══ MISSION SYSTEM ══
+const DAILY_MISSIONS = [
+  { id:'daily_upload_1', icon:'📤', name:'Upload Harian', desc:'Upload 1 asset hari ini', target:1, reward:2, type:'daily' },
+  { id:'daily_upload_3', icon:'📦', name:'Triple Upload', desc:'Upload 3 asset hari ini', target:3, reward:5, type:'daily' },
+  { id:'daily_login', icon:'☀️', name:'Login Streak', desc:'Login hari ini', target:1, reward:1, type:'daily' },
+  { id:'daily_chat', icon:'💬', name:'Chat Admin', desc:'Kirim 1 pesan ke admin', target:1, reward:2, type:'daily' },
+];
+const WEEKLY_MISSIONS = [
+  { id:'weekly_upload_10', icon:'🚀', name:'Grind Week', desc:'Upload 10 asset minggu ini', target:10, reward:15, type:'weekly' },
+  { id:'weekly_upload_25', icon:'💎', name:'Master Week', desc:'Upload 25 asset minggu ini', target:25, reward:30, type:'weekly' },
+  { id:'weekly_referral', icon:'👥', name:'Recruiter Week', desc:'Ajak 1 teman minggu ini', target:1, reward:10, type:'weekly' },
+  { id:'weekly_rating_5', icon:'⭐', name:'Critic Week', desc:'Rating 5 upload minggu ini', target:5, reward:8, type:'weekly' },
+];
+let currentMissionTab = 'daily';
+window.switchMissionTab = function(btn, tab) {
+  document.querySelectorAll('.mission-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active'); currentMissionTab = tab;
+  renderMissions();
+}
+function getTodayKey() { return new Date().toISOString().split('T')[0]; }
+function getWeekKey() { const d=new Date(); d.setDate(d.getDate()-d.getDay()); return d.toISOString().split('T')[0]; }
+async function checkMissionProgress() {
+  if (!currentUser) return;
+  await updateMissionProgress('daily_login', 1);
+  renderMissions();
+}
+async function updateMissionProgress(missionId, add) {
+  if (!currentUser) return;
+  try {
+    const periodKey = missionId.startsWith('daily')||missionId==='daily_login'||missionId==='send_chat'||missionId==='chat_first' ? getTodayKey() : getWeekKey();
+    const ref = doc(db,'users',currentUser.uid,'missions',missionId+'_'+periodKey);
+    const snap = await getDoc(ref);
+    if (snap.exists() && snap.data().claimed) return;
+    const curr = (snap.data()?.progress||0)+add;
+    await setDoc(ref, {progress:curr, claimed:false, updatedAt:serverTimestamp()}, {merge:true});
+  } catch(e) {}
+}
+async function renderMissions() {
+  const list = document.getElementById('missionList'); if (!list) return;
+  const missions = currentMissionTab==='daily' ? DAILY_MISSIONS : WEEKLY_MISSIONS;
+  const periodKey = currentMissionTab==='daily' ? getTodayKey() : getWeekKey();
+  const msnData = {};
+  try {
+    for (const m of missions) {
+      const snap = await getDoc(doc(db,'users',currentUser.uid,'missions',m.id+'_'+periodKey));
+      msnData[m.id] = snap.exists() ? snap.data() : {progress:0,claimed:false};
+    }
+  } catch(e) {}
+  list.innerHTML = missions.map(m => {
+    const d = msnData[m.id]||{progress:0,claimed:false};
+    const prog = Math.min(d.progress||0, m.target);
+    const pct = Math.round(prog/m.target*100);
+    const done = prog >= m.target; const claimed = d.claimed;
+    return `<div class="mission-item ${done&&!claimed?'done':''} ${claimed?'claimed':''}">
+      <div class="mission-top">
+        <div class="mission-icon">${m.icon}</div>
+        <div class="mission-info"><div class="mission-name">${m.name}</div><div class="mission-desc">${m.desc}</div></div>
+        <div class="mission-reward">+${m.reward} 🪙</div>
+      </div>
+      <div class="mission-progress-wrap">
+        <div class="mission-progress-track"><div class="mission-progress-fill" style="width:${pct}%"></div></div>
+        <div class="mission-progress-nums"><span>${prog}/${m.target}</span><span>${pct}%</span></div>
+      </div>
+      ${claimed ? `<div class="mission-claimed-tag">✓ Reward sudah diambil</div>`
+        : done ? `<button class="btn-claim" onclick="claimMission('${m.id}',${m.reward},'${periodKey}')">🎁 Ambil ${m.reward} Coin</button>`
+        : `<button class="btn-claim" disabled>Belum selesai</button>`}
+    </div>`;
+  }).join('');
+}
+window.claimMission = async function(missionId, reward, periodKey) {
+  if (!currentUser) return;
+  const ref = doc(db,'users',currentUser.uid,'missions',missionId+'_'+periodKey);
+  const snap = await getDoc(ref); if (snap.data()?.claimed) return toast('Sudah diklaim!');
+  await updateDoc(ref, {claimed:true, claimedAt:serverTimestamp()});
+  await updateDoc(doc(db,'users',currentUser.uid), {coins:increment(reward)});
+  currentUserData.coins=(currentUserData.coins||0)+reward; updateUI();
+  await addDoc(collection(db,'notifications'), {uid:currentUser.uid, title:'🎯 Misi Selesai!', message:`+${reward} Coin dari misi`, icon:'🎯', read:false, createdAt:serverTimestamp()});
+  // Send email
+  await sendEmailNotif(currentUser.email, currentUserData.name, '🎯 Misi Selesai!', `Selamat! Kamu mendapat +${reward} Coin dari misi. Total coin: ${currentUserData.coins}`);
+  toast(`🎉 +${reward} Coin dari misi!`);
+  loadNotifications(); checkBadges(); renderMissions();
+}
+
+let missionTimer = null;
+function startMissionCountdown() {
+  if (missionTimer) clearInterval(missionTimer);
+  function tick() {
+    const now=new Date(), midnight=new Date(now); midnight.setHours(24,0,0,0);
+    const diff=midnight-now; const h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+    const el=document.getElementById('missionCountdown'); if(el) el.textContent=`${h}j ${m}m ${s}d`;
+  }
+  tick(); missionTimer = setInterval(tick, 1000);
+}
+
+
 function showAdmin(){document.getElementById('screen-auth').style.display='none';document.getElementById('screen-app').style.display='none';document.getElementById('screen-admin').style.display='block';loadAdminData();}
 function updateUI(){
   if(!currentUserData)return;
@@ -946,7 +1557,14 @@ window.doUpload=async function(){
       await updateDoc(userRef,{coins:increment(-1),totalUploads:increment(1)});currentUserData.coins=freshCoins-1;currentUserData.totalUploads=(currentUserData.totalUploads||0)+1;updateUI();
       const assetId=data.assetId||null,opId=data.operationId||data.path||null;
       await addDoc(collection(db,'uploads'),{uid:currentUser.uid,userEmail:currentUser.email,userName:currentUserData.name,assetName,assetType,assetId:assetId||'Processing',operationId:opId||'',fileName:selFile.name,fileSize:selFile.size,rating:0,createdAt:serverTimestamp()});
-      loadHistory();
+      // Track missions & badges
+      await updateMissionProgress('daily_upload_1', 1);
+      await updateMissionProgress('daily_upload_3', 1);
+      await updateMissionProgress('weekly_upload_10', 1);
+      await updateMissionProgress('weekly_upload_25', 1);
+      // Email notif
+      await sendEmailNotif(currentUser.email, currentUserData.name, '✅ Upload Berhasil!', `Asset "${assetName}" berhasil diupload! ID: ${assetId||'Processing'}`);
+      loadHistory(); checkBadges();
       showResult('ok','✦ UPLOAD BERHASIL',`<div class="rrow"><span class="rkey">Asset Name</span><span class="rval">${assetName}</span></div><div class="rrow"><span class="rkey">Asset ID</span><span>${assetId?`<span class="rval" onclick="cp('${assetId}')">${assetId}</span>`:'<span class="badge-proc">Processing…</span>'}</span></div><div class="rrow"><span class="rkey">Insert URL</span><span>${assetId?`<span class="rval" onclick="cp('rbxassetid://${assetId}')">rbxassetid://${assetId}</span>`:'<span style="font-size:10px;color:var(--muted)">Cek Inventory</span>'}</span></div>${opId?`<div class="rrow"><span class="rkey">Operation ID</span><span class="rval" onclick="cp('${opId}')" style="font-size:10px">${opId}</span></div>`:''}`);
       toast('✓ Upload berhasil!');
     }else{const msg=data.message||data.error||JSON.stringify(data);showResult('fail','✕ UPLOAD GAGAL',`<div style="font-family:DM Mono,monospace;font-size:12px;color:rgba(255,68,102,0.8);line-height:1.7">${msg}</div>`);}
@@ -1000,7 +1618,15 @@ async function loadHistory(){
     el.innerHTML=items.map(h=>`<div class="hist-item"><div class="hist-item-top"><span class="hist-name">${h.assetName}</span><span class="hist-time">${h.createdAt?.toDate?h.createdAt.toDate().toLocaleString('id-ID'):''}</span></div><div class="hist-id" onclick="cp('${h.assetId}')">ID: ${h.assetId}</div><div class="hist-tags"><span class="hist-tag">${h.assetType}</span><span class="hist-tag">${h.fileName}</span></div><div class="hist-rating"><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">RATING:</span>${[1,2,3,4,5].map(s=>`<span class="star ${(h.rating||0)>=s?'active':''}" onclick="rateUpload('${h.id}',${s})">★</span>`).join('')}</div></div>`).join('');
   }catch(e){el.innerHTML='<div class="hist-empty"><div class="hist-empty-t">Gagal memuat.</div></div>';}
 }
-window.rateUpload=async function(docId,stars){try{await updateDoc(doc(db,'uploads',docId),{rating:stars});toast('✓ Rating: '+'★'.repeat(stars));loadHistory();}catch(e){}}
+window.rateUpload=async function(docId,stars){
+  try{
+    await updateDoc(doc(db,'uploads',docId),{rating:stars});
+    await updateDoc(doc(db,'users',currentUser.uid),{totalRatings:increment(1)});
+    currentUserData.totalRatings=(currentUserData.totalRatings||0)+1;
+    await updateMissionProgress('weekly_rating_5',1);
+    toast('✓ Rating: '+'★'.repeat(stars));loadHistory();checkBadges();
+  }catch(e){}
+}
 
 // DASHBOARD
 async function loadDashboard(){
@@ -1088,6 +1714,46 @@ async function loadAdminData(){
     const maxRev=Math.max(...Object.values(mrev),1);
     document.getElementById('revenueChart').innerHTML=Object.entries(mrev).slice(-6).map(([m,v])=>`<div class="bar-col"><div class="bar-wrap"><div class="bar-fill" style="height:${(v/maxRev)*100}%;background:linear-gradient(180deg,var(--green),var(--teal))">${v>0?`<span class="bar-val" style="font-size:8px">Rp${(v/1000).toFixed(0)}k</span>`:''}</div></div><div class="bar-label">${m}</div></div>`).join('')||'<div style="color:var(--muted);font-size:11px;font-family:DM Mono,monospace;padding:16px;text-align:center">Belum ada data</div>';
 
+    // Retention chart (users by join date cohort)
+    const joinByDay={};
+    users.forEach(u=>{if(!u.createdAt?.toDate)return;const d=u.createdAt.toDate().toLocaleDateString('id-ID',{weekday:'short'});joinByDay[d]=(joinByDay[d]||0)+1;});
+    const days7=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+    const retEl=document.getElementById('retentionChart');
+    if(retEl){
+      const maxJ=Math.max(...days7.map(d=>joinByDay[d]||0),1);
+      retEl.innerHTML=days7.map(d=>{const v=joinByDay[d]||0;const pct=Math.round(v/maxJ*100);return`<div class="retention-bar"><div class="retention-label">${d}</div><div class="retention-track"><div class="retention-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--teal),var(--green))"></div></div><div class="retention-pct">${v}</div></div>`;}).join('');
+    }
+
+    // Activity heatmap (28 days of uploads)
+    const heatEl=document.getElementById('activityHeatmap');
+    if(heatEl){
+      const uploadsByDay={};uploads.forEach(u=>{if(!u.createdAt?.toDate)return;const d=u.createdAt.toDate().toLocaleDateString('id-ID');uploadsByDay[d]=(uploadsByDay[d]||0)+1;});
+      const maxU=Math.max(...Object.values(uploadsByDay),1);
+      const cells=[];
+      for(let i=27;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const key=d.toLocaleDateString('id-ID');const v=uploadsByDay[key]||0;const intensity=v===0?'rgba(255,255,255,0.04)':v<maxU*0.33?'rgba(201,168,76,0.25)':v<maxU*0.66?'rgba(201,168,76,0.5)':'var(--gold)';cells.push(`<div class="heatmap-cell" style="background:${intensity}" title="${d.toLocaleDateString('id-ID')}: ${v} upload"></div>`);}
+      heatEl.innerHTML=cells.join('');
+    }
+
+    // Admin chat list
+    try {
+      const chatMetaSnap=await getDocs(query(collection(db,'chatMeta'),orderBy('lastMsgAt','desc'),limit(20)));
+      const chatMetas=[]; chatMetaSnap.forEach(d=>chatMetas.push({id:d.id,...d.data()}));
+      const chatListEl=document.getElementById('adminChatList');
+      chatListEl.innerHTML=chatMetas.length?`<div class="admin-chat-list">${chatMetas.map(c=>`
+        <div class="admin-chat-item" onclick="openAdminChat('${c.uid}','${c.userName}')">
+          <div class="admin-chat-item-top">
+            <div class="admin-chat-user">${c.avatarEmoji||'⚡'} ${c.userName||'User'}</div>
+            <div style="display:flex;align-items:center;gap:6px">
+              ${c.unreadAdmin>0?`<div class="admin-chat-unread">${c.unreadAdmin}</div>`:''}
+              <div class="admin-chat-time">${c.lastMsgAt?.toDate?c.lastMsgAt.toDate().toLocaleString('id-ID',{hour:'2-digit',minute:'2-digit'}):''}</div>
+            </div>
+          </div>
+          <div class="admin-chat-preview">${c.lastMsg||'—'}</div>
+        </div>`).join('')}</div>`
+      :'<div style="text-align:center;padding:20px;font-family:DM Mono,monospace;font-size:11px;color:var(--muted)">Belum ada chat</div>';
+    } catch(e){}
+
+
     // Users
     document.getElementById('adminUserList').innerHTML=users.map(u=>`<div class="admin-user-card ${u.isBanned?'banned':''}"><div class="admin-user-top"><div class="admin-user-avatar">${u.avatarEmoji||'⚡'}</div><div class="admin-user-info"><div class="admin-user-name">${u.name||'Unknown'} ${u.isAdmin?'<span class="badge-admin">ADMIN</span>':''} ${u.isBanned?'<span class="badge-banned">BANNED</span>':''}</div><div class="admin-user-email">${u.email}</div>${u.waNumber?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--green)">📱 +${u.waNumber}</div>`:''}<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">👥 Ref: ${u.referralCount||0} · 📤 ${u.totalUploads||0}</div></div><div class="admin-user-coins"><span class="coins-display">✦ ${u.coins||0}</span></div></div><div class="admin-user-actions"><input class="finput" type="number" id="coinInp_${u.id}" placeholder="Jumlah" style="flex:1;padding:7px 10px;font-size:12px"><button class="btn-add-coin" onclick="addCoins('${u.id}','${u.name}','${u.waNumber||''}')">+ Add</button><button class="btn-sub-coin" onclick="subCoins('${u.id}','${u.name}')">- Sub</button><button class="btn-set-coin" onclick="setCoins('${u.id}','${u.name}')">Set</button>${!u.isAdmin?`<button class="${u.isBanned?'btn-add-coin':'btn-sub-coin'}" onclick="toggleBan('${u.id}','${u.name}',${!!u.isBanned})">${u.isBanned?'✓ Unban':'🚫 Ban'}</button>`:''}</div></div>`).join('');
 
@@ -1124,6 +1790,7 @@ window.confirmOrder=async function(orderId,uid,coins,orderCode){
   await addDoc(collection(db,'notifications'),{uid,title:'✦ Topup Dikonfirmasi!',message:`+${coins} Coin dari order ${orderCode}`,icon:'✦',read:false,createdAt:serverTimestamp()});
   const userSnap=await getDoc(doc(db,'users',uid));const ud=userSnap.data();
   if(ud?.waNumber){const waMsg=encodeURIComponent(`🔔 *DEV Uploader*\n\nHai ${ud.name}! ✦ *${coins} Coin* masuk!\nOrder: ${orderCode}\nCek: devv-uploader.vercel.app 🚀`);window.open(`https://wa.me/${ud.waNumber}?text=${waMsg}`,'_blank');}
+  if(ud?.email) await sendEmailNotif(ud.email, ud.name, '✦ Topup Dikonfirmasi!', `+${coins} Coin dari order ${orderCode} telah masuk ke akun kamu!`);
   toast(`✓ +${coins} Coins!`);loadAdminData();
 }
 window.replyTicket=async function(ticketId,userUid){
@@ -1160,7 +1827,7 @@ window.doGoogle=async function(){try{await signInWithPopup(auth,googleProvider);
 window.doLogout=async function(){if(!confirm('Yakin mau logout?'))return;await signOut(auth);}
 function getAuthError(code){const m={'auth/email-already-in-use':'Email sudah terdaftar!','auth/invalid-email':'Format email tidak valid!','auth/weak-password':'Password minimal 6 karakter!','auth/user-not-found':'Email tidak ditemukan!','auth/wrong-password':'Password salah!','auth/invalid-credential':'Email atau password salah!','auth/too-many-requests':'Terlalu banyak percobaan!'};return m[code]||'Error: '+code;}
 function showAuthErr(msg){const el=document.getElementById('authErr');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
-window.switchTab=function(btn,panel){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('panel-'+panel).classList.add('active');moveSlider(btn);if(panel==='history')loadHistory();if(panel==='settings')loadSettings();if(panel==='dashboard')loadDashboard();if(panel==='leaderboard')loadLeaderboard();if(panel==='support')loadMyTickets();if(panel==='notif')loadNotifications();}
+window.switchTab=function(btn,panel){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('panel-'+panel).classList.add('active');moveSlider(btn);if(panel==='history')loadHistory();if(panel==='settings')loadSettings();if(panel==='dashboard')loadDashboard();if(panel==='leaderboard')loadLeaderboard();if(panel==='support')loadMyTickets();if(panel==='notif')loadNotifications();if(panel==='badges')checkBadges();if(panel==='missions')renderMissions();}
 function moveSlider(btn){const tabs=document.getElementById('tabs'),slider=document.getElementById('tabSlider');if(!tabs||!slider)return;const tr=tabs.getBoundingClientRect(),br=btn.getBoundingClientRect();slider.style.left=(br.left-tr.left-4)+'px';slider.style.width=br.width+'px';}
 setTimeout(()=>{const a=document.querySelector('.tab-btn.active');if(a)moveSlider(a);},200);
 window.switchAuthTab=function(tab){document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));event.target.classList.add('active');document.getElementById('form-'+tab).classList.add('active');document.getElementById('authErr').style.display='none';}
