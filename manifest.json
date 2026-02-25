@@ -1,0 +1,9 @@
+{
+  "name": "DEV Uploader",
+  "short_name": "DEV",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020408",
+  "theme_color": "#020408",
+  "icons": []
+}
