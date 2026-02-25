@@ -525,6 +525,46 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
 .btn-midtrans{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,rgba(0,229,200,0.2),rgba(0,229,200,0.08));border:1px solid rgba(0,229,200,0.3);color:var(--teal);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s;}
 .btn-midtrans:hover{background:rgba(0,229,200,0.2);}
 
+/* ── AUDIO EDITOR ── */
+.audio-editor{background:linear-gradient(145deg,rgba(167,139,250,0.06),rgba(167,139,250,0.02));border:1px solid rgba(167,139,250,0.2);border-radius:18px;padding:18px;margin-bottom:12px;}
+.audio-editor-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--purple);margin-bottom:4px;}
+.audio-editor-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+.waveform-wrap{background:rgba(0,0,0,0.4);border:1px solid rgba(167,139,250,0.15);border-radius:12px;padding:12px;margin-bottom:12px;position:relative;overflow:hidden;cursor:crosshair;}
+.waveform-canvas{width:100%;height:80px;display:block;}
+.waveform-overlay{position:absolute;top:12px;left:12px;right:12px;height:80px;pointer-events:none;}
+.waveform-progress-bar{position:absolute;top:0;left:0;height:100%;background:rgba(167,139,250,0.12);}
+.waveform-cursor-line{position:absolute;top:0;width:2px;height:100%;background:var(--purple);box-shadow:0 0 6px rgba(167,139,250,0.8);}
+.waveform-sel{position:absolute;top:0;height:100%;background:rgba(167,139,250,0.18);border-left:1px solid rgba(167,139,250,0.5);border-right:1px solid rgba(167,139,250,0.5);}
+.waveform-empty{display:flex;align-items:center;justify-content:center;height:80px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);flex-direction:column;gap:6px;}
+.audio-controls{display:flex;gap:7px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.btn-audio{padding:8px 13px;border:1px solid rgba(167,139,250,0.3);border-radius:9px;background:rgba(167,139,250,0.08);color:var(--purple);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.btn-audio:hover{background:rgba(167,139,250,0.18);}
+.btn-audio:disabled{opacity:0.35;cursor:not-allowed;}
+.btn-audio-green{border-color:rgba(0,229,160,0.3);background:rgba(0,229,160,0.06);color:var(--green);}
+.btn-audio-red{border-color:rgba(255,68,102,0.3);background:rgba(255,68,102,0.06);color:var(--red);}
+.audio-time-display{font-family:'DM Mono',monospace;font-size:11px;color:var(--teal);padding:7px 11px;background:rgba(0,0,0,0.3);border:1px solid var(--rim);border-radius:8px;margin-left:auto;}
+.audio-sliders{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+.audio-slider-group{background:rgba(255,255,255,0.02);border:1px solid var(--rim);border-radius:11px;padding:11px;}
+.aslider-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:7px;text-transform:uppercase;letter-spacing:1.5px;}
+.aslider-val{color:var(--purple);font-weight:600;}
+.aslider{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:rgba(167,139,250,0.2);outline:none;cursor:pointer;}
+.aslider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--purple);cursor:pointer;box-shadow:0 0 8px rgba(167,139,250,0.5);}
+.audio-effects-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.effect-chip{padding:6px 12px;border:1px solid rgba(167,139,250,0.2);border-radius:20px;background:rgba(167,139,250,0.04);color:var(--muted2);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all 0.2s;}
+.effect-chip:hover,.effect-chip.on{border-color:rgba(167,139,250,0.5);background:rgba(167,139,250,0.14);color:var(--purple);}
+.audio-info-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px;}
+.ainfo-box{background:rgba(0,0,0,0.3);border:1px solid var(--rim);border-radius:10px;padding:9px;text-align:center;}
+.ainfo-val{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--purple);line-height:1;}
+.ainfo-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:2px;}
+.export-box{background:rgba(0,229,160,0.03);border:1px solid rgba(0,229,160,0.15);border-radius:12px;padding:13px;}
+.export-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--green);text-transform:uppercase;margin-bottom:9px;}
+.export-formats{display:flex;gap:6px;margin-bottom:10px;}
+.fmt-btn{padding:6px 14px;border:1px solid var(--rim);border-radius:7px;background:rgba(255,255,255,0.02);color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all 0.2s;}
+.fmt-btn.sel{border-color:rgba(0,229,160,0.4);background:rgba(0,229,160,0.08);color:var(--green);}
+.btn-export{width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,rgba(0,229,160,0.18),rgba(0,229,160,0.06));border:1px solid rgba(0,229,160,0.3);color:var(--green);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;}
+.btn-export:hover{background:rgba(0,229,160,0.22);}
+.btn-export:disabled{opacity:0.35;cursor:not-allowed;}
+.audio-tips-box{background:rgba(245,158,11,0.03);border:1px solid rgba(245,158,11,0.15);border-radius:11px;padding:11px 14px;font-family:'DM Mono',monospace;font-size:10px;color:rgba(245,158,11,0.65);line-height:1.9;margin-top:10px;}
 /* ── ADMIN ENHANCED DASHBOARD ── */
 .admin-dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
 .admin-dash-card{background:rgba(255,255,255,0.02);border:1px solid var(--rim);border-radius:14px;padding:14px;}
@@ -639,6 +679,7 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
       <button class="tab-btn" onclick="switchTab(this,'dashboard')"><span class="ti">📊</span> Stats</button>
       <button class="tab-btn" onclick="switchTab(this,'leaderboard')"><span class="ti">🏆</span> Board</button>
       <button class="tab-btn" onclick="switchTab(this,'referral')"><span class="ti">🎁</span> Referral</button>
+      <button class="tab-btn" onclick="switchTab(this,'audio')"><span class="ti">🎵</span> Audio</button>
       <button class="tab-btn" onclick="switchTab(this,'badges')"><span class="ti">🏅</span> Badge</button>
       <button class="tab-btn" onclick="switchTab(this,'missions')"><span class="ti">🎯</span> Misi</button>
       <button class="tab-btn" onclick="switchTab(this,'support')"><span class="ti">💬</span> Support</button>
@@ -804,7 +845,116 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
     </div>
   </div>
 
+  <!-- AUDIO EDITOR -->
+  <div class="panel" id="panel-audio">
+    <div class="card"><div class="card-glow"></div>
+      <div class="ctitle"><div class="ctitle-icon">🎵</div><div><div class="ctitle-text">Audio Editor</div><div class="ctitle-sub">Edit audio agar lolos moderasi Roblox</div></div></div>
+
+      <!-- DROP FILE -->
+      <div class="dz" id="audioDz" style="margin-bottom:12px">
+        <input type="file" id="audioFileInput" accept=".mp3,.ogg,.wav" onchange="loadAudioFile(this)">
+        <div class="dz-orb">🎵</div>
+        <div class="dz-title">Drop file audio di sini</div>
+        <div class="dz-sub">MP3 · OGG · WAV · Max 20MB</div>
+      </div>
+
+      <!-- AUDIO INFO -->
+      <div class="audio-info-bar" id="audioInfoBar" style="display:none">
+        <div class="ainfo-box"><div class="ainfo-val" id="aDuration">—</div><div class="ainfo-lbl">Durasi</div></div>
+        <div class="ainfo-box"><div class="ainfo-val" id="aSampleRate">—</div><div class="ainfo-lbl">Sample Rate</div></div>
+        <div class="ainfo-box"><div class="ainfo-val" id="aChannels">—</div><div class="ainfo-lbl">Channel</div></div>
+        <div class="ainfo-box"><div class="ainfo-val" id="aFileSize">—</div><div class="ainfo-lbl">Ukuran</div></div>
+      </div>
+
+      <!-- WAVEFORM -->
+      <div class="audio-editor" id="audioEditorMain" style="display:none">
+        <div class="audio-editor-title">🎛 Waveform Editor</div>
+        <div class="audio-editor-sub">Klik & drag untuk pilih area · Kanan klik untuk deselect</div>
+
+        <div class="waveform-wrap" id="waveformWrap">
+          <canvas id="waveformCanvas" class="waveform-canvas" height="80"></canvas>
+          <div class="waveform-overlay">
+            <div class="waveform-progress-bar" id="waveProgressBar"></div>
+            <div class="waveform-cursor-line" id="waveformCursor" style="display:none"></div>
+            <div class="waveform-sel" id="waveformSel" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- PLAYBACK CONTROLS -->
+        <div class="audio-controls">
+          <button class="btn-audio" id="btnPlay" onclick="togglePlay()">▶ Play</button>
+          <button class="btn-audio" onclick="stopAudio()">■ Stop</button>
+          <button class="btn-audio" id="btnLoop" onclick="toggleLoop()">🔁 Loop</button>
+          <button class="btn-audio btn-audio-red" onclick="trimAudio()" id="btnTrim">✂ Trim Seleksi</button>
+          <button class="btn-audio btn-audio-red" onclick="resetAudio()">↺ Reset</button>
+          <div class="audio-time-display" id="audioTimeDisplay">0:00 / 0:00</div>
+        </div>
+
+        <!-- SLIDERS -->
+        <div class="audio-sliders">
+          <div class="audio-slider-group">
+            <div class="aslider-label">Volume <span class="aslider-val" id="volVal">100%</span></div>
+            <input class="aslider" type="range" id="volSlider" min="0" max="200" value="100" oninput="updateVol(this.value)">
+          </div>
+          <div class="audio-slider-group">
+            <div class="aslider-label">Pitch <span class="aslider-val" id="pitchVal">0 st</span></div>
+            <input class="aslider" type="range" id="pitchSlider" min="-12" max="12" value="0" oninput="updatePitch(this.value)">
+          </div>
+          <div class="audio-slider-group">
+            <div class="aslider-label">Speed <span class="aslider-val" id="speedVal">1.0x</span></div>
+            <input class="aslider" type="range" id="speedSlider" min="50" max="200" value="100" oninput="updateSpeed(this.value)">
+          </div>
+          <div class="audio-slider-group">
+            <div class="aslider-label">Fade In <span class="aslider-val" id="fadeInVal">0s</span></div>
+            <input class="aslider" type="range" id="fadeInSlider" min="0" max="50" value="0" oninput="updateFadeIn(this.value)">
+          </div>
+          <div class="audio-slider-group">
+            <div class="aslider-label">Fade Out <span class="aslider-val" id="fadeOutVal">0s</span></div>
+            <input class="aslider" type="range" id="fadeOutSlider" min="0" max="50" value="0" oninput="updateFadeOut(this.value)">
+          </div>
+          <div class="audio-slider-group">
+            <div class="aslider-label">Noise Level <span class="aslider-val" id="noiseVal">0%</span></div>
+            <input class="aslider" type="range" id="noiseSlider" min="0" max="20" value="0" oninput="updateNoise(this.value)">
+          </div>
+        </div>
+
+        <!-- EFFECTS -->
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">✨ Quick Effects</div>
+        <div class="audio-effects-row">
+          <div class="effect-chip" id="fx-reverse" onclick="toggleEffect('reverse')">↩ Reverse</div>
+          <div class="effect-chip" id="fx-normalize" onclick="applyNormalize()">📊 Normalize</div>
+          <div class="effect-chip" id="fx-stereo" onclick="toggleEffect('stereo')">🔊 Stereo Enhance</div>
+          <div class="effect-chip" id="fx-bass" onclick="toggleEffect('bass')">🎸 Bass Boost</div>
+          <div class="effect-chip" id="fx-treble" onclick="toggleEffect('treble')">🎵 Treble Boost</div>
+          <div class="effect-chip" id="fx-echo" onclick="toggleEffect('echo')">🌊 Echo</div>
+        </div>
+
+        <!-- EXPORT -->
+        <div class="export-box">
+          <div class="export-title">📥 Export & Download</div>
+          <div class="export-formats">
+            <div class="fmt-btn sel" id="fmt-wav" onclick="selectFmt('wav')">WAV</div>
+            <div class="fmt-btn" id="fmt-mp3" onclick="selectFmt('mp3')">MP3</div>
+            <div class="fmt-btn" id="fmt-ogg" onclick="selectFmt('ogg')">OGG</div>
+          </div>
+          <button class="btn-export" id="btnExport" onclick="exportAudio()"><div class="shim"></div>📥 &nbsp; DOWNLOAD HASIL EDIT</button>
+        </div>
+
+        <div class="audio-tips-box">
+          <div style="color:#f59e0b;font-weight:600;margin-bottom:4px">💡 Tips Lolos Moderasi Roblox</div>
+          ✦ Tambah <strong>Noise 2-5%</strong> untuk mengacak fingerprint audio<br>
+          ✦ Ubah <strong>Pitch ±1-2 semitone</strong> supaya tidak terdeteksi sama<br>
+          ✦ <strong>Speed 1.05x</strong> mengubah durasi sedikit<br>
+          ✦ Tambah <strong>Fade In/Out</strong> di awal & akhir lagu<br>
+          ✦ Kombinasi beberapa efek = lebih aman ⚡<br>
+          ✦ Tidak ada jaminan 100% lolos — tergantung kebijakan Roblox
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- BADGES -->
+
   <div class="panel" id="panel-badges">
     <div class="card"><div class="card-glow"></div>
       <div class="ctitle"><div class="ctitle-icon">🏅</div><div><div class="ctitle-text">Badge & Achievement</div><div class="ctitle-sub">Kumpulkan badge, naik level!</div></div></div>
@@ -1095,9 +1245,9 @@ function showApp(){
 
 // ══ EMAILJS INIT ══
 // Setup: https://www.emailjs.com/ — ganti dengan Service ID & Template ID kamu
-const EMAILJS_SERVICE = 'service_ne5bhne';
-const EMAILJS_TEMPLATE = 'dmotyqo';
-const EMAILJS_PUBLIC = 'hnWg_zpMGjDGuFn2T';
+const EMAILJS_SERVICE = 'YOUR_SERVICE_ID';
+const EMAILJS_TEMPLATE = 'YOUR_TEMPLATE_ID';
+const EMAILJS_PUBLIC = 'YOUR_PUBLIC_KEY';
 async function sendEmailNotif(toEmail, toName, subject, message) {
   try {
     if (typeof emailjs === 'undefined') return;
@@ -1827,7 +1977,7 @@ window.doGoogle=async function(){try{await signInWithPopup(auth,googleProvider);
 window.doLogout=async function(){if(!confirm('Yakin mau logout?'))return;await signOut(auth);}
 function getAuthError(code){const m={'auth/email-already-in-use':'Email sudah terdaftar!','auth/invalid-email':'Format email tidak valid!','auth/weak-password':'Password minimal 6 karakter!','auth/user-not-found':'Email tidak ditemukan!','auth/wrong-password':'Password salah!','auth/invalid-credential':'Email atau password salah!','auth/too-many-requests':'Terlalu banyak percobaan!'};return m[code]||'Error: '+code;}
 function showAuthErr(msg){const el=document.getElementById('authErr');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
-window.switchTab=function(btn,panel){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('panel-'+panel).classList.add('active');moveSlider(btn);if(panel==='history')loadHistory();if(panel==='settings')loadSettings();if(panel==='dashboard')loadDashboard();if(panel==='leaderboard')loadLeaderboard();if(panel==='support')loadMyTickets();if(panel==='notif')loadNotifications();if(panel==='badges')checkBadges();if(panel==='missions')renderMissions();}
+window.switchTab=function(btn,panel){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('panel-'+panel).classList.add('active');moveSlider(btn);if(panel==='history')loadHistory();if(panel==='settings')loadSettings();if(panel==='dashboard')loadDashboard();if(panel==='leaderboard')loadLeaderboard();if(panel==='support')loadMyTickets();if(panel==='notif')loadNotifications();if(panel==='badges')checkBadges();if(panel==='missions')renderMissions();if(panel==='audio')setTimeout(drawWaveform,100);}
 function moveSlider(btn){const tabs=document.getElementById('tabs'),slider=document.getElementById('tabSlider');if(!tabs||!slider)return;const tr=tabs.getBoundingClientRect(),br=btn.getBoundingClientRect();slider.style.left=(br.left-tr.left-4)+'px';slider.style.width=br.width+'px';}
 setTimeout(()=>{const a=document.querySelector('.tab-btn.active');if(a)moveSlider(a);},200);
 window.switchAuthTab=function(tab){document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));event.target.classList.add('active');document.getElementById('form-'+tab).classList.add('active');document.getElementById('authErr').style.display='none';}
@@ -1841,6 +1991,207 @@ if(urlP.get('ref')){const hint=document.getElementById('refHint');if(hint)hint.s
 // Drag and drop
 const dzEl=document.getElementById('dz');
 if(dzEl){dzEl.addEventListener('dragover',e=>{e.preventDefault();dzEl.classList.add('over');});dzEl.addEventListener('dragleave',()=>dzEl.classList.remove('over'));dzEl.addEventListener('drop',e=>{e.preventDefault();dzEl.classList.remove('over');const f=e.dataTransfer.files[0];if(!f)return;const dt=new DataTransfer();dt.items.add(f);document.getElementById('fi').files=dt.files;window.handleFile(document.getElementById('fi'));});}
+
+// ══ AUDIO EDITOR ══
+let audioCtx = null, audioBuffer = null, originalBuffer = null;
+let audioSource = null, isPlaying = false, isLooping = false;
+let startTime = 0, pauseOffset = 0;
+let selStart = -1, selEnd = -1, isDragging = false;
+let gainNode = null, currentFmt = 'wav';
+let effects = { reverse: false, stereo: false, bass: false, treble: false, echo: false };
+let volValue = 100, pitchValue = 0, speedValue = 100, fadeInValue = 0, fadeOutValue = 0, noiseValue = 0;
+let animFrameAudio = null, originalFileName = 'audio_edit';
+
+window.loadAudioFile = async function(inp) {
+  const f = inp.files[0]; if (!f) return;
+  originalFileName = f.name.replace(/\.[^.]+$/, '');
+  document.getElementById('aFileSize').textContent = fmtBytes(f.size);
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const ab = await f.arrayBuffer();
+    audioBuffer = await audioCtx.decodeAudioData(ab);
+    originalBuffer = audioBuffer;
+    document.getElementById('audioInfoBar').style.display = 'grid';
+    document.getElementById('audioEditorMain').style.display = 'block';
+    document.getElementById('aDuration').textContent = fmtTime(audioBuffer.duration);
+    document.getElementById('aSampleRate').textContent = (audioBuffer.sampleRate/1000).toFixed(1)+'k';
+    document.getElementById('aChannels').textContent = audioBuffer.numberOfChannels===1?'Mono':'Stereo';
+    setTimeout(()=>{ drawWaveform(); setupWaveformEvents(); }, 100);
+    toast('✓ Audio dimuat: '+f.name);
+  } catch(e) { toast('✕ Gagal baca file: '+e.message); }
+}
+
+function drawWaveform() {
+  const canvas = document.getElementById('waveformCanvas');
+  if (!canvas || !audioBuffer) return;
+  const wrap = document.getElementById('waveformWrap');
+  canvas.width = wrap.clientWidth - 24; canvas.height = 80;
+  const ctx2 = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+  ctx2.clearRect(0,0,W,H);
+  const data = audioBuffer.getChannelData(0);
+  const step = Math.ceil(data.length / W);
+  ctx2.strokeStyle = 'rgba(167,139,250,0.08)';
+  for (let i=0;i<4;i++){ctx2.beginPath();ctx2.moveTo(0,(H/4)*i);ctx2.lineTo(W,(H/4)*i);ctx2.stroke();}
+  const grad = ctx2.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(167,139,250,0.9)');
+  grad.addColorStop(0.5,'rgba(167,139,250,0.5)');
+  grad.addColorStop(1,'rgba(167,139,250,0.9)');
+  ctx2.fillStyle = grad;
+  for (let i=0;i<W;i++){
+    let min=1,max=-1;
+    for(let j=0;j<step;j++){const v=data[(i*step)+j]||0;if(v<min)min=v;if(v>max)max=v;}
+    ctx2.fillRect(i,((1+min)/2)*H,1,Math.max(1,((max-min)/2)*H));
+  }
+  const selEl = document.getElementById('waveformSel');
+  if (selStart>=0 && selEnd>selStart) {
+    const dur=audioBuffer.duration, pw=wrap.clientWidth-24;
+    selEl.style.display='block';
+    selEl.style.left=(selStart/dur)*pw+'px';
+    selEl.style.width=((selEnd-selStart)/dur)*pw+'px';
+  } else selEl.style.display='none';
+}
+
+function setupWaveformEvents() {
+  const canvas = document.getElementById('waveformCanvas');
+  if (!canvas || canvas._hasEvents) return;
+  canvas._hasEvents = true;
+  canvas.addEventListener('mousedown', e => {
+    if (!audioBuffer) return;
+    isDragging = true;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX-rect.left)/rect.width;
+    selStart = x * audioBuffer.duration; selEnd = selStart;
+    drawWaveform();
+  });
+  canvas.addEventListener('mousemove', e => {
+    if (!isDragging || !audioBuffer) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX-rect.left)/rect.width));
+    const t = x * audioBuffer.duration;
+    selStart = Math.min(selStart, t); selEnd = Math.max(selStart, t);
+    drawWaveform();
+  });
+  canvas.addEventListener('mouseup', ()=>{ isDragging=false; });
+  canvas.addEventListener('contextmenu', e=>{ e.preventDefault(); selStart=-1; selEnd=-1; drawWaveform(); });
+}
+
+function updateTimeDisplay() {
+  if (!audioBuffer || !audioCtx) return;
+  const cur = isPlaying ? (audioCtx.currentTime - startTime + pauseOffset) : pauseOffset;
+  const clamped = Math.min(cur, audioBuffer.duration);
+  document.getElementById('audioTimeDisplay').textContent = fmtTime(clamped)+' / '+fmtTime(audioBuffer.duration);
+  const pb = document.getElementById('waveProgressBar');
+  if (pb) pb.style.width = (clamped/audioBuffer.duration*100)+'%';
+  if (isPlaying) animFrameAudio = requestAnimationFrame(updateTimeDisplay);
+}
+
+window.togglePlay = function() { if (!audioBuffer||!audioCtx) return; isPlaying?pauseAudio():playAudio(); }
+function playAudio() {
+  if (!audioBuffer) return;
+  stopAudio(true);
+  const buf = applyEffectsToBuffer(audioBuffer);
+  audioSource = audioCtx.createBufferSource();
+  audioSource.buffer = buf;
+  audioSource.loop = isLooping;
+  audioSource.playbackRate.value = speedValue/100;
+  gainNode = audioCtx.createGain();
+  gainNode.gain.value = volValue/100;
+  if (fadeInValue>0){gainNode.gain.setValueAtTime(0,audioCtx.currentTime);gainNode.gain.linearRampToValueAtTime(volValue/100,audioCtx.currentTime+fadeInValue/10);}
+  if (fadeOutValue>0&&buf.duration>fadeOutValue/10){gainNode.gain.setValueAtTime(volValue/100,audioCtx.currentTime+buf.duration-fadeOutValue/10);gainNode.gain.linearRampToValueAtTime(0,audioCtx.currentTime+buf.duration);}
+  audioSource.connect(gainNode); gainNode.connect(audioCtx.destination);
+  audioSource.start(0, Math.min(pauseOffset, buf.duration));
+  startTime = audioCtx.currentTime; isPlaying = true;
+  document.getElementById('btnPlay').textContent = '⏸ Pause';
+  audioSource.onended = ()=>{if(!isLooping){isPlaying=false;pauseOffset=0;document.getElementById('btnPlay').textContent='▶ Play';cancelAnimationFrame(animFrameAudio);}};
+  updateTimeDisplay();
+}
+function pauseAudio() { if(!audioSource)return; pauseOffset+=audioCtx.currentTime-startTime; try{audioSource.stop();}catch(e){} isPlaying=false; document.getElementById('btnPlay').textContent='▶ Play'; cancelAnimationFrame(animFrameAudio); }
+window.stopAudio = function(keep=false) { if(audioSource){try{audioSource.stop();}catch(e){} audioSource=null;} isPlaying=false; if(!keep)pauseOffset=0; document.getElementById('btnPlay').textContent='▶ Play'; cancelAnimationFrame(animFrameAudio); }
+window.toggleLoop = function() { isLooping=!isLooping; document.getElementById('btnLoop').classList.toggle('active',isLooping); if(audioSource)audioSource.loop=isLooping; }
+
+function applyEffectsToBuffer(buf) {
+  const sr=buf.sampleRate, ch=buf.numberOfChannels, len=buf.length;
+  const nb = audioCtx.createBuffer(ch,len,sr);
+  for (let c=0;c<ch;c++) {
+    const src=buf.getChannelData(c), dst=nb.getChannelData(c);
+    for (let i=0;i<len;i++) {
+      let s = effects.reverse ? src[len-1-i] : src[i];
+      if (noiseValue>0) s += (Math.random()*2-1)*(noiseValue/100)*0.25;
+      if (effects.bass&&i>0) s = s*0.65 + (dst[i-1]||0)*0.55;
+      if (effects.treble&&i>0) s = s + (s-(src[i-1]||0))*1.4;
+      dst[i] = Math.max(-1, Math.min(1, s));
+    }
+    if (fadeInValue>0){const fs=Math.floor(sr*(fadeInValue/10));for(let i=0;i<Math.min(fs,len);i++)dst[i]*=(i/fs);}
+    if (fadeOutValue>0){const fs=Math.floor(sr*(fadeOutValue/10));for(let i=0;i<Math.min(fs,len);i++)dst[len-1-i]*=(i/fs);}
+  }
+  return nb;
+}
+
+window.trimAudio = function() {
+  if (!audioBuffer||selStart<0||selEnd<=selStart) return toast('⚠ Klik & drag di waveform dulu untuk pilih area!');
+  const sr=audioBuffer.sampleRate, ch=audioBuffer.numberOfChannels;
+  const s=Math.floor(selStart*sr), e=Math.floor(selEnd*sr);
+  const nb=audioCtx.createBuffer(ch,e-s,sr);
+  for(let c=0;c<ch;c++) nb.getChannelData(c).set(audioBuffer.getChannelData(c).slice(s,e));
+  audioBuffer=nb; selStart=-1; selEnd=-1;
+  document.getElementById('aDuration').textContent=fmtTime(audioBuffer.duration);
+  drawWaveform(); toast('✓ Di-trim!');
+}
+window.resetAudio = function() {
+  if(!originalBuffer)return;
+  audioBuffer=originalBuffer; selStart=-1; selEnd=-1;
+  [['volSlider',100,updateVol],['pitchSlider',0,updatePitch],['speedSlider',100,updateSpeed],['fadeInSlider',0,updateFadeIn],['fadeOutSlider',0,updateFadeOut],['noiseSlider',0,updateNoise]].forEach(([id,v,fn])=>{document.getElementById(id).value=v;fn(v);});
+  effects={reverse:false,stereo:false,bass:false,treble:false,echo:false};
+  ['reverse','stereo','bass','treble','echo'].forEach(f=>{const el=document.getElementById('fx-'+f);if(el)el.classList.remove('on');});
+  drawWaveform(); document.getElementById('aDuration').textContent=fmtTime(audioBuffer.duration);
+  toast('✓ Reset!');
+}
+window.applyNormalize = function() {
+  if(!audioBuffer)return;
+  let maxAmp=0;
+  for(let c=0;c<audioBuffer.numberOfChannels;c++){const d=audioBuffer.getChannelData(c);for(let i=0;i<d.length;i++)if(Math.abs(d[i])>maxAmp)maxAmp=Math.abs(d[i]);}
+  if(maxAmp===0)return;
+  const factor=0.95/maxAmp;
+  const nb=audioCtx.createBuffer(audioBuffer.numberOfChannels,audioBuffer.length,audioBuffer.sampleRate);
+  for(let c=0;c<audioBuffer.numberOfChannels;c++){const s=audioBuffer.getChannelData(c),d=nb.getChannelData(c);for(let i=0;i<s.length;i++)d[i]=s[i]*factor;}
+  audioBuffer=nb; drawWaveform(); toast('✓ Normalized!');
+}
+window.toggleEffect = function(fx) { effects[fx]=!effects[fx]; document.getElementById('fx-'+fx).classList.toggle('on',effects[fx]); toast((effects[fx]?'✓ ON: ':'✕ OFF: ')+fx); }
+window.updateVol = function(v) { volValue=parseInt(v); document.getElementById('volVal').textContent=v+'%'; if(gainNode)gainNode.gain.value=v/100; }
+window.updatePitch = function(v) { pitchValue=parseInt(v); document.getElementById('pitchVal').textContent=(v>0?'+':'')+v+' st'; }
+window.updateSpeed = function(v) { speedValue=parseInt(v); document.getElementById('speedVal').textContent=(v/100).toFixed(2)+'x'; if(audioSource)audioSource.playbackRate.value=v/100; }
+window.updateFadeIn = function(v) { fadeInValue=parseInt(v); document.getElementById('fadeInVal').textContent=(v/10).toFixed(1)+'s'; }
+window.updateFadeOut = function(v) { fadeOutValue=parseInt(v); document.getElementById('fadeOutVal').textContent=(v/10).toFixed(1)+'s'; }
+window.updateNoise = function(v) { noiseValue=parseInt(v); document.getElementById('noiseVal').textContent=v+'%'; }
+window.selectFmt = function(fmt) { currentFmt=fmt; document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('sel')); document.getElementById('fmt-'+fmt).classList.add('sel'); }
+window.exportAudio = async function() {
+  if(!audioBuffer)return toast('⚠ Load audio dulu!');
+  const btn=document.getElementById('btnExport');
+  btn.disabled=true; btn.textContent='⏳ Memproses...';
+  try {
+    const processed=applyEffectsToBuffer(audioBuffer);
+    const wav=audioBufferToWav(processed);
+    const blob=new Blob([wav],{type:'audio/wav'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=originalFileName+'_edited.wav'; a.click();
+    URL.revokeObjectURL(url);
+    toast('✓ Download dimulai!');
+  } catch(e){toast('✕ Gagal: '+e.message);}
+  btn.disabled=false; btn.innerHTML='<div class="shim"></div>📥 &nbsp; DOWNLOAD HASIL EDIT';
+}
+function audioBufferToWav(buf) {
+  const ch=buf.numberOfChannels,sr=buf.sampleRate,len=buf.length,bLen=len*ch*2;
+  const ab=new ArrayBuffer(44+bLen), v=new DataView(ab);
+  function ws(o,s){for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));}
+  ws(0,'RIFF');v.setUint32(4,36+bLen,true);ws(8,'WAVE');ws(12,'fmt ');
+  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*ch*2,true);v.setUint16(32,ch*2,true);
+  v.setUint16(34,16,true);ws(36,'data');v.setUint32(40,bLen,true);
+  let off=44;
+  for(let i=0;i<len;i++)for(let c=0;c<ch;c++){const s=Math.max(-1,Math.min(1,buf.getChannelData(c)[i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}
+  return ab;
+}
+function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
 
 // CANVAS
 let canvasRunning=false,animFrame;
