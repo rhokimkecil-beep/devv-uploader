@@ -1190,7 +1190,6 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6;}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="YOUR_MIDTRANS_CLIENT_KEY"></script>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
@@ -1272,14 +1271,11 @@ window.switchPaymentMethod = function(method) {
 window.openMidtrans = async function(coins, amount) {
   if (!currentUser) return toast('⚠ Login dulu!');
   const orderId = 'DEV-'+Date.now().toString(36).toUpperCase();
-  // Create pending order in Firestore
   await addDoc(collection(db,'orders'),{
     uid:currentUser.uid, userEmail:currentUser.email, userName:currentUserData.name,
     orderId, coins, price:'Rp '+amount.toLocaleString('id-ID'),
     method:'Midtrans', status:'pending_midtrans', createdAt:serverTimestamp()
   });
-  // Call your backend to get Snap token
-  // For now show instructions to setup backend
   document.getElementById('modalBg').classList.add('show');
   document.getElementById('modalInner').innerHTML = `
     <div class="modal-title">⚡ Auto Payment</div>
@@ -1291,11 +1287,9 @@ window.openMidtrans = async function(coins, amount) {
     <div style="background:rgba(0,229,200,0.05);border:1px solid rgba(0,229,200,0.2);border-radius:12px;padding:14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:11px;color:rgba(0,229,200,0.7);line-height:1.8">
       <strong style="color:var(--teal)">🔧 Setup Midtrans:</strong><br>
       1. Daftar di <a href="https://midtrans.com" target="_blank" style="color:var(--teal)">midtrans.com</a><br>
-      2. Ganti <code>YOUR_MIDTRANS_CLIENT_KEY</code> di script tag<br>
-      3. Buat endpoint <code>/api/midtrans-token</code> di Vercel<br>
-      4. Endpoint generate Snap token → kirim ke frontend<br><br>
-      <strong style="color:var(--gold)">Order ID: ${orderId}</strong><br>
-      Coins akan otomatis masuk setelah bayar! ✨
+      2. Buat endpoint <code>/api/midtrans-token</code> di Vercel<br>
+      3. Endpoint generate Snap token → aktif otomatis<br><br>
+      <strong style="color:var(--gold)">Order ID: ${orderId}</strong>
     </div>
     <button class="btn-confirm" onclick="closeModal()" style="background:rgba(255,255,255,0.05);border:1px solid var(--rim);color:var(--muted)">Tutup</button>
   `;
