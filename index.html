@@ -883,7 +883,7 @@ input[type=range]::-webkit-slider-thumb{touch-action:none;}
     <div class="landing-h1">DEV<br>UPLOADER</div>
     <div class="landing-sub">Upload asset Roblox dengan mudah, cepat, dan aman.<br>Decal, Audio, Mesh — semua dalam satu platform premium.</div>
     <div class="landing-cta-row">
-      <button class="btn-cta-primary" onclick="hideLanding()">⚡ DAFTAR</button>
+      <button class="btn-cta-primary" onclick="hideLanding()">⚡ MULAI GRATIS</button>
       <button class="btn-cta-secondary" onclick="document.getElementById('landingFeatures').scrollIntoView({behavior:'smooth'})">📖 Lihat Fitur</button>
     </div>
     <div class="landing-stats-row">
@@ -1856,13 +1856,13 @@ async function loadUserData(user){
 }
 function genCode(uid){return'DEV'+uid.slice(-6).toUpperCase();}
 function showAuth(){
+  stopGlobalVipListener();
   // Show landing page first if user never visited
   const visited=localStorage.getItem('dev_visited');
   if(!visited){
     localStorage.setItem('dev_visited','1');
     document.getElementById('screen-landing').style.display='block';
     document.getElementById('screen-auth').style.display='none';
-    // Load live stats for landing
     Promise.all([getDocs(collection(db,'users')),getDocs(collection(db,'uploads'))]).then(([u,up])=>{
       const uel=document.getElementById('landingStatUsers');const upel=document.getElementById('landingStatUploads');
       if(uel)uel.textContent=u.size+'+';if(upel)upel.textContent=up.size+'+';
@@ -1879,7 +1879,7 @@ function showApp(){
   document.getElementById('screen-auth').style.display='none';
   document.getElementById('screen-app').style.display='block';
   document.getElementById('screen-admin').style.display='none';
-  startCanvas(); updateUI(); loadHistory(); loadSettings(); loadNotifications();
+  startCanvas(); updateUI(); loadHistory(); loadSettings(); loadNotifications(); startGlobalVipListener();
   document.getElementById('adminTabBtn').style.display=isAdmin?'flex':'none';
   document.getElementById('chatFab').style.display='flex';
   initChat(); checkMissionProgress(); checkBadges();
@@ -2986,18 +2986,64 @@ window.selectFmt=function(fmt){
 window.exportAudio=async function(){
   if(!audioBuffer)return toast('⚠ Load audio dulu!');
   const btn=document.getElementById('btnExport');
-  if(btn){btn.disabled=true;btn.textContent='⏳ Memproses...';}
+  if(btn){btn.disabled=true;btn.innerHTML='⏳ Memproses...';}
+  const fmt=currentFmt||'wav';
   try{
     const processed=buildProcessedBuffer();
-    const wav=audioBufferToWav(processed);
-    const blob=new Blob([wav],{type:'audio/wav'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;a.download=originalFileName+'_edited.wav';a.click();
-    URL.revokeObjectURL(url);
-    toast('✓ Download dimulai!');
-  }catch(e){toast('✕ Gagal: '+e.message);console.error(e);}
+
+    if(fmt==='wav'){
+      // WAV: pure JS, always works
+      const data=audioBufferToWav(processed);
+      _triggerDownload(new Blob([data],{type:'audio/wav'}),originalFileName+'_edited.wav');
+      toast('✓ Download WAV!');
+
+    }else{
+      // MP3/OGG: use AudioContext.createMediaStreamDestination (works without user gesture)
+      const actx=new AudioContext({sampleRate:processed.sampleRate});
+      const dest=actx.createMediaStreamDestination();
+      const src=actx.createBufferSource();
+      src.buffer=processed;
+      src.connect(dest);
+
+      // Detect supported mime
+      const mp3Mimes=['audio/mpeg','audio/mp4;codecs=mp4a','audio/webm;codecs=opus'];
+      const oggMimes=['audio/ogg;codecs=opus','audio/ogg','audio/webm;codecs=opus'];
+      const candidates=fmt==='mp3'?mp3Mimes:oggMimes;
+      const mime=candidates.find(m=>MediaRecorder.isTypeSupported(m))||'audio/webm;codecs=opus';
+      const ext=mime.startsWith('audio/mpeg')?'mp3':mime.startsWith('audio/ogg')?'ogg':'webm';
+
+      const chunks=[];
+      const recorder=new MediaRecorder(dest.stream,{mimeType:mime,audioBitsPerSecond:192000});
+      recorder.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data);};
+      recorder.onstop=async()=>{
+        await actx.close();
+        const blob=new Blob(chunks,{type:mime});
+        _triggerDownload(blob,originalFileName+'_edited.'+ext);
+        toast(`✓ Download ${ext.toUpperCase()}!`);
+        if(btn){btn.disabled=false;btn.innerHTML='📥 &nbsp; DOWNLOAD HASIL EDIT';}
+      };
+      recorder.start(100);
+      src.start(0);
+      // Stop after audio duration
+      setTimeout(()=>{
+        try{recorder.stop();src.stop();}catch(e){}
+      },(processed.duration*1000)+200);
+      return; // early return — button re-enabled in onstop
+    }
+  }catch(e){
+    console.error(e);
+    toast('✕ Gagal export: '+e.message);
+    // Ultimate fallback: WAV
+    try{const d=audioBufferToWav(buildProcessedBuffer());_triggerDownload(new Blob([d],{type:'audio/wav'}),originalFileName+'_edited.wav');toast('⚠ Fallback: download sebagai WAV');}catch(_){}
+  }
   if(btn){btn.disabled=false;btn.innerHTML='📥 &nbsp; DOWNLOAD HASIL EDIT';}
 };
+
+function _triggerDownload(blob,filename){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
 
 function audioBufferToWav(buf){
   const ch=buf.numberOfChannels,sr=buf.sampleRate,len=buf.length,bLen=len*ch*2;
@@ -3104,35 +3150,108 @@ const VIP_TIERS = {
   diamond: { name:'DIAMOND', icon:'💎', color:'var(--teal)', desc:'Member Diamond aktif' }
 };
 
-function loadVipStatus() {
-  if(!currentUserData)return;
-  // Re-read from Firestore to ensure fresh data
-  getDoc(doc(db,'users',currentUser.uid)).then(snap=>{
-    if(snap.exists()){
-      const fresh=snap.data();
-      currentUserData.vipTier=fresh.vipTier||'free';
-      currentUserData.vipExpiry=fresh.vipExpiry||null;
+let _vipUnsubscribe = null;
+let _vipUnsubscribe = null;
+// Auto-start VIP real-time listener on login (tidak perlu buka tab VIP dulu)
+function startGlobalVipListener(){
+  if(!currentUser||_vipUnsubscribe)return;
+  _vipUnsubscribe=onSnapshot(doc(db,'users',currentUser.uid),snap=>{
+    if(!snap.exists())return;
+    const fresh=snap.data();
+    const prevTier=currentUserData?.vipTier||'free';
+    if(!currentUserData)return;
+    currentUserData.vipTier=fresh.vipTier||'free';
+    currentUserData.vipExpiry=fresh.vipExpiry||null;
+    currentUserData.coins=fresh.coins??currentUserData.coins;
+    _syncVipUI(currentUserData.vipTier);
+    const cv=document.getElementById('coinVal');if(cv)cv.textContent=currentUserData.coins;
+    const rn=document.getElementById('ringNum');if(rn)rn.textContent=currentUserData.coins;
+    // Celebrate VIP upgrade
+    if(prevTier!==currentUserData.vipTier&&currentUserData.vipTier!=='free'){
+      const icons={silver:'🥈',gold:'👑',diamond:'💎'};
+      toast(`🎉 VIP ${currentUserData.vipTier.toUpperCase()} Aktif! Selamat!`);
+      showNotifToast((icons[currentUserData.vipTier]||'👑')+' VIP Aktif!',`VIP ${currentUserData.vipTier} sudah aktif di akun kamu!`);
     }
-    _syncVipUI(currentUserData.vipTier||'free');
-  }).catch(()=>_syncVipUI(currentUserData.vipTier||'free'));
+  });
+}
+function stopGlobalVipListener(){if(_vipUnsubscribe){_vipUnsubscribe();_vipUnsubscribe=null;}}
+
+function loadVipStatus() {
+  if(!currentUserData||!currentUser)return;
+  // Listener sudah jalan dari startGlobalVipListener — cukup sync UI
+  _syncVipUI(currentUserData.vipTier||'free');
 }
 
 window.subscribeVip = async function(tier, price) {
-  const t = VIP_TIERS[tier];
-  if (!confirm(`Upgrade ke ${t.icon} ${t.name.toUpperCase()}?\n\nHarga: ${price}/bulan\n\nPembayaran via Transfer Manual.\nKontak admin WA setelah bayar.`)) return;
+  const VIP_INFO={silver:{name:'SILVER',icon:'🥈'},gold:{name:'GOLD',icon:'👑'},diamond:{name:'DIAMOND',icon:'💎'}};
+  const t = VIP_INFO[tier];
+  if(!t)return;
+
+  const choice = confirm(
+    `👑 Upgrade ke ${t.icon} ${t.name}?\n\nHarga: ${price}/bulan\n\n` +
+    `✅ Klik OK → Buka WhatsApp Admin\n❌ Klik Cancel → Batal`
+  );
+  if(!choice)return;
+
   const orderId = 'VIP-'+Date.now().toString(36).toUpperCase();
   await addDoc(collection(db,'orders'), {
-    uid:currentUser.uid, userEmail:currentUser.email, userName:currentUserData.name,
-    orderId, price, method:'Transfer', status:'pending',
-    type:'vip', vipTier:tier, coins:0, createdAt:serverTimestamp()
+    uid:currentUser.uid,
+    userEmail:currentUser.email,
+    userName:currentUserData.name,
+    orderId, price,
+    method:'Transfer',
+    status:'pending',
+    type:'vip',
+    vipTier:tier,
+    coins:0,
+    createdAt:serverTimestamp()
   });
+
   await addDoc(collection(db,'notifications'), {
-    uid:currentUser.uid, title:`👑 Order VIP ${t.name}!`, message:`Order ${orderId} menunggu konfirmasi admin.`, icon:t.icon, read:false, createdAt:serverTimestamp()
+    uid:currentUser.uid,
+    title:`👑 Order VIP ${t.name} Dibuat!`,
+    message:`Order ${orderId} menunggu konfirmasi admin. Kirim bukti transfer ke WA admin.`,
+    icon:t.icon, read:false, createdAt:serverTimestamp()
   });
-  const waMsg = encodeURIComponent(`👑 *DEV Uploader - VIP Upgrade*\n\nHai Admin!\nSaya ingin upgrade ke *${t.name}*\n\nOrder ID: ${orderId}\nHarga: ${price}/bulan\nAkun: ${currentUser.email}\n\nMohon konfirmasi pembayaran 🙏`);
+
+  // Open WA admin
+  const waMsg = encodeURIComponent(
+    `👑 *DEV Uploader - VIP Upgrade*\n\n` +
+    `Halo Admin! Saya mau upgrade VIP:\n\n` +
+    `📦 Paket: *${t.name}*\n` +
+    `💰 Harga: ${price}/bulan\n` +
+    `🆔 Order ID: *${orderId}*\n` +
+    `📧 Akun: ${currentUser.email}\n\n` +
+    `Terlampir bukti transfer 🙏`
+  );
   window.open(`https://wa.me/${ADMIN_WA}?text=${waMsg}`, '_blank');
-  toast(`✓ Order VIP ${t.name} dibuat! Kontak admin untuk konfirmasi.`);
+
+  toast(`✓ Order ${orderId} dibuat! Kirim bukti ke admin WA.`);
   loadNotifications();
+
+  // Start listening for VIP activation (real-time)
+  _listenVipActivation(orderId);
+};
+
+// Listen for order confirmed → auto apply VIP
+function _listenVipActivation(orderId){
+  const q=query(collection(db,'orders'),where('orderId','==',orderId),where('uid','==',currentUser.uid));
+  const unsub=onSnapshot(q,snap=>{
+    snap.forEach(d=>{
+      const data=d.data();
+      if(data.status==='confirmed'&&data.type==='vip'&&data.vipTier){
+        // Auto apply!
+        currentUserData.vipTier=data.vipTier;
+        currentUserData.vipExpiry=data.vipExpiry||new Date(Date.now()+30*24*60*60*1000).toISOString();
+        updateUI();
+        toast(`🎉 VIP ${data.vipTier.toUpperCase()} aktif! Selamat!`);
+        showNotifToast(`${data.vipTier==='diamond'?'💎':data.vipTier==='gold'?'👑':'🥈'} VIP Aktif!`,`VIP ${data.vipTier} kamu sudah aktif!`);
+        unsub(); // stop listening
+      }
+    });
+  });
+  // Auto-stop after 24 hours to avoid memory leak
+  setTimeout(unsub, 24*60*60*1000);
 }
 
 // ══ SPIN WHEEL ══
