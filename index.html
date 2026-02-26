@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--void:#020408;--deep:#060d18;--glass:rgba(255,255,255,0.03);--rim:rgba(255,255,255,0.07);--rim2:rgba(255,255,255,0.12);--gold:#c9a84c;--gold2:#f0d080;--teal:#00e5c8;--red:#ff4466;--red-dim:rgba(255,68,102,0.15);--green:#00e5a0;--purple:#a78bfa;--text:#dde6f0;--muted:#4a6080;--muted2:#7a90a8;}
+:root{--void:#010306;--deep:#050b14;--glass:rgba(255,255,255,0.025);--rim:rgba(255,255,255,0.06);--rim2:rgba(255,255,255,0.12);--gold:#c9a84c;--gold2:#f0d080;--gold3:#ffe9a0;--teal:#00e5c8;--red:#ff4466;--red-dim:rgba(255,68,102,0.12);--green:#00e5a0;--purple:#a78bfa;--blue:#60a5fa;--text:#dde6f0;--muted:#3d5570;--muted2:#6a8099;}
 html{scroll-behavior:smooth;}
 body{background:var(--void);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
 #c{position:fixed;inset:0;z-index:0;pointer-events:none;}
@@ -747,10 +747,17 @@ body.light-mode .card{background:rgba(255,255,255,0.9);}
 .audio-time-display{font-family:'DM Mono',monospace;font-size:11px;color:var(--teal);padding:7px 11px;background:rgba(0,0,0,0.3);border:1px solid var(--rim);border-radius:8px;margin-left:auto;}
 .audio-sliders{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
 .audio-slider-group{background:rgba(255,255,255,0.02);border:1px solid var(--rim);border-radius:11px;padding:11px;}
-.aslider-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:7px;text-transform:uppercase;letter-spacing:1.5px;}
-.aslider-val{color:var(--purple);font-weight:600;}
-.aslider{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:rgba(167,139,250,0.2);outline:none;cursor:pointer;}
-.aslider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--purple);cursor:pointer;box-shadow:0 0 8px rgba(167,139,250,0.5);}
+input[type=range]{touch-action:pan-y;-webkit-tap-highlight-color:transparent;}
+input[type=range]::-webkit-slider-thumb{touch-action:none;}
+
+.aslider-val{color:var(--purple);font-weight:700;font-size:11px;}
+.aslider{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:rgba(167,139,250,0.2);outline:none;cursor:pointer;touch-action:pan-y;display:block;}
+.aslider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);cursor:pointer;box-shadow:0 0 0 4px rgba(167,139,250,0.15),0 2px 8px rgba(124,58,237,0.4);transition:box-shadow 0.2s;margin-top:-11px;}
+.aslider::-webkit-slider-thumb:active{box-shadow:0 0 0 8px rgba(167,139,250,0.25),0 4px 16px rgba(124,58,237,0.5);}
+.aslider::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);cursor:pointer;border:none;box-shadow:0 0 0 4px rgba(167,139,250,0.15);}
+.aslider::-webkit-slider-runnable-track{height:6px;border-radius:3px;}
+.aslider::-moz-range-track{height:6px;border-radius:3px;background:rgba(167,139,250,0.2);}
+.audio-slider-group{background:rgba(255,255,255,0.02);border:1px solid rgba(167,139,250,0.15);border-radius:14px;padding:14px 14px 16px;}
 .audio-effects-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
 .effect-chip{padding:6px 12px;border:1px solid rgba(167,139,250,0.2);border-radius:20px;background:rgba(167,139,250,0.04);color:var(--muted2);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all 0.2s;}
 .effect-chip:hover,.effect-chip.on{border-color:rgba(167,139,250,0.5);background:rgba(167,139,250,0.14);color:var(--purple);}
@@ -780,6 +787,56 @@ body.light-mode .card{background:rgba(255,255,255,0.9);}
 .heatmap-cell{aspect-ratio:1;border-radius:3px;background:rgba(255,255,255,0.04);transition:all 0.2s;cursor:default;}
 .heatmap-cell:hover{transform:scale(1.3);}
 .heatmap-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);text-align:center;margin-bottom:4px;display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+/* ══ PREMIUM REDESIGN ══ */
+/* Card premium glow effect */
+.card{background:linear-gradient(145deg,rgba(255,255,255,0.035),rgba(255,255,255,0.008));border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:22px;position:relative;overflow:hidden;margin-bottom:12px;box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.06);}
+.card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.8),rgba(240,208,128,0.4),transparent);}
+/* Topbar premium */
+.topbar{background:rgba(1,3,6,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.05);box-shadow:0 4px 24px rgba(0,0,0,0.5);}
+/* Coin ring */
+.coin-ring{border:2px solid rgba(201,168,76,0.4);box-shadow:0 0 12px rgba(201,168,76,0.2),inset 0 0 8px rgba(201,168,76,0.05);transition:border-color 0.5s,box-shadow 0.5s;}
+/* Tab bar */
+.tab-bar{background:rgba(1,3,6,0.95);backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,0.06);box-shadow:0 -4px 32px rgba(0,0,0,0.5);}
+.tab-btn{transition:color 0.2s;}
+.tab-btn.active .ti{filter:drop-shadow(0 0 6px currentColor);}
+/* Buttons */
+.btn-up{background:linear-gradient(135deg,#8b6520 0%,var(--gold) 40%,var(--gold2) 60%,#8b6520 100%);background-size:200% 100%;box-shadow:0 4px 20px rgba(201,168,76,0.35);transition:background-position 0.4s,transform 0.15s,box-shadow 0.2s;}
+.btn-up:hover{background-position:100% 0;box-shadow:0 6px 28px rgba(201,168,76,0.5);}
+.btn-up:active{transform:scale(0.97);}
+/* Finput */
+.finput{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;transition:border-color 0.2s,box-shadow 0.2s;}
+.finput:focus{border-color:rgba(201,168,76,0.4);box-shadow:0 0 0 3px rgba(201,168,76,0.08);outline:none;}
+/* History items */
+.hist-item{border-radius:16px;transition:all 0.2s;border:1px solid rgba(255,255,255,0.05);}
+.hist-item:hover{border-color:rgba(201,168,76,0.2);background:rgba(201,168,76,0.02);transform:translateX(2px);}
+/* Panel panels */
+.panel-wrap{scrollbar-width:thin;scrollbar-color:rgba(201,168,76,0.2) transparent;}
+/* Toast */
+.toast-msg{background:linear-gradient(135deg,rgba(10,20,36,0.98),rgba(5,12,22,0.98));border:1px solid rgba(201,168,76,0.25);box-shadow:0 8px 32px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.03);}
+/* Waveform canvas */
+#waveformCanvas{border-radius:12px;}
+/* Spin wheel */
+.spin-canvas{filter:drop-shadow(0 0 20px rgba(201,168,76,0.25));}
+/* Admin tab active */
+.admin-tab-btn.active{box-shadow:0 2px 12px rgba(201,168,76,0.2);}
+/* VIP tiers premium shine */
+.vip-tier.gold{box-shadow:0 4px 24px rgba(201,168,76,0.12);}
+.vip-tier.diamond{box-shadow:0 4px 24px rgba(0,229,200,0.08);}
+/* Market cards */
+.market-card{box-shadow:0 4px 16px rgba(0,0,0,0.3);}
+.market-card:hover{box-shadow:0 8px 32px rgba(201,168,76,0.15);}
+/* Ctitle icon */
+.ctitle-icon{width:44px;height:44px;background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border:1px solid rgba(201,168,76,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 2px 8px rgba(201,168,76,0.1);}
+/* Landing hero gradient text animation */
+.landing-h1{animation:hueShift 8s ease infinite;}
+@keyframes hueShift{0%,100%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(15deg)}}
+/* Premium scrollbar */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.25);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,0.45);}
+/* Notif toast premium */
+.notif-toast-popup{backdrop-filter:blur(20px);box-shadow:0 16px 48px rgba(0,0,0,0.7),0 0 0 1px rgba(201,168,76,0.15);}
 </style>
 </head>
 <body>
@@ -826,7 +883,7 @@ body.light-mode .card{background:rgba(255,255,255,0.9);}
     <div class="landing-h1">DEV<br>UPLOADER</div>
     <div class="landing-sub">Upload asset Roblox dengan mudah, cepat, dan aman.<br>Decal, Audio, Mesh — semua dalam satu platform premium.</div>
     <div class="landing-cta-row">
-      <button class="btn-cta-primary" onclick="hideLanding()">⚡ MULAI GRATIS</button>
+      <button class="btn-cta-primary" onclick="hideLanding()">⚡ DAFTAR</button>
       <button class="btn-cta-secondary" onclick="document.getElementById('landingFeatures').scrollIntoView({behavior:'smooth'})">📖 Lihat Fitur</button>
     </div>
     <div class="landing-stats-row">
@@ -2192,6 +2249,7 @@ function showAdmin(){document.getElementById('screen-auth').style.display='none'
 function updateUI(){
   if(!currentUserData)return;
   const av=currentUserData.avatarEmoji||'⚡',coins=currentUserData.coins||0;
+  const tier=currentUserData.vipTier||'free';
   ['userAvatar','settingsAvatar'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=av;});
   document.getElementById('coinVal').textContent=coins;
   document.getElementById('ringNum').textContent=coins;
@@ -2207,7 +2265,31 @@ function updateUI(){
   const e2=document.getElementById('myRefLink');if(e2)e2.textContent=refLink;
   const e3=document.getElementById('myRefCount');if(e3)e3.textContent=currentUserData.referralCount||0;
   const e4=document.getElementById('myRefEarned');if(e4)e4.textContent=currentUserData.referralEarned||0;
+  // Always sync VIP everywhere
+  _syncVipUI(tier);
 }
+
+function _syncVipUI(tier){
+  const VIP={free:{name:'FREE',icon:'⚡',color:'var(--muted2)',cls:'free',desc:'Akun standar'},silver:{name:'SILVER',icon:'🥈',color:'#c0c0c0',cls:'silver',desc:'Member Silver aktif'},gold:{name:'GOLD',icon:'👑',color:'var(--gold2)',cls:'gold',desc:'Member Gold aktif'},diamond:{name:'DIAMOND',icon:'💎',color:'var(--teal)',cls:'diamond',desc:'Member Diamond aktif'}};
+  const t=VIP[tier]||VIP.free;
+  // VIP panel banner
+  const banner=document.getElementById('currentVipBanner');if(banner)banner.className='current-vip-banner '+t.cls;
+  const vIcon=document.getElementById('currentVipIcon');if(vIcon)vIcon.textContent=t.icon;
+  const vName=document.getElementById('currentVipName');if(vName){vName.textContent=t.icon+' '+t.name;vName.style.color=t.color;}
+  const vDesc=document.getElementById('currentVipDesc');if(vDesc)vDesc.textContent=currentUserData?.vipExpiry?'Aktif hingga: '+new Date(currentUserData.vipExpiry).toLocaleDateString('id-ID'):t.desc;
+  // Remove old VIP badge from topbar
+  document.querySelectorAll('.topbar-vip-badge').forEach(el=>el.remove());
+  if(tier!=='free'){
+    const badge=document.createElement('span');badge.className='vip-badge '+tier+' topbar-vip-badge';badge.style.cssText='display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;margin-left:6px;vertical-align:middle;';badge.textContent=t.icon+' '+tier.toUpperCase();const un=document.getElementById('userName');if(un)un.after(badge);
+  }
+  // Profile panel
+  const pb=document.getElementById('profileBadgesRow');
+  if(pb&&tier!=='free'){pb.innerHTML=`<span class="vip-badge ${tier}">${t.icon} ${tier.toUpperCase()}</span>`;}
+  // Topbar coin ring color by VIP
+  const ring=document.querySelector('.coin-ring');
+  if(ring){ring.style.borderColor=tier==='diamond'?'rgba(0,229,200,0.6)':tier==='gold'?'rgba(201,168,76,0.8)':tier==='silver'?'rgba(192,192,192,0.5)':'rgba(201,168,76,0.3)';}
+}
+
 
 // AVATAR
 const AVATARS=['⚡','🔥','💎','🎮','🚀','🌙','⭐','🎯','🦊','🐉','💀','🤖','👾','🎪','🌊','🎭'];
@@ -2568,37 +2650,39 @@ window.addCoins=async function(uid,name,waNumber){
 window.subCoins=async function(uid,name){const val=parseInt(document.getElementById('coinInp_'+uid).value);if(!val||val<=0)return toast('⚠ Masukkan jumlah!');await updateDoc(doc(db,'users',uid),{coins:increment(-val)});toast(`✓ -${val} dari ${name}`);loadAdminData();}
 window.setCoins=async function(uid,name){const val=parseInt(document.getElementById('coinInp_'+uid).value);if(isNaN(val))return toast('⚠ Masukkan jumlah!');await updateDoc(doc(db,'users',uid),{coins:val});toast(`✓ Coin ${name} = ${val}`);loadAdminData();}
 window.toggleBan=async function(uid,name,isBanned){if(!confirm(`${isBanned?'Unban':'Ban'} user ${name}?`))return;await updateDoc(doc(db,'users',uid),{isBanned:!isBanned});if(!isBanned)await addDoc(collection(db,'notifications'),{uid,title:'🚫 Akun Disuspend',message:'Akun kamu disuspend oleh admin.',icon:'🚫',read:false,createdAt:serverTimestamp()});toast(`✓ ${isBanned?'Unban':'Ban'}: ${name}`);loadAdminData();}
-window.confirmOrder=async function(orderId,uid,coins,orderCode){
-  if(!confirm(`Konfirmasi ${orderCode} & +${coins} coins?`))return;
+window.confirmOrder=async function(orderId,uid,coins,vipTierOrCode,type){
+  // Handle both old and new call signatures
+  const isVip = type==='vip';
+  const vipTier = isVip ? vipTierOrCode : null;
+  if(!confirm(`Konfirmasi order ini?`))return;
   await updateDoc(doc(db,'orders',orderId),{status:'confirmed',confirmedAt:serverTimestamp()});
-  await updateDoc(doc(db,'users',uid),{coins:increment(coins)});
-  await addDoc(collection(db,'notifications'),{uid,title:'✦ Topup Dikonfirmasi!',message:`+${coins} Coin dari order ${orderCode}`,icon:'✦',read:false,createdAt:serverTimestamp()});
-  const userSnap=await getDoc(doc(db,'users',uid));const ud=userSnap.data();
-  if(ud?.waNumber){const waMsg=encodeURIComponent(`🔔 *DEV Uploader*\n\nHai ${ud.name}! ✦ *${coins} Coin* masuk!\nOrder: ${orderCode}\nCek: devv-uploader.vercel.app 🚀`);window.open(`https://wa.me/${ud.waNumber}?text=${waMsg}`,'_blank');}
-  if(ud?.email) await sendEmailNotif(ud.email, ud.name, '✦ Topup Dikonfirmasi!', `+${coins} Coin dari order ${orderCode} telah masuk ke akun kamu!`);
-  toast(`✓ +${coins} Coins!`);loadAdminData();
+  if(isVip && vipTier){
+    const expiry=new Date(Date.now()+30*24*60*60*1000).toISOString();
+    await updateDoc(doc(db,'users',uid),{vipTier,vipExpiry:expiry});
+    // Sync if current user
+    if(currentUser&&uid===currentUser.uid){currentUserData.vipTier=vipTier;currentUserData.vipExpiry=expiry;updateUI();}
+    await addDoc(collection(db,'notifications'),{uid,title:`👑 VIP ${vipTier.toUpperCase()} Aktif!`,message:`VIP ${vipTier} kamu sudah aktif 30 hari!`,icon:'👑',read:false,createdAt:serverTimestamp()});
+  } else if(coins>0){
+    await updateDoc(doc(db,'users',uid),{coins:increment(coins)});
+    if(currentUser&&uid===currentUser.uid){currentUserData.coins=(currentUserData.coins||0)+coins;updateUI();}
+    const userSnap=await getDoc(doc(db,'users',uid));const ud=userSnap.data();
+    if(ud?.waNumber){const waMsg=encodeURIComponent(`🔔 *DEV Uploader*\n\nHai ${ud.name}! ✦ *${coins} Coin* masuk!\nCek: devv-uploader.vercel.app 🚀`);window.open(`https://wa.me/${ud.waNumber}?text=${waMsg}`,'_blank');}
+    if(ud?.email)await sendEmailNotif(ud.email,ud.name,'✦ Topup Dikonfirmasi!',`+${coins} Coin telah masuk ke akun kamu!`);
+    await addDoc(collection(db,'notifications'),{uid,title:'✅ Topup Dikonfirmasi!',message:`+${coins} Coins sudah masuk ke akun kamu!`,icon:'✅',read:false,createdAt:serverTimestamp()});
+  }
+  toast(`✓ Order dikonfirmasi!`);loadAdminData();
 }
-window.replyTicket=async function(ticketId,userUid){
-  const reply=document.getElementById('reply_'+ticketId)?.value?.trim();if(!reply)return toast('⚠ Ketik balasan!');
-  await updateDoc(doc(db,'tickets',ticketId),{status:'replied',adminReply:reply,repliedAt:serverTimestamp()});
-  await addDoc(collection(db,'notifications'),{uid:userUid,title:'💬 Ticket Dibalas!',message:reply.slice(0,80),icon:'💬',read:false,createdAt:serverTimestamp()});
-  const us=await getDoc(doc(db,'users',userUid));const uwa=us.data()?.waNumber;
-  if(uwa){const waMsg=encodeURIComponent(`💬 *Balas Ticket DEV Uploader*\n\n${reply}`);window.open(`https://wa.me/${uwa}?text=${waMsg}`,'_blank');}
+window.replyTicket=async function(id,uid){
+  // Support both old (reply_) and new (replyInp_) input IDs
+  const reply=(document.getElementById('replyInp_'+id)||document.getElementById('reply_'+id))?.value?.trim();
+  if(!reply)return toast('⚠ Ketik balasan!');
+  await updateDoc(doc(db,'tickets',id),{status:'replied',adminReply:reply,repliedAt:serverTimestamp()});
+  await addDoc(collection(db,'notifications'),{uid,title:'💬 Ticket Dibalas!',message:reply.slice(0,100),icon:'💬',read:false,createdAt:serverTimestamp()});
+  const us=await getDoc(doc(db,'users',uid));const uData=us.data();
+  if(uData?.waNumber){const waMsg=encodeURIComponent(`💬 *Balas Ticket DEV Uploader*\n\n${reply}`);window.open(`https://wa.me/${uData.waNumber}?text=${waMsg}`,'_blank');}
   toast('✓ Balasan terkirim!');loadAdminData();
 }
 window.closeTicket=async function(id){await updateDoc(doc(db,'tickets',id),{status:'closed'});toast('✓ Ticket ditutup');loadAdminData();}
-window.sendBroadcast=async function(){
-  const title=document.getElementById('broadTitle').value.trim(),msg=document.getElementById('broadMsg').value.trim(),icon=document.getElementById('broadIcon').value||'📢';
-  if(!title||!msg)return toast('⚠ Isi title dan pesan!');if(!confirm('Broadcast ke semua user?'))return;
-  const btn=document.getElementById('btnBroadcast');btn.disabled=true;btn.textContent='Mengirim...';
-  try{const us=await getDocs(collection(db,'users'));const batch=writeBatch(db);us.docs.forEach(d=>{if(d.data().email===ADMIN_EMAIL)return;const ref=doc(collection(db,'notifications'));batch.set(ref,{uid:d.id,title,message:msg,icon,read:false,createdAt:serverTimestamp()});});await batch.commit();document.getElementById('broadTitle').value='';document.getElementById('broadMsg').value='';toast(`✓ Broadcast ke ${us.size} user!`);}catch(e){toast('⚠ Gagal: '+e.message);}
-  btn.disabled=false;btn.textContent='📢 KIRIM BROADCAST';
-}
-window.createPromo=async function(){
-  const code=document.getElementById('promoCode').value.trim().toUpperCase(),bonus=parseInt(document.getElementById('promoBonusCoin').value),maxUses=parseInt(document.getElementById('promoMaxUses').value)||null;
-  if(!code)return toast('⚠ Masukkan kode!');if(!bonus||bonus<=0)return toast('⚠ Masukkan bonus!');
-  try{await addDoc(collection(db,'promos'),{code,coinBonus:bonus,maxUses,usedCount:0,active:true,createdAt:serverTimestamp()});document.getElementById('promoCode').value='';document.getElementById('promoBonusCoin').value='';document.getElementById('promoMaxUses').value='';toast(`✓ Promo ${code} dibuat!`);loadAdminData();}catch(e){toast('⚠ Gagal: '+e.message);}
-}
 window.togglePromo=async function(id,active){await updateDoc(doc(db,'promos',id),{active:!active});toast(`✓ Promo ${active?'dinonaktifkan':'diaktifkan'}`);loadAdminData();}
 
 // UTILS
@@ -3021,26 +3105,16 @@ const VIP_TIERS = {
 };
 
 function loadVipStatus() {
-  if (!currentUserData) return;
-  const tier = currentUserData.vipTier || 'free';
-  const t = VIP_TIERS[tier] || VIP_TIERS.free;
-  const banner = document.getElementById('currentVipBanner');
-  const icon = document.getElementById('currentVipIcon');
-  const name = document.getElementById('currentVipName');
-  const desc = document.getElementById('currentVipDesc');
-  if (banner) { banner.className = 'current-vip-banner ' + tier; }
-  if (icon) icon.textContent = t.icon;
-  if (name) { name.textContent = t.icon + ' ' + t.name; name.style.color = t.color; }
-  if (desc) desc.textContent = currentUserData.vipExpiry ? `Aktif hingga: ${new Date(currentUserData.vipExpiry).toLocaleDateString('id-ID')}` : t.desc;
-  // Show VIP badge in topbar
-  const existingBadge = document.querySelector('.topbar-vip-badge');
-  if (existingBadge) existingBadge.remove();
-  if (tier !== 'free') {
-    const badge = document.createElement('div');
-    badge.className = `vip-badge ${tier} topbar-vip-badge`;
-    badge.textContent = t.icon + ' ' + tier.toUpperCase();
-    document.querySelector('.user-name')?.after(badge);
-  }
+  if(!currentUserData)return;
+  // Re-read from Firestore to ensure fresh data
+  getDoc(doc(db,'users',currentUser.uid)).then(snap=>{
+    if(snap.exists()){
+      const fresh=snap.data();
+      currentUserData.vipTier=fresh.vipTier||'free';
+      currentUserData.vipExpiry=fresh.vipExpiry||null;
+    }
+    _syncVipUI(currentUserData.vipTier||'free');
+  }).catch(()=>_syncVipUI(currentUserData.vipTier||'free'));
 }
 
 window.subscribeVip = async function(tier, price) {
@@ -3406,37 +3480,6 @@ window.filterAdminOrders=function(){renderAdminOrders(document.getElementById('a
 window.filterAdminTickets=function(){renderAdminTickets(document.getElementById('adminTicketFilter')?.value||'all');}
 window.filterAdminUploads=function(){renderAdminUploads(document.getElementById('adminUploadSearch')?.value||'',document.getElementById('adminUploadTypeFilter')?.value||'all');}
 
-window.replyTicket=async function(id,uid){
-  const inp=document.getElementById('replyInp_'+id);const reply=inp?.value?.trim();
-  if(!reply)return toast('⚠ Ketik balasan dulu!');
-  await updateDoc(doc(db,'tickets',id),{adminReply:reply,status:'replied'});
-  await addDoc(collection(db,'notifications'),{uid,title:'💬 Ticket Dibalas!',message:`Admin membalas: "${reply.substring(0,60)}..."`,icon:'💬',read:false,createdAt:serverTimestamp()});
-  toast('✓ Balasan terkirim!');loadAdminData();
-  showNotifToast('💬 Balas Terkirim!','Ticket berhasil dibalas ke user.');
-}
-
-window.setVipAdmin=async function(uid,name){
-  const tier=prompt(`Set VIP untuk ${name}:\nfree / silver / gold / diamond`,'free');
-  if(!tier||!['free','silver','gold','diamond'].includes(tier))return toast('⚠ Tier tidak valid!');
-  const expiry=tier!=='free'?new Date(Date.now()+30*24*60*60*1000).toISOString():null;
-  await updateDoc(doc(db,'users',uid),{vipTier:tier,vipExpiry:expiry});
-  await addDoc(collection(db,'notifications'),{uid,title:`👑 VIP ${tier.toUpperCase()} Aktif!`,message:`Admin mengaktifkan VIP ${tier} untuk akun kamu!`,icon:'👑',read:false,createdAt:serverTimestamp()});
-  toast(`✓ VIP ${tier} diset untuk ${name}`);loadAdminData();
-}
-
-window.confirmOrder=async function(orderId,uid,coins,vipTier,type){
-  if(!confirm('Konfirmasi order ini?'))return;
-  await updateDoc(doc(db,'orders',orderId),{status:'confirmed',confirmedAt:serverTimestamp()});
-  if(type==='vip'&&vipTier){
-    const expiry=new Date(Date.now()+30*24*60*60*1000).toISOString();
-    await updateDoc(doc(db,'users',uid),{vipTier,vipExpiry:expiry});
-    await addDoc(collection(db,'notifications'),{uid,title:`👑 VIP ${vipTier.toUpperCase()} Aktif!`,message:`VIP ${vipTier} kamu sudah aktif selama 30 hari!`,icon:'👑',read:false,createdAt:serverTimestamp()});
-  } else if(coins>0){
-    await updateDoc(doc(db,'users',uid),{coins:increment(coins)});
-    await addDoc(collection(db,'notifications'),{uid,title:'✅ Topup Dikonfirmasi!',message:`+${coins} Coins sudah masuk ke akun kamu!`,icon:'✅',read:false,createdAt:serverTimestamp()});
-  }
-  toast('✓ Order dikonfirmasi!');loadAdminData();
-}
 window.rejectOrder=async function(orderId,uid){
   const reason=prompt('Alasan penolakan (opsional):','');
   await updateDoc(doc(db,'orders',orderId),{status:'rejected',adminNote:reason||'',rejectedAt:serverTimestamp()});
