@@ -1,753 +1,1481 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SOUNDFORGE — Audio Modifier</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPMxPRIME BYPASS — Roblox Audio Processor</title>
+<meta name="description" content="Upload, pitch-shift, speed-change and export audio for Roblox. Client-side processing with independent pitch & speed control.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♫</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- lamejs for MP3 encoding -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{--bg:#020509;--cyan:#00f0ff;--cyan2:#00b8cc;--green:#00ff88;--orange:#ff6b00;--gold:#ffd700;--text:#c8e8f0;--muted:#3a6070;--muted2:#5a8090;--rim:rgba(0,240,255,.1);--rim2:rgba(0,240,255,.22);}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;}
-.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,240,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.022) 1px,transparent 1px);background-size:48px 48px;animation:gd 25s linear infinite;pointer-events:none;}
-@keyframes gd{to{background-position:48px 48px}}
-.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 55% 40% at 20% 50%,rgba(0,240,255,.05) 0%,transparent 70%),radial-gradient(ellipse 35% 55% at 80% 30%,rgba(0,255,136,.03) 0%,transparent 70%);}
-.scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);}
-#app{position:relative;z-index:2;height:100vh;display:flex;flex-direction:column;}
-/* HEADER */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-bottom:1px solid var(--rim);background:rgba(2,5,9,.92);backdrop-filter:blur(16px);flex-shrink:0;}
-.logo{font-family:'Orbitron',monospace;font-size:19px;font-weight:900;letter-spacing:5px;background:linear-gradient(90deg,var(--cyan),var(--green),var(--cyan));background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:ls 4s linear infinite;}
-@keyframes ls{to{background-position:200%}}
-.logo-sub{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--muted2);letter-spacing:3px;}
-.hdr-pills{display:flex;gap:8px;}
-.pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid var(--rim);border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted2);}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:background .3s,box-shadow .3s;}
-.dot.ok{background:var(--green);box-shadow:0 0 7px var(--green);}
-.dot.pl{background:#ff2244;box-shadow:0 0 7px #ff2244;animation:blk .8s infinite;}
-@keyframes blk{50%{opacity:.2}}
-/* MAIN */
-.main{display:grid;grid-template-columns:255px 1fr 235px;flex:1;overflow:hidden;min-height:0;}
-/* SIDE PANELS */
-.pl,.pr{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--rim) transparent;}
-.pl{border-right:1px solid var(--rim);}
-.pr{border-left:1px solid var(--rim);}
-.ps{padding:11px 12px;border-bottom:1px solid var(--rim);}
-.ptitle{font-family:'Share Tech Mono',monospace;font-size:7px;letter-spacing:3px;color:var(--cyan2);text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
-.ptitle::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--rim2),transparent);}
-/* UPLOAD */
-.upzone{border:1px dashed rgba(0,240,255,.16);border-radius:9px;padding:16px 10px;text-align:center;cursor:pointer;position:relative;transition:all .25s;}
-.upzone:hover,.upzone.dv{border-color:var(--cyan);background:rgba(0,240,255,.04);box-shadow:0 0 14px rgba(0,240,255,.07);}
-.upzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.up-txt{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted2);line-height:1.7;}
-#fileInfo{display:none;padding:7px;background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.14);border-radius:7px;margin-top:7px;}
-.fnm{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--green);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.fmeta{font-size:7px;color:var(--muted);margin-top:2px;}
-/* CONTROLS */
-.cr{margin-bottom:9px;}
-.cl{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--muted2);letter-spacing:1px;margin-bottom:4px;}
-.cv{color:var(--cyan);font-weight:700;}
-input[type=range]{width:100%;-webkit-appearance:none;height:3px;border-radius:2px;outline:none;cursor:pointer;touch-action:pan-y;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.8),0 0 8px currentColor;transition:transform .1s;}
-input[type=range]::-webkit-slider-thumb:active{transform:scale(1.3);}
-.sc{--p:50%;background:linear-gradient(90deg,var(--cyan) var(--p),rgba(0,240,255,.1) var(--p));}
-.sc::-webkit-slider-thumb{background:var(--cyan);}
-.sg{--p:0%;background:linear-gradient(90deg,var(--green) var(--p),rgba(0,255,136,.1) var(--p));}
-.sg::-webkit-slider-thumb{background:var(--green);}
-.so{--p:0%;background:linear-gradient(90deg,var(--orange) var(--p),rgba(255,107,0,.1) var(--p));}
-.so::-webkit-slider-thumb{background:var(--orange);}
-.sgo{--p:0%;background:linear-gradient(90deg,var(--gold) var(--p),rgba(255,215,0,.1) var(--p));}
-.sgo::-webkit-slider-thumb{background:var(--gold);}
-/* CHIPS */
-.cg{display:flex;flex-wrap:wrap;gap:4px;}
-.chip{padding:4px 8px;border:1px solid var(--rim);border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--muted2);cursor:pointer;transition:border-color .12s,color .12s,background .12s;user-select:none;}
-.chip.ac{border-color:var(--cyan);background:rgba(0,240,255,.07);color:var(--cyan);}
-.chip.ag{border-color:var(--green);background:rgba(0,255,136,.05);color:var(--green);}
-.chip.ao{border-color:var(--orange);background:rgba(255,107,0,.05);color:var(--orange);}
-.sel-ctrl{width:100%;padding:6px 8px;border:1px solid var(--rim);border-radius:7px;background:rgba(0,240,255,.02);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:8px;outline:none;cursor:pointer;}
-.sel-ctrl:focus{border-color:var(--cyan);}
-option{background:#020509;}
-.rand-btn{width:100%;margin-top:6px;padding:7px;border:1px solid rgba(255,107,0,.25);border-radius:7px;background:rgba(255,107,0,.04);color:var(--orange);font-family:'Share Tech Mono',monospace;font-size:8px;cursor:pointer;letter-spacing:2px;transition:all .2s;}
-.rand-btn:hover{border-color:var(--orange);background:rgba(255,107,0,.09);}
-/* CENTER */
-.pc{display:flex;flex-direction:column;overflow:hidden;}
-.vtabs{display:flex;border-bottom:1px solid var(--rim);flex-shrink:0;background:rgba(0,0,0,.2);}
-.vt{padding:7px 13px;font-family:'Share Tech Mono',monospace;font-size:7px;letter-spacing:2px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;}
-.vt:hover{color:var(--muted2);}
-.vt.act{color:var(--cyan);border-bottom-color:var(--cyan);}
-.cw{flex:1;position:relative;overflow:hidden;min-height:0;background:radial-gradient(ellipse at center,rgba(0,15,25,.6) 0%,var(--bg) 100%);}
-#vc{display:block;width:100%;height:100%;}
-.ibar{display:flex;border-top:1px solid var(--rim);flex-shrink:0;background:rgba(0,0,0,.3);}
-.is{flex:1;padding:6px;text-align:center;border-right:1px solid var(--rim);}
-.is:last-child{border-right:none;}
-.isv{font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);}
-.isl{font-family:'Share Tech Mono',monospace;font-size:6px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
-/* PLAYBACK */
-.pbar{border-top:1px solid var(--rim);padding:10px 14px;display:flex;align-items:center;gap:9px;flex-shrink:0;background:rgba(2,5,9,.95);}
-.bp{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:#010a0d;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;box-shadow:0 0 12px rgba(0,240,255,.25);}
-.bp:hover{transform:scale(1.08);box-shadow:0 0 20px rgba(0,240,255,.45);}
-.bp:disabled{opacity:.3;cursor:not-allowed;transform:none;}
-.bsm{width:28px;height:28px;border-radius:6px;border:1px solid var(--rim);background:transparent;color:var(--muted2);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
-.bsm:hover,.bsm.lp{border-color:var(--cyan);color:var(--cyan);}
-.pw{flex:1;}
-.pts{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--muted);margin-bottom:4px;}
-.ptr{height:4px;border-radius:2px;background:rgba(0,240,255,.07);cursor:pointer;overflow:hidden;}
-.ptf{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--green));width:0%;will-change:width;}
-.vw{display:flex;align-items:center;gap:5px;flex-shrink:0;}
-/* SPECTRUM MINI */
-.spec-mini{height:68px;display:flex;align-items:flex-end;gap:1px;}
-.smb{flex:1;border-radius:1px 1px 0 0;min-height:2px;will-change:height;transition:height 0.05s linear;}
-/* RIGHT */
-.fp-box{padding:9px;background:rgba(255,107,0,.04);border:1px solid rgba(255,107,0,.13);border-radius:8px;margin-bottom:7px;}
-.fp-hash{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--orange);word-break:break-all;line-height:1.6;letter-spacing:1px;}
-.out-box{padding:9px;border-radius:8px;margin-bottom:7px;}
-.out-box.g{background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.16);}
-.out-box.c{background:rgba(0,240,255,.03);border:1px solid rgba(0,240,255,.14);}
-.out-v{font-family:'Orbitron',monospace;font-size:17px;}
-.out-l{font-family:'Share Tech Mono',monospace;font-size:7px;letter-spacing:1.5px;margin-bottom:2px;}
-.out-s{font-size:7px;color:var(--muted);font-family:'Share Tech Mono',monospace;margin-top:2px;}
-/* EXPORT */
-.fmt-row{display:flex;gap:4px;margin-bottom:7px;}
-.fc{flex:1;padding:5px;text-align:center;border:1px solid var(--rim);border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted);cursor:pointer;transition:all .12s;}
-.fc.sel{border-color:var(--cyan);background:rgba(0,240,255,.07);color:var(--cyan);}
-.br-row{display:flex;gap:3px;margin-bottom:7px;flex-wrap:wrap;}
-.bc{padding:3px 7px;border:1px solid var(--rim);border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--muted);cursor:pointer;transition:all .12s;}
-.bc.sel{border-color:var(--green);background:rgba(0,255,136,.05);color:var(--green);}
-.bex{width:100%;padding:11px;border:none;border-radius:8px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;transition:all .2s;margin-bottom:5px;position:relative;overflow:hidden;}
-.bex.m{background:linear-gradient(135deg,#00b8cc,#00f0ff,#00ffcc);color:#010a0d;box-shadow:0 3px 16px rgba(0,240,255,.28);}
-.bex.m:hover{box-shadow:0 5px 24px rgba(0,240,255,.48);transform:translateY(-1px);}
-.bex.s{background:rgba(0,240,255,.04);border:1px solid rgba(0,240,255,.2);color:var(--cyan);}
-.bex.s:hover{background:rgba(0,240,255,.09);}
-.bex:disabled{opacity:.3;cursor:not-allowed;transform:none!important;}
-.ep{height:3px;border-radius:2px;background:rgba(0,240,255,.07);margin-top:4px;overflow:hidden;display:none;}
-.epf{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));width:0%;transition:width .15s;}
-.tips{padding:9px;background:rgba(255,215,0,.02);border:1px solid rgba(255,215,0,.09);border-radius:8px;}
-.ti{display:flex;gap:5px;margin-bottom:4px;font-family:'Share Tech Mono',monospace;font-size:7px;line-height:1.5;color:var(--muted2);}
-.tico{color:var(--gold);flex-shrink:0;}
-/* TOAST */
-.toast{position:fixed;bottom:65px;left:50%;transform:translateX(-50%) translateY(14px);padding:7px 16px;border-radius:16px;font-family:'Share Tech Mono',monospace;font-size:9px;background:rgba(0,240,255,.1);border:1px solid rgba(0,240,255,.22);color:var(--cyan);z-index:999;opacity:0;transition:all .22s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.5);backdrop-filter:blur(12px);}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-@keyframes fph{0%,100%{color:var(--orange)}50%{color:var(--gold)}}
-.fph{animation:fph .3s ease;}
+:root{--accent:#00e5ff;--accent2:#9c6cff;--bg:#06060c;--surface:#0e0e18;--surface2:#161624;--border:#252538;--text:#e0e0ec;--dim:#55557a;--success:#00e676;--warn:#ffab40;--danger:#ff5252}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+input[type="range"]{-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;width:100%}
+input[type="range"]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--border)}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);margin-top:-6px;box-shadow:0 0 10px var(--accent)}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px}
+.app{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 20px 40px}
+.header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 0;margin-bottom:20px;border-bottom:1px solid var(--border);backdrop-filter:blur(16px);background:rgba(6,6,12,.8)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:16px;font-weight:800}
+.logo-text{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;letter-spacing:1px}
+.logo-text .dot{color:var(--accent)}
+.logo-sub{font-size:9px;color:var(--dim);letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-left:8px}
+.badge{font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace;padding:4px 10px;background:var(--surface2);border-radius:4px;border:1px solid var(--border)}
+.badge-server{color:var(--success);border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.06)}
+.badge-client{color:var(--accent);border-color:rgba(0,229,255,.3);background:rgba(0,229,255,.06)}
+.badge-vip{color:#ffd700;border-color:rgba(255,215,0,.3);background:rgba(255,215,0,.06)}
+.badge-admin{color:var(--danger);border-color:rgba(255,82,82,.3);background:rgba(255,82,82,.06)}
+.dropzone{border:2px dashed var(--border);border-radius:14px;text-align:center;cursor:pointer;transition:all .3s;background:var(--surface);margin-bottom:16px}
+.dropzone.empty{padding:52px 20px}
+.dropzone.has-files{padding:16px}
+.dropzone.dragover{border-color:var(--accent);background:rgba(0,229,255,.04)}
+.dropzone .icon{font-size:40px;margin-bottom:10px}
+.dropzone .title{font-size:17px;font-weight:600;margin-bottom:4px}
+.dropzone .sub{font-size:12px;color:var(--dim)}
+.tier-warn{background:rgba(255,171,64,.08);border:1px solid rgba(255,171,64,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:11px;color:var(--warn);font-family:'JetBrains Mono',monospace;line-height:1.5}
+.tier-warn b{color:var(--warn)}
+.tier-vip{background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:11px;color:#ffd700;font-family:'JetBrains Mono',monospace;line-height:1.5}
+.file-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.file-tab{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:8px;cursor:pointer;background:var(--surface);border:1px solid var(--border);font-size:11px;font-family:'JetBrains Mono',monospace;transition:all .2s;animation:slideUp .3s ease-out both}
+.file-tab.active{border-color:var(--accent);background:rgba(0,229,255,.07)}
+.file-tab .fname{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dim)}
+.file-tab.active .fname{color:var(--text)}
+.file-tab .fdur{color:var(--dim);font-size:9px}
+.file-tab .fclose{background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;padding:0 2px;line-height:1}
+.file-tab .fclose:hover{color:var(--danger)}
+.file-tab.broken{border-color:rgba(255,171,64,.4)}
+.wave-panel{background:var(--surface);border-radius:14px;padding:16px;border:1px solid var(--border);margin-bottom:16px}
+.wave-panel .info-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);flex-wrap:wrap;gap:4px}
+.wave-panel .info-row .fname{color:var(--text)}
+#waveCanvas{width:100%;height:100px;border-radius:8px;display:block;cursor:pointer}
+.transport{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px}
+.btn-transport{width:38px;height:38px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:15px;display:grid;place-items:center;transition:all .15s}
+.btn-transport:hover{border-color:var(--accent)}
+.btn-play{width:52px;height:52px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;cursor:pointer;font-size:20px;display:grid;place-items:center;box-shadow:0 0 24px rgba(0,229,255,.3);transition:transform .15s}
+.btn-play:hover{transform:scale(1.08)}
+.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:700px){.main-grid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border-radius:14px;padding:20px;border:1px solid var(--border)}
+.panel-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:18px}
+.knobs-row{display:flex;justify-content:space-around;margin-bottom:24px}
+.knob-wrap{text-align:center;user-select:none}
+.knob-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--dim);margin-bottom:8px;font-family:'JetBrains Mono',monospace}
+.knob-ring{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;margin:0 auto;cursor:ns-resize}
+.knob-inner{width:56px;height:56px;border-radius:50%;background:var(--surface);position:relative}
+.knob-needle{width:2px;height:18px;border-radius:1px;position:absolute;top:6px;left:50%;margin-left:-1px;transform-origin:bottom center}
+.knob-value{margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.slider-row{margin-bottom:14px}
+.slider-header{display:flex;justify-content:space-between;margin-bottom:5px}
+.slider-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);font-family:'JetBrains Mono',monospace}
+.slider-val{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.slider-track{position:relative;height:4px;background:var(--border);border-radius:2px}
+.slider-fill{position:absolute;left:0;top:0;height:100%;border-radius:2px;transition:width .08s}
+.info-strip{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.2);border-radius:8px;padding:8px 12px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent)}
+.limit-strip{background:rgba(255,82,82,.06);border:1px solid rgba(255,82,82,.2);border-radius:8px;padding:8px 12px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--danger)}
+.auto-section{background:var(--surface);border-radius:14px;padding:16px 20px;border:1px solid var(--border);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.auto-label{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.5px}
+.auto-desc{font-size:11px;color:var(--dim)}
+.auto-modes{display:flex;gap:6px;flex-wrap:wrap}
+.auto-btn{padding:8px 14px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;transition:all .2s;white-space:nowrap}
+.auto-btn:hover{border-color:var(--accent)}
+.auto-btn.active{border-color:var(--warn);background:rgba(255,171,64,.1);color:var(--warn);box-shadow:0 0 12px rgba(255,171,64,.15)}
+.auto-btn .detail{font-size:8px;color:var(--dim);margin-top:2px}
+.auto-btn.active .detail{color:rgba(255,171,64,.6)}
+.auto-featured{background:linear-gradient(135deg,rgba(255,171,64,.15),rgba(156,108,255,.15));border-color:var(--warn);color:var(--warn);font-size:12px;padding:10px 18px}
+.auto-featured:hover{box-shadow:0 0 16px rgba(255,171,64,.25);border-color:var(--warn)}
+.auto-featured.active{background:linear-gradient(135deg,rgba(255,171,64,.25),rgba(156,108,255,.25));box-shadow:0 0 20px rgba(255,171,64,.3)}
+.presets-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.preset-btn{padding:10px 6px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;transition:all .2s;text-align:center}
+.preset-btn:hover{border-color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:rgba(0,229,255,.1);color:var(--accent)}
+.preset-btn .preset-detail{font-size:8px;color:var(--dim);margin-top:3px}
+.format-selector{display:flex;gap:6px;margin-bottom:12px}
+.format-btn{flex:1;padding:10px 8px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--dim);font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:700;text-align:center;transition:all .2s}
+.format-btn:hover{border-color:var(--accent);color:var(--text)}
+.format-btn.active{border-color:var(--accent);background:rgba(0,229,255,.1);color:var(--accent)}
+.format-btn .fmt-sub{font-size:8px;font-weight:400;margin-top:2px;color:var(--dim)}
+.format-btn.active .fmt-sub{color:rgba(0,229,255,.5)}
+.btn-export{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;cursor:pointer;font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;box-shadow:0 4px 20px rgba(0,229,255,.25);transition:all .2s;margin-bottom:8px}
+.btn-export:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(0,229,255,.35)}
+.btn-export:disabled{opacity:.5;cursor:wait;transform:none}
+.btn-export-all{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace;transition:all .2s;margin-bottom:8px}
+.btn-export-all:hover{border-color:var(--accent)}
+.btn-export-all:disabled{opacity:.5;cursor:wait}
+.export-info{font-size:9px;color:var(--dim);font-family:'JetBrains Mono',monospace;line-height:1.6}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:500px){.stats-row{grid-template-columns:1fr 1fr}}
+.stat-card{background:var(--surface);border-radius:10px;padding:12px;border:1px solid var(--border);text-align:center}
+.stat-label{font-size:8px;letter-spacing:2px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-bottom:4px}
+.stat-value{font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.footer{text-align:center;padding:28px;font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace;letter-spacing:1px}
+.footer .dot{color:var(--accent)}
+.hero{text-align:center;padding:40px 0 20px;animation:fadeIn .6s}
+.hero h1{font-size:32px;font-weight:800;margin-bottom:8px}
+.hero h1 .accent{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--dim);font-size:14px;max-width:520px;margin:0 auto}
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:700px){.features{grid-template-columns:1fr 1fr}}
+.feat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;animation:slideUp .4s ease-out both}
+.feat .feat-icon{font-size:22px;margin-bottom:8px}
+.feat .feat-title{font-size:11px;font-weight:700;margin-bottom:4px;font-family:'JetBrains Mono',monospace;letter-spacing:1px}
+.feat .feat-desc{font-size:10px;color:var(--dim)}
+.progress-overlay{position:fixed;inset:0;background:rgba(6,6,12,.85);z-index:200;display:none;place-items:center;backdrop-filter:blur(8px)}
+.progress-overlay.show{display:grid}
+.progress-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px 40px;text-align:center;max-width:400px;width:90%}
+.progress-box .prog-icon{font-size:36px;margin-bottom:12px}
+.progress-box .prog-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.progress-box .prog-sub{font-size:12px;color:var(--dim);margin-bottom:16px}
+.prog-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .3s;width:0%}
+.prog-status{font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-top:8px}
+.toast-stack{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;max-width:340px;pointer-events:none}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:12px;animation:slideIn .3s ease-out;box-shadow:0 4px 20px rgba(0,0,0,.4);pointer-events:auto}
+.toast.error{border-color:var(--danger);background:rgba(255,82,82,.08);color:#ffaaaa}
+.toast.warn{border-color:var(--warn);background:rgba(255,171,64,.08);color:#ffd699}
+.toast.success{border-color:var(--success);background:rgba(0,230,118,.08);color:#aaffcc}
+.toast .t-title{font-weight:700;margin-bottom:2px;font-family:'JetBrains Mono',monospace;font-size:11px}
+.toast .t-body{color:var(--dim);font-size:11px;line-height:1.4}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(255,171,64,.2)}50%{box-shadow:0 0 16px rgba(255,171,64,.4)}}
+.auto-active-glow{animation:glow 2s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinning{animation:spin 1s linear infinite;display:inline-block}
+
+/* ===== GATE OVERLAY ===== */
+.gate-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+.gate-overlay.hidden{display:none}
+.gate-box{max-width:480px;width:100%;text-align:center;animation:fadeIn .6s}
+.gate-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:32px}
+.gate-logo .logo-icon{width:48px;height:48px;border-radius:12px;font-size:22px}
+.gate-title{font-size:26px;font-weight:800;margin-bottom:8px}
+.gate-title .accent{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.gate-sub{color:var(--dim);font-size:13px;margin-bottom:32px;line-height:1.6}
+.gate-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.gate-step{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:12px;background:var(--surface);border:1px solid var(--border);transition:all .3s;text-align:left}
+.gate-step.done{border-color:var(--success);background:rgba(0,230,118,.06)}
+.gate-step-icon{font-size:28px;flex-shrink:0}
+.gate-step-info{flex:1}
+.gate-step-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.gate-step-desc{font-size:11px;color:var(--dim)}
+.gate-step-btn{padding:8px 18px;border-radius:8px;border:none;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;text-decoration:none;display:inline-block;flex-shrink:0}
+.gate-step-btn.yt{background:#5865F2;color:#fff}
+.gate-step-btn.yt:hover{background:#4752c4;box-shadow:0 0 12px rgba(88,101,242,.4)}
+.gate-step-btn.tt{background:#000;color:#fff;border:1px solid #333}
+.gate-step-btn.tt:hover{background:#1a1a1a}
+.gate-step .check{display:none;color:var(--success);font-size:20px;font-weight:700;flex-shrink:0}
+.gate-step.done .check{display:block}
+.gate-step.done .gate-step-btn{display:none}
+.gate-continue{width:100%;padding:14px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;cursor:pointer;transition:all .3s}
+.gate-continue.locked{background:var(--surface2);color:var(--dim);cursor:not-allowed;border:1px solid var(--border)}
+.gate-continue.unlocked{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 24px rgba(0,229,255,.3)}
+.gate-continue.unlocked:hover{transform:translateY(-2px);box-shadow:0 6px 32px rgba(0,229,255,.4)}
+.gate-note{font-size:9px;color:var(--dim);margin-top:16px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+
+/* ===== LIMIT OVERLAY ===== */
+.limit-overlay{position:fixed;inset:0;z-index:8000;background:rgba(6,6,12,.95);display:none;place-items:center;backdrop-filter:blur(12px)}
+.limit-overlay.show{display:grid}
+.limit-box{background:var(--surface);border:1px solid rgba(255,82,82,.4);border-radius:20px;padding:40px;text-align:center;max-width:420px;width:90%}
+.limit-box .limit-icon{font-size:48px;margin-bottom:16px}
+.limit-box h2{font-size:22px;font-weight:800;margin-bottom:8px;color:var(--danger)}
+.limit-box p{color:var(--dim);font-size:13px;margin-bottom:20px;line-height:1.6}
+.limit-box .limit-vip-btn{width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;font-weight:700;font-size:13px;font-family:'JetBrains Mono',monospace;cursor:pointer}
+
+/* ===== ADMIN PANEL ===== */
+.admin-overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.97);display:none;backdrop-filter:blur(16px)}
+.admin-overlay.show{display:flex}
+.admin-login{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px}
+.admin-login-box{background:#0a0a12;border:1px solid rgba(255,82,82,.3);border-radius:20px;padding:40px;width:100%;max-width:400px;text-align:center}
+.admin-login-box .admin-logo{font-size:48px;margin-bottom:16px}
+.admin-login-box h2{font-size:20px;font-weight:800;margin-bottom:4px;color:var(--danger);font-family:'JetBrains Mono',monospace;letter-spacing:2px}
+.admin-login-box .admin-sub{font-size:11px;color:var(--dim);margin-bottom:28px;font-family:'JetBrains Mono',monospace}
+.admin-input{width:100%;padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:#111120;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:12px;outline:none;transition:border-color .2s}
+.admin-input:focus{border-color:var(--danger)}
+.admin-login-btn{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--danger),#c0392b);color:#fff;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .2s;margin-bottom:12px}
+.admin-login-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(255,82,82,.3)}
+.admin-close-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px}
+.admin-close-btn:hover{border-color:var(--danger);color:var(--danger)}
+.admin-panel{width:100%;display:none;flex-direction:column}
+.admin-panel.show{display:flex}
+.admin-sidebar{width:220px;background:#080810;border-right:1px solid rgba(255,82,82,.15);display:flex;flex-direction:column;flex-shrink:0}
+.admin-main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.admin-content{flex:1;padding:24px}
+.admin-header-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,82,82,.15);background:#060608}
+.admin-header-bar .admin-title{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;letter-spacing:2px;color:var(--danger)}
+.admin-header-bar .admin-user{font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace}
+.admin-sidebar-logo{padding:20px;border-bottom:1px solid rgba(255,82,82,.15)}
+.admin-sidebar-logo .brand{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--danger);letter-spacing:1px}
+.admin-sidebar-logo .sub{font-size:9px;color:var(--dim);font-family:'JetBrains Mono',monospace;letter-spacing:2px;margin-top:2px}
+.admin-nav{flex:1;padding:12px 0}
+.admin-nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11px;transition:all .2s;border-left:2px solid transparent}
+.admin-nav-item:hover{color:var(--text);background:rgba(255,82,82,.05)}
+.admin-nav-item.active{color:var(--danger);background:rgba(255,82,82,.08);border-left-color:var(--danger)}
+.admin-nav-item .nav-icon{font-size:14px;width:18px;text-align:center}
+.admin-logout{padding:16px 20px;border-top:1px solid rgba(255,82,82,.15)}
+.admin-logout button{width:100%;padding:8px;border-radius:8px;background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:var(--danger);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer}
+.admin-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:900px){.admin-stats-grid{grid-template-columns:1fr 1fr}}
+.admin-stat{background:#0a0a14;border:1px solid var(--border);border-radius:12px;padding:16px}
+.admin-stat .as-label{font-size:9px;letter-spacing:2px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+.admin-stat .as-val{font-size:24px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.admin-stat .as-sub{font-size:10px;color:var(--dim);margin-top:4px}
+.admin-stat.danger .as-val{color:var(--danger)}
+.admin-stat.success .as-val{color:var(--success)}
+.admin-stat.warn .as-val{color:var(--warn)}
+.admin-stat.accent .as-val{color:var(--accent)}
+.admin-section{background:#0a0a14;border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden}
+.admin-section-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.admin-section-header .sec-title{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text)}
+.admin-section-header .sec-actions{display:flex;gap:8px;align-items:center}
+.admin-page{display:none}
+.admin-page.active{display:block}
+.admin-form-row{display:flex;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.03);align-items:center}
+.admin-form-row:last-child{border-bottom:none}
+.admin-form-group{flex:1}
+.admin-form-group label{display:block;font-size:9px;color:var(--dim);font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;margin-bottom:5px}
+.admin-inp{width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#111120;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .2s}
+.admin-inp:focus{border-color:var(--accent)}
+.admin-inp-sm{padding:6px 10px;font-size:11px}
+.admin-select{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#111120;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;cursor:pointer}
+.admin-table{width:100%;border-collapse:collapse}
+.admin-table th{padding:10px 14px;font-size:9px;letter-spacing:2px;color:var(--dim);font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--border);text-align:left;font-weight:600}
+.admin-table td{padding:10px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:none}
+.admin-table tr:hover td{background:rgba(255,255,255,.02)}
+.role-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:1px}
+.role-admin{background:rgba(255,82,82,.2);color:var(--danger);border:1px solid rgba(255,82,82,.3)}
+.role-vip{background:rgba(255,215,0,.15);color:#ffd700;border:1px solid rgba(255,215,0,.3)}
+.role-user{background:rgba(85,85,122,.2);color:var(--dim);border:1px solid rgba(85,85,122,.3)}
+.role-banned{background:rgba(255,82,82,.1);color:#ff8888;border:1px solid rgba(255,82,82,.2);text-decoration:line-through}
+.abtn{padding:5px 12px;border-radius:6px;border:none;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.5px}
+.abtn-danger{background:rgba(255,82,82,.15);color:var(--danger);border:1px solid rgba(255,82,82,.3)}
+.abtn-danger:hover{background:rgba(255,82,82,.25)}
+.abtn-success{background:rgba(0,230,118,.15);color:var(--success);border:1px solid rgba(0,230,118,.3)}
+.abtn-success:hover{background:rgba(0,230,118,.25)}
+.abtn-warn{background:rgba(255,171,64,.15);color:var(--warn);border:1px solid rgba(255,171,64,.3)}
+.abtn-warn:hover{background:rgba(255,171,64,.25)}
+.abtn-accent{background:rgba(0,229,255,.15);color:var(--accent);border:1px solid rgba(0,229,255,.3)}
+.abtn-accent:hover{background:rgba(0,229,255,.25)}
+.abtn-vip{background:rgba(255,215,0,.15);color:#ffd700;border:1px solid rgba(255,215,0,.3)}
+.abtn-vip:hover{background:rgba(255,215,0,.25)}
+.abtn-lg{padding:9px 20px;font-size:11px;border-radius:8px}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:11px;cursor:pointer;transition:.3s}
+.toggle input:checked+.toggle-track{background:var(--accent)}
+.toggle-track::after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.3s}
+.toggle input:checked+.toggle-track::after{transform:translateX(18px)}
+.log-entry{display:flex;align-items:flex-start;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.03);font-family:'JetBrains Mono',monospace;font-size:10px}
+.log-entry:last-child{border-bottom:none}
+.log-entry .log-time{color:var(--dim);flex-shrink:0;min-width:54px}
+.log-entry .log-type{flex-shrink:0;min-width:60px}
+.log-entry .log-msg{color:var(--text);flex:1}
+.log-export{color:var(--accent)}
+.log-error{color:var(--danger)}
+.log-admin{color:var(--warn)}
+.log-ban{color:var(--danger)}
+.log-vip{color:#ffd700}
+.log-join{color:var(--success)}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:800px){.settings-grid{grid-template-columns:1fr}}
+.settings-item{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.03)}
+.settings-item:last-child{border-bottom:none}
+.settings-item-info .si-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.settings-item-info .si-desc{font-size:10px;color:var(--dim)}
+.num-inp-wrap{display:flex;align-items:center;gap:6px}
+.num-inp{width:70px;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:#111120;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;text-align:center}
+.num-inp-label{font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace}
+.add-user-form{padding:14px 18px;background:rgba(0,229,255,.03);border-bottom:1px solid rgba(0,229,255,.1);display:none}
+.add-user-form.open{display:block}
+.add-user-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+@keyframes adminFadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.admin-panel-wrap{display:flex;width:100%;height:100vh;animation:adminFadeIn .3s ease-out}
 </style>
 </head>
 <body>
-<div class="bg-grid"></div><div class="bg-glow"></div><div class="scanlines"></div>
-<div class="toast" id="toast"></div>
-<div id="app">
-  <div class="hdr">
-    <div><div class="logo">SOUNDFORGE</div><div class="logo-sub">Audio Modifier · Roblox Ready</div></div>
-    <div class="hdr-pills">
-      <div class="pill"><div class="dot" id="dLoad"></div><span id="sTxt">NO FILE</span></div>
-      <div class="pill"><div class="dot" id="dPlay"></div><span id="sPly">STOPPED</span></div>
-      <div class="pill" style="border-color:rgba(255,215,0,.15)"><div class="dot" id="dFp"></div><span style="color:rgba(255,215,0,.65)">FINGERPRINT</span></div>
+
+<!-- ===== GATE OVERLAY ===== -->
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-box">
+    <div class="gate-logo">
+      <div class="logo-icon" style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:22px;font-weight:800">♫</div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;letter-spacing:1px">RPMxPRIME<span style="color:var(--accent)">.</span>AUDIO</div>
+      </div>
+    </div>
+    <div class="gate-title">Support Us to <span class="accent">Continue</span></div>
+    <div class="gate-sub">This tool is 100% free. To keep it running, please join our Discord and follow on TikTok first!</div>
+    <div class="gate-steps">
+      <div class="gate-step" id="gateYT">
+        <div class="gate-step-icon">💬</div>
+        <div class="gate-step-info">
+          <div class="gate-step-title">JOIN DISCORD</div>
+          <div class="gate-step-desc">@RPMxPRIME Community</div>
+        </div>
+        <a class="gate-step-btn yt" id="btnYT" href="https://discord.gg/5EAzVWSV" target="_blank">JOIN DULU GUYS</a>
+        <div class="check">✓</div>
+      </div>
+      <div class="gate-step" id="gateTT">
+        <div class="gate-step-icon">🎵</div>
+        <div class="gate-step-info">
+          <div class="gate-step-title">Follow on TikTok</div>
+          <div class="gate-step-desc">@nicccl22 — Main account</div>
+        </div>
+        <a class="gate-step-btn tt" id="btnTT" href="https://www.tiktok.com/@nicccl22" target="_blank">FOLLOW</a>
+        <div class="check">✓</div>
+      </div>
+    </div>
+    <button class="gate-continue locked" id="gateContinue" disabled>COMPLETE BOTH STEPS FIRST</button>
+    <div class="gate-note">After clicking both links, the continue button will unlock • Admin? <span style="color:var(--accent);cursor:pointer" onclick="openAdminLogin()">Click here</span></div>
+  </div>
+</div>
+
+<!-- ===== LIMIT OVERLAY ===== -->
+<div class="limit-overlay" id="limitOverlay">
+  <div class="limit-box">
+    <div class="limit-icon">🚫</div>
+    <h2>Export Limit Reached</h2>
+    <p id="limitMsg">You've reached your daily export limit. Upgrade to VIP for unlimited exports or wait until tomorrow!</p>
+    <button class="limit-vip-btn" onclick="document.getElementById('limitOverlay').classList.remove('show')">✕ Close</button>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div class="app" id="mainApp" style="display:none">
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">♫</div>
+      <div>
+        <span class="logo-text">RPMxPRIME<span class="dot">.</span>AUDIO</span>
+        <span class="logo-sub">BYPASS STUDIO</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="badge badge-client" id="serverBadge">⚡ Client-Side</div>
+      <div class="badge" id="userRoleBadge" style="display:none"></div>
+      <div class="badge" id="autoIndicator" style="display:none;color:var(--warn);border-color:rgba(255,171,64,.3);background:rgba(255,171,64,.06)">⚡ AUTO</div>
+      <div class="badge" id="fileCount">0 FILES</div>
+      <div class="badge" id="exportCounter" style="color:var(--accent)">0 EXPORTS</div>
     </div>
   </div>
-  <div class="main">
-    <!-- LEFT -->
-    <div class="pl">
-      <div class="ps">
-        <div class="ptitle">Input</div>
-        <div class="upzone" id="upZone">
-          <input type="file" id="fileInput" accept=".mp3,.wav,.ogg,.flac,.aac,.m4a">
-          <div style="font-size:22px;margin-bottom:5px">📂</div>
-          <div class="up-txt">Drop file atau klik pilih<br><span style="color:var(--muted);font-size:7px">MP3 · WAV · OGG · FLAC</span></div>
-        </div>
-        <div id="fileInfo"><div class="fnm" id="fName">—</div><div class="fmeta" id="fMeta">—</div></div>
-      </div>
-      <div class="ps">
-        <div class="ptitle">Pitch &amp; Tempo</div>
-        <div class="cr"><div class="cl">Pitch Shift <span class="cv" id="vPitch">0 st</span></div><input type="range" class="sc" id="sPitch" min="-12" max="12" step="0.5" value="0"></div>
-        <div class="cr"><div class="cl">Speed <span class="cv" id="vSpeed">1.00×</span></div><input type="range" class="sg" id="sSpeed" min="0.5" max="2" step="0.01" value="1"></div>
-      </div>
-      <div class="ps">
-        <div class="ptitle">EQ &amp; Effects</div>
-        <div class="cr"><div class="cl">Noise <span class="cv" id="vNoise">0%</span></div><input type="range" class="so" id="sNoise" min="0" max="15" step="0.1" value="0"></div>
-        <div class="cr"><div class="cl">Bass Boost <span class="cv" id="vBass">0 dB</span></div><input type="range" class="sc" id="sBass" min="-6" max="12" step="0.5" value="0"></div>
-        <div class="cr"><div class="cl">Treble <span class="cv" id="vTreble">0 dB</span></div><input type="range" class="sc" id="sTreble" min="-6" max="12" step="0.5" value="0"></div>
-        <div class="cr"><div class="cl">Fade In <span class="cv" id="vFadeIn">0.0s</span></div><input type="range" class="sgo" id="sFadeIn" min="0" max="5" step="0.1" value="0"></div>
-        <div class="cr"><div class="cl">Fade Out <span class="cv" id="vFadeOut">0.0s</span></div><input type="range" class="sgo" id="sFadeOut" min="0" max="5" step="0.1" value="0"></div>
-      </div>
-      <div class="ps">
-        <div class="ptitle">Quick FX</div>
-        <div class="cg">
-          <div class="chip" id="fx-reverse" onclick="toggleFx('reverse',this)">⏪ Reverse</div>
-          <div class="chip" id="fx-stereo" onclick="toggleFx('stereo',this)">〰 Stereo</div>
-          <div class="chip" id="fx-echo" onclick="toggleFx('echo',this)">🌊 Echo</div>
-          <div class="chip" id="fx-norm" onclick="toggleFx('norm',this)">📶 Normalize</div>
-          <div class="chip" id="fx-mono" onclick="toggleFx('mono',this)">◼ Mono</div>
-          <div class="chip" id="fx-bitcrush" onclick="toggleFx('bitcrush',this)">⚡ Bitcrush</div>
+
+  <div class="hero" id="hero">
+    <h1>Process Audio for <span class="accent">Roblox</span></h1>
+    <p>Client-side processing — independent pitch & speed control, MP3/WAV export in-browser. Bypass Roblox copyright filters.</p>
+  </div>
+
+  <div id="tierNotice"></div>
+
+  <div class="dropzone empty" id="dropzone">
+    <div class="icon">🎵</div>
+    <div class="title">Drop audio files here</div>
+    <div class="sub">MP3, WAV, OGG, FLAC, M4A — up to 50MB · short songs work best</div>
+  </div>
+  <input type="file" id="fileInput" accept="audio/*" multiple hidden>
+
+  <div class="features" id="features">
+    <div class="feat" style="animation-delay:.05s"><div class="feat-icon">⚡</div><div class="feat-title">AUTO BYPASS</div><div class="feat-desc">One-click Roblox copyright bypass</div></div>
+    <div class="feat" style="animation-delay:.1s"><div class="feat-icon">🎚️</div><div class="feat-title">INDEPENDENT</div><div class="feat-desc">Pitch & speed controlled separately</div></div>
+    <div class="feat" style="animation-delay:.15s"><div class="feat-icon">🎧</div><div class="feat-title">LIVE PREVIEW</div><div class="feat-desc">Hear changes before exporting</div></div>
+    <div class="feat" style="animation-delay:.2s"><div class="feat-icon">💾</div><div class="feat-title">IN-BROWSER</div><div class="feat-desc">No server needed — works offline</div></div>
+  </div>
+
+  <div class="file-tabs" id="fileTabs"></div>
+  <div id="editor" style="display:none">
+    <div class="auto-section" id="autoSection">
+      <div class="auto-left">
+        <div>
+          <div class="auto-label">⚡ AUTO BYPASS</div>
+          <div class="auto-desc">Automatically adjust to pass Roblox copyright — processed in-browser</div>
         </div>
       </div>
-      <div class="ps">
-        <div class="ptitle">Fingerprint Mode</div>
-        <select class="sel-ctrl" id="fpMode" onchange="applyFpMode()">
-          <option value="off">OFF — No modification</option>
-          <option value="mild" selected>MILD — Safe (±1-2st)</option>
-          <option value="medium">MEDIUM — Kuat (±3st)</option>
-          <option value="strong">STRONG — Max random</option>
-        </select>
-        <button class="rand-btn" onclick="doRandomize()">🔀 RANDOMIZE FINGERPRINT</button>
+      <div class="auto-modes" id="autoModes"></div>
+    </div>
+    <div class="wave-panel">
+      <div class="info-row">
+        <div>WAVEFORM — <span class="fname" id="waveFileName"></span></div>
+        <div id="waveTime">0:00 / 0:00</div>
+      </div>
+      <canvas id="waveCanvas"></canvas>
+      <div class="transport">
+        <button class="btn-transport" id="btnRew" title="Restart">⏮</button>
+        <button class="btn-play" id="btnPlay" title="Play / Pause">▶</button>
+        <button class="btn-transport" id="btnStop" title="Stop">⏹</button>
       </div>
     </div>
-    <!-- CENTER -->
-    <div class="pc">
-      <div class="vtabs">
-        <div class="vt act" onclick="setVis('bars',this)">BARS</div>
-        <div class="vt" onclick="setVis('wave',this)">WAVE</div>
-        <div class="vt" onclick="setVis('circle',this)">RADIAL</div>
-        <div class="vt" onclick="setVis('scope',this)">SCOPE</div>
-        <div class="vt" onclick="setVis('spec',this)">SPECTROGRAM</div>
-      </div>
-      <div class="cw"><canvas id="vc"></canvas></div>
-      <div class="ibar">
-        <div class="is"><div class="isv" id="iDur">—</div><div class="isl">Duration</div></div>
-        <div class="is"><div class="isv" id="iSR">—</div><div class="isl">Sample Rate</div></div>
-        <div class="is"><div class="isv" id="iCh">—</div><div class="isl">Channels</div></div>
-        <div class="is"><div class="isv" id="iBPM">—</div><div class="isl">BPM</div></div>
-        <div class="is"><div class="isv" id="iSz">—</div><div class="isl">Size</div></div>
-      </div>
-      <div class="pbar">
-        <button class="bp" id="btnPlay" onclick="togglePlay()" disabled>▶</button>
-        <button class="bsm" onclick="stopAudio()" id="btnStop" disabled>⬛</button>
-        <button class="bsm" id="btnLoop" onclick="toggleLoop()">🔁</button>
-        <div class="pw">
-          <div class="pts"><span id="tCur">0:00</span><span id="tTot">0:00</span></div>
-          <div class="ptr" id="pTrack" onclick="seekAudio(event)"><div class="ptf" id="pFill"></div></div>
+    <div class="main-grid">
+      <div class="panel">
+        <div class="panel-label">🎚️ AUDIO PROCESSOR — Client Side</div>
+        <div class="knobs-row">
+          <div class="knob-wrap"><div class="knob-label">Speed</div><div class="knob-ring" id="knobSpeed"><div class="knob-inner"><div class="knob-needle"></div></div></div><div class="knob-value" id="knobSpeedVal">1.00x</div></div>
+          <div class="knob-wrap"><div class="knob-label">Pitch</div><div class="knob-ring" id="knobPitch"><div class="knob-inner"><div class="knob-needle"></div></div></div><div class="knob-value" id="knobPitchVal">0st</div></div>
+          <div class="knob-wrap"><div class="knob-label">Volume</div><div class="knob-ring" id="knobVolume"><div class="knob-inner"><div class="knob-needle"></div></div></div><div class="knob-value" id="knobVolumeVal">100%</div></div>
         </div>
-        <div class="vw">
-          <span style="font-size:10px;color:var(--muted2)">🔊</span>
-          <input type="range" class="sc" id="sVol" min="0" max="150" value="100" style="width:58px">
+        <div class="slider-row">
+          <div class="slider-header"><span class="slider-label">Speed (tempo)</span><span class="slider-val" id="sliderSpeedVal" style="color:var(--accent)">1.00x</span></div>
+          <div class="slider-track"><div class="slider-fill" id="sliderSpeedFill" style="background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div>
+          <input type="range" id="sliderSpeed" min="0.25" max="4" step="0.05" value="1">
+        </div>
+        <div class="slider-row">
+          <div class="slider-header"><span class="slider-label">Pitch (semitones)</span><span class="slider-val" id="sliderPitchVal" style="color:var(--accent2)">0 st</span></div>
+          <div class="slider-track"><div class="slider-fill" id="sliderPitchFill" style="background:linear-gradient(90deg,var(--accent2),var(--accent))"></div></div>
+          <input type="range" id="sliderPitch" min="-12" max="12" step="1" value="0">
+        </div>
+        <div class="slider-row">
+          <div class="slider-header"><span class="slider-label">Volume</span><span class="slider-val" id="sliderVolumeVal" style="color:var(--success)">100%</span></div>
+          <div class="slider-track"><div class="slider-fill" id="sliderVolumeFill" style="background:linear-gradient(90deg,var(--success),#00c853)"></div></div>
+          <input type="range" id="sliderVolume" min="0" max="2" step="0.05" value="1">
+        </div>
+        <div class="info-strip" id="infoStrip">Speed & pitch processed <strong>independently</strong> in-browser (playbackRate + pitch shift)</div>
+        <div class="limit-strip" id="limitInfoStrip" style="display:none"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="panel" style="flex:1">
+          <div class="panel-label">🎯 PRESETS</div>
+          <div class="presets-grid" id="presetsGrid"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-label">💾 EXPORT — In-Browser</div>
+          <div class="format-selector" id="formatSelector"></div>
+          <button class="btn-export" id="btnExport">EXPORT CURRENT → MP3</button>
+          <button class="btn-export-all" id="btnExportAll" style="display:none">EXPORT ALL → MP3</button>
+          <div class="export-info" id="exportInfo">Output: MP3 · 44100Hz · Stereo</div>
         </div>
       </div>
     </div>
-    <!-- RIGHT -->
-    <div class="pr">
-      <div class="ps">
-        <div class="ptitle">Spectrum Live</div>
-        <div class="spec-mini" id="specMini"></div>
-      </div>
-      <div class="ps">
-        <div class="ptitle">Fingerprint Hash</div>
-        <div class="fp-box"><div class="fp-hash" id="fpHash">LOAD FILE TO ANALYZE</div></div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--muted);line-height:1.5">Hash berubah tiap randomize → tidak terdeteksi copyright Roblox.</div>
-      </div>
-      <div class="ps">
-        <div class="ptitle">Output</div>
-        <div class="out-box g"><div class="out-l" style="color:var(--green)">EST. SIZE</div><div class="out-v" style="color:var(--green)" id="oSz">—</div></div>
-        <div class="out-box c"><div class="out-l" style="color:var(--cyan)">MODIFICATIONS</div><div class="out-v" style="color:var(--cyan);font-size:12px" id="oMod">NONE</div><div class="out-s" id="oModS">No modification</div></div>
-      </div>
-      <div class="ps">
-        <div class="ptitle">Export</div>
-        <div class="fmt-row">
-          <div class="fc sel" id="ef-wav" onclick="selFmt('wav')">WAV</div>
-          <div class="fc" id="ef-mp3" onclick="selFmt('mp3')">MP3</div>
-          <div class="fc" id="ef-ogg" onclick="selFmt('ogg')">OGG</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">SAMPLE RATE</div><div class="stat-value" id="statRate">—</div></div>
+      <div class="stat-card"><div class="stat-label">CHANNELS</div><div class="stat-value" id="statCh">—</div></div>
+      <div class="stat-card"><div class="stat-label">ORIGINAL</div><div class="stat-value" id="statOrig">—</div></div>
+      <div class="stat-card"><div class="stat-label">PROCESSED</div><div class="stat-value" id="statProc">—</div></div>
+    </div>
+  </div>
+  <div class="footer">RPMxPRIME<span class="dot">.</span>AUDIO STUDIO — Client-Side · Built for Roblox Creators</div>
+</div>
+
+<!-- ===== PROGRESS OVERLAY ===== -->
+<div class="progress-overlay" id="progressOverlay">
+  <div class="progress-box">
+    <div class="prog-icon"><span class="spinning">⚙️</span></div>
+    <div class="prog-title" id="progTitle">Processing Audio...</div>
+    <div class="prog-sub" id="progSub">Rendering audio in-browser</div>
+    <div class="prog-bar"><div class="prog-bar-fill" id="progBarFill"></div></div>
+    <div class="prog-status" id="progStatus">Starting...</div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- ===== ADMIN OVERLAY ===== -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-login" id="adminLogin">
+    <div class="admin-login-box">
+      <div class="admin-logo">🛡️</div>
+      <h2>ADMIN ACCESS</h2>
+      <div class="admin-sub">RPMxPRIME Control Panel</div>
+      <input type="text" class="admin-input" id="adminUser" placeholder="Username" autocomplete="off">
+      <input type="password" class="admin-input" id="adminPass" placeholder="Password" autocomplete="off">
+      <button class="admin-login-btn" onclick="doAdminLogin()">LOGIN TO PANEL</button>
+      <button class="admin-close-btn" onclick="closeAdmin()">← BACK</button>
+    </div>
+  </div>
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-panel-wrap">
+      <div class="admin-sidebar">
+        <div class="admin-sidebar-logo">
+          <div class="brand">RPMxPRIME</div>
+          <div class="sub">ADMIN PANEL v2.0</div>
         </div>
-        <div class="br-row" id="brRow" style="display:none">
-          <div class="bc" id="b96" onclick="selBr(96)">96k</div>
-          <div class="bc sel" id="b128" onclick="selBr(128)">128k</div>
-          <div class="bc" id="b192" onclick="selBr(192)">192k</div>
-          <div class="bc" id="b320" onclick="selBr(320)">320k</div>
-        </div>
-        <button class="bex m" id="btnEx" onclick="exportAudio()" disabled>⬇ DOWNLOAD</button>
-        <div class="ep" id="ep"><div class="epf" id="epf"></div></div>
-        <button class="bex s" id="btnQEx" onclick="quickExport()" disabled>⚡ QUICK + RANDOMIZE</button>
+        <nav class="admin-nav">
+          <div class="admin-nav-item active" onclick="adminNav('dashboard')" data-page="dashboard"><span class="nav-icon">📊</span> Dashboard</div>
+          <div class="admin-nav-item" onclick="adminNav('users')" data-page="users"><span class="nav-icon">👥</span> Users</div>
+          <div class="admin-nav-item" onclick="adminNav('vip')" data-page="vip"><span class="nav-icon">⭐</span> VIP Manager</div>
+          <div class="admin-nav-item" onclick="adminNav('limits')" data-page="limits"><span class="nav-icon">🚦</span> Limits & Quotas</div>
+          <div class="admin-nav-item" onclick="adminNav('gate')" data-page="gate"><span class="nav-icon">🔒</span> Gate Settings</div>
+          <div class="admin-nav-item" onclick="adminNav('activity')" data-page="activity"><span class="nav-icon">📋</span> Activity Log</div>
+          <div class="admin-nav-item" onclick="adminNav('settings')" data-page="settings"><span class="nav-icon">⚙️</span> Settings</div>
+        </nav>
+        <div class="admin-logout"><button onclick="adminLogout()">🚪 Logout</button></div>
       </div>
-      <div class="ps">
-        <div class="ptitle">Tips Roblox</div>
-        <div class="tips">
-          <div class="ti"><span class="tico">✦</span>Noise 2–5% acak fingerprint</div>
-          <div class="ti"><span class="tico">✦</span>Pitch ±1–2st beda dari asli</div>
-          <div class="ti"><span class="tico">✦</span>Speed 1.03–1.07× ubah durasi</div>
-          <div class="ti"><span class="tico">✦</span>Fade In/Out supaya natural</div>
-          <div class="ti"><span class="tico">⚠</span><span style="color:rgba(255,215,0,.6)">Tidak ada jaminan 100% lolos</span></div>
+      <div class="admin-main">
+        <div class="admin-header-bar">
+          <div class="admin-title">🛡️ RPMxPRIME ADMIN</div>
+          <div class="admin-user" id="adminUserLabel">Logged in as: admin</div>
+        </div>
+        <div class="admin-content">
+          <div class="admin-page active" id="page-dashboard">
+            <div class="admin-stats-grid">
+              <div class="admin-stat accent"><div class="as-label">TOTAL USERS</div><div class="as-val" id="statTotalUsers">0</div><div class="as-sub">All registered</div></div>
+              <div class="admin-stat success"><div class="as-label">VIP USERS</div><div class="as-val" id="statVipUsers">0</div><div class="as-sub">Active VIP</div></div>
+              <div class="admin-stat warn"><div class="as-label">EXPORTS TODAY</div><div class="as-val" id="statExportsToday">0</div><div class="as-sub">Across all users</div></div>
+              <div class="admin-stat danger"><div class="as-label">BANNED USERS</div><div class="as-val" id="statBanned">0</div><div class="as-sub">Active bans</div></div>
+            </div>
+            <div class="admin-section">
+              <div class="admin-section-header"><div class="sec-title">📋 RECENT ACTIVITY</div><button class="abtn abtn-accent" onclick="adminNav('activity')">View All</button></div>
+              <div id="dashRecentActivity"></div>
+            </div>
+            <div class="admin-section" style="margin-bottom:0">
+              <div class="admin-section-header"><div class="sec-title">👥 RECENT USERS</div><button class="abtn abtn-accent" onclick="adminNav('users')">Manage All</button></div>
+              <table class="admin-table"><thead><tr><th>ID</th><th>NAME</th><th>ROLE</th><th>EXPORTS</th><th>STATUS</th></tr></thead><tbody id="dashUsersTbody"></tbody></table>
+            </div>
+          </div>
+          <div class="admin-page" id="page-users">
+            <div class="admin-section">
+              <div class="admin-section-header">
+                <div class="sec-title">👥 USER MANAGEMENT</div>
+                <div class="sec-actions">
+                  <input type="text" class="admin-inp admin-inp-sm" id="userSearch" placeholder="Search user..." oninput="renderUsersTable()" style="width:160px">
+                  <button class="abtn abtn-success" onclick="toggleAddUserForm()">+ Add User</button>
+                </div>
+              </div>
+              <div class="add-user-form" id="addUserForm">
+                <div class="add-user-row">
+                  <div class="admin-form-group"><label>USERNAME</label><input type="text" class="admin-inp" id="newUserName" placeholder="username"></div>
+                  <div class="admin-form-group"><label>ROLE</label><select class="admin-select" id="newUserRole"><option value="user">Free User</option><option value="vip">VIP</option><option value="admin">Admin</option></select></div>
+                  <div class="admin-form-group"><label>EXPORT LIMIT/DAY</label><input type="number" class="admin-inp" id="newUserLimit" placeholder="5" value="5" min="0"></div>
+                  <button class="abtn abtn-success abtn-lg" style="margin-top:18px" onclick="addUser()">ADD</button>
+                  <button class="abtn abtn-danger abtn-lg" style="margin-top:18px" onclick="toggleAddUserForm()">CANCEL</button>
+                </div>
+              </div>
+              <table class="admin-table"><thead><tr><th>#</th><th>USERNAME</th><th>ROLE</th><th>EXPORTS</th><th>LIMIT/DAY</th><th>JOINED</th><th>ACTIONS</th></tr></thead><tbody id="usersTbody"></tbody></table>
+            </div>
+          </div>
+          <div class="admin-page" id="page-vip">
+            <div class="admin-section" style="margin-bottom:16px">
+              <div class="admin-section-header"><div class="sec-title">⭐ GRANT VIP</div></div>
+              <div class="admin-form-row">
+                <div class="admin-form-group"><label>SELECT USER</label><select class="admin-select" id="vipUserSelect" style="width:100%"></select></div>
+                <div class="admin-form-group"><label>VIP DURATION</label><select class="admin-select" id="vipDuration"><option value="7">7 Days</option><option value="30">30 Days</option><option value="90">90 Days</option><option value="365">1 Year</option><option value="0">Permanent</option></select></div>
+                <div class="admin-form-group"><label>CUSTOM EXPORT LIMIT</label><input type="number" class="admin-inp" id="vipExportLimit" placeholder="Unlimited = 0" value="0" min="0"></div>
+                <button class="abtn abtn-vip abtn-lg" style="margin-top:18px;white-space:nowrap" onclick="grantVip()">⭐ GRANT VIP</button>
+              </div>
+            </div>
+            <div class="admin-section"><div class="admin-section-header"><div class="sec-title">⭐ ACTIVE VIP USERS</div></div><table class="admin-table"><thead><tr><th>USER</th><th>VIP SINCE</th><th>EXPIRES</th><th>EXPORT LIMIT</th><th>ACTIONS</th></tr></thead><tbody id="vipTbody"></tbody></table></div>
+          </div>
+          <div class="admin-page" id="page-limits">
+            <div class="admin-section" style="margin-bottom:16px">
+              <div class="admin-section-header"><div class="sec-title">🚦 GLOBAL EXPORT LIMITS</div></div>
+              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Free User Daily Export Limit</div><div class="si-desc">Max exports per day for free users (0 = unlimited)</div></div><div class="num-inp-wrap"><input type="number" class="num-inp" id="globalFreeLimit" value="5" min="0"><span class="num-inp-label">/day</span></div></div>
+              <div class="settings-item"><div class="settings-item-info"><div class="si-title">VIP User Daily Export Limit</div><div class="si-desc">Max exports per day for VIP users (0 = unlimited)</div></div><div class="num-inp-wrap"><input type="number" class="num-inp" id="globalVipLimit" value="0" min="0"><span class="num-inp-label">/day</span></div></div>
+              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Max File Size (MB)</div><div class="si-desc">Maximum upload size for free users</div></div><div class="num-inp-wrap"><input type="number" class="num-inp" id="globalMaxFile" value="50" min="1"><span class="num-inp-label">MB</span></div></div>
+              <div class="settings-item"><div class="settings-item-info"><div class="si-title">VIP Max File Size (MB)</div><div class="si-desc">Maximum upload size for VIP users</div></div><div class="num-inp-wrap"><input type="number" class="num-inp" id="globalVipMaxFile" value="200" min="1"><span class="num-inp-label">MB</span></div></div>
+              <div style="padding:14px 18px"><button class="abtn abtn-success abtn-lg" onclick="saveGlobalLimits()">💾 SAVE LIMITS</button></div>
+            </div>
+            <div class="admin-section">
+              <div class="admin-section-header"><div class="sec-title">🎯 PER-USER LIMIT OVERRIDE</div></div>
+              <div class="admin-form-row">
+                <div class="admin-form-group"><label>USER</label><select class="admin-select" id="limitUserSelect" style="width:100%"></select></div>
+                <div class="admin-form-group"><label>NEW DAILY LIMIT (0 = unlimited)</label><input type="number" class="admin-inp" id="limitNewVal" value="10" min="0"></div>
+                <button class="abtn abtn-warn abtn-lg" style="margin-top:18px" onclick="setUserLimit()">SET LIMIT</button>
+              </div>
+            </div>
+          </div>
+          <div class="admin-page" id="page-gate">
+            <div class="admin-section">
+              <div class="admin-section-header"><div class="sec-title">🔒 GATE / ACCESS CONTROL</div></div>
+              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Enable Gate</div><div class="si-desc">Require Discord + TikTok before accessing the tool</div></div><label class="toggle"><input type="checkbox" id="gateEnabled" checked><div class="toggle-track"></div></label></div>
+              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Require Discord Join</div><div class="si-desc">Step 1: Join Discord server</div></div><label class="toggle"><input type="checkbox" id="gateDiscord" checked><div class="toggle-track"></div></label></div>
+              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Require TikTok Follow</div><div class="si-desc">Step 2: Follow TikTok account</div></div><label class="toggle"><input type="checkbox" id="gateTikTok" checked><div class="toggle-track"></div></label></div>
+              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Gate Bypass (Whitelist)</div><div class="si-desc">Whitelisted IDs skip the gate entirely</div></div><label class="toggle"><input type="checkbox" id="gateWhitelist" checked><div class="toggle-track"></div></label></div>
+              <div class="admin-form-row"><div class="admin-form-group"><label>DISCORD INVITE LINK</label><input type="text" class="admin-inp" id="gateDiscordLink" value="https://discord.gg/5EAzVWSV"></div></div>
+              <div class="admin-form-row"><div class="admin-form-group"><label>TIKTOK LINK</label><input type="text" class="admin-inp" id="gateTTLink" value="https://www.tiktok.com/@nicccl22"></div></div>
+              <div style="padding:14px 18px"><button class="abtn abtn-success abtn-lg" onclick="saveGateSettings()">💾 SAVE GATE SETTINGS</button><button class="abtn abtn-danger abtn-lg" style="margin-left:8px" onclick="resetGateForAll()">🔄 RESET GATE FOR ALL USERS</button></div>
+            </div>
+          </div>
+          <div class="admin-page" id="page-activity">
+            <div class="admin-section">
+              <div class="admin-section-header">
+                <div class="sec-title">📋 ACTIVITY LOG</div>
+                <div class="sec-actions">
+                  <select class="admin-select" id="logFilter" onchange="renderLog()"><option value="all">All Events</option><option value="export">Exports</option><option value="admin">Admin Actions</option><option value="ban">Bans</option><option value="vip">VIP Changes</option><option value="join">New Users</option><option value="error">Errors</option></select>
+                  <button class="abtn abtn-danger" onclick="clearLog()">🗑 Clear</button>
+                </div>
+              </div>
+              <div id="activityLog"></div>
+            </div>
+          </div>
+          <div class="admin-page" id="page-settings">
+            <div class="settings-grid">
+              <div class="admin-section">
+                <div class="admin-section-header"><div class="sec-title">⚙️ SYSTEM SETTINGS</div></div>
+                <div class="settings-item"><div class="settings-item-info"><div class="si-title">Maintenance Mode</div><div class="si-desc">Disable access for all non-admins</div></div><label class="toggle"><input type="checkbox" id="settMaintenance"><div class="toggle-track"></div></label></div>
+                <div class="settings-item"><div class="settings-item-info"><div class="si-title">Auto-Ban on Abuse</div><div class="si-desc">Ban users who exceed limit 3x</div></div><label class="toggle"><input type="checkbox" id="settAutoBan" checked><div class="toggle-track"></div></label></div>
+              </div>
+              <div class="admin-section">
+                <div class="admin-section-header"><div class="sec-title">🔑 ADMIN CREDENTIALS</div></div>
+                <div class="admin-form-row" style="flex-direction:column;gap:10px">
+                  <div class="admin-form-group" style="width:100%"><label>NEW ADMIN USERNAME</label><input type="text" class="admin-inp" id="newAdminUser" placeholder="New username"></div>
+                  <div class="admin-form-group" style="width:100%"><label>NEW ADMIN PASSWORD</label><input type="password" class="admin-inp" id="newAdminPass" placeholder="New password"></div>
+                  <div class="admin-form-group" style="width:100%"><label>CONFIRM PASSWORD</label><input type="password" class="admin-inp" id="confirmAdminPass" placeholder="Confirm password"></div>
+                  <button class="abtn abtn-warn abtn-lg" onclick="changeAdminCreds()">🔑 CHANGE CREDENTIALS</button>
+                </div>
+              </div>
+              <div class="admin-section">
+                <div class="admin-section-header"><div class="sec-title">📢 ANNOUNCEMENT BANNER</div></div>
+                <div class="admin-form-row" style="flex-direction:column;gap:10px">
+                  <div class="settings-item" style="padding:0"><div class="settings-item-info"><div class="si-title">Show Banner</div><div class="si-desc">Display announcement to all users</div></div><label class="toggle"><input type="checkbox" id="settBanner"><div class="toggle-track"></div></label></div>
+                  <div class="admin-form-group" style="width:100%"><label>BANNER TEXT</label><input type="text" class="admin-inp" id="bannerText" placeholder="e.g. Server maintenance tonight at 10PM"></div>
+                  <div class="admin-form-group" style="width:100%"><label>BANNER TYPE</label><select class="admin-select" id="bannerType" style="width:100%"><option value="info">Info (Blue)</option><option value="warn">Warning (Orange)</option><option value="danger">Alert (Red)</option><option value="success">Success (Green)</option></select></div>
+                  <button class="abtn abtn-success abtn-lg" onclick="saveBanner()">💾 SAVE BANNER</button>
+                </div>
+              </div>
+              <div class="admin-section">
+                <div class="admin-section-header"><div class="sec-title">🗑️ DATA MANAGEMENT</div></div>
+                <div style="padding:14px 18px;display:flex;flex-direction:column;gap:10px">
+                  <button class="abtn abtn-warn abtn-lg" style="width:100%" onclick="resetAllExportCounts()">🔄 Reset All Export Counts</button>
+                  <button class="abtn abtn-danger abtn-lg" style="width:100%" onclick="clearAllBans()">🔓 Remove All Bans</button>
+                  <button class="abtn abtn-danger abtn-lg" style="width:100%" onclick="if(confirm('Reset ALL data?'))resetAllData()">💥 RESET ALL DATA</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+
 <script>
-'use strict';
-// ══ CACHE ALL DOM REFS ONCE ══
-const $=id=>document.getElementById(id);
-const D={
-  dLoad:$('dLoad'),dPlay:$('dPlay'),dFp:$('dFp'),
-  sTxt:$('sTxt'),sPly:$('sPly'),
-  fileInfo:$('fileInfo'),fName:$('fName'),fMeta:$('fMeta'),
-  vPitch:$('vPitch'),vSpeed:$('vSpeed'),vNoise:$('vNoise'),
-  vBass:$('vBass'),vTreble:$('vTreble'),vFadeIn:$('vFadeIn'),vFadeOut:$('vFadeOut'),
-  sPitch:$('sPitch'),sSpeed:$('sSpeed'),sNoise:$('sNoise'),
-  sBass:$('sBass'),sTreble:$('sTreble'),sFadeIn:$('sFadeIn'),sFadeOut:$('sFadeOut'),sVol:$('sVol'),
-  iDur:$('iDur'),iSR:$('iSR'),iCh:$('iCh'),iBPM:$('iBPM'),iSz:$('iSz'),
-  canvas:$('vc'),pFill:$('pFill'),tCur:$('tCur'),tTot:$('tTot'),pTrack:$('pTrack'),
-  btnPlay:$('btnPlay'),btnStop:$('btnStop'),btnLoop:$('btnLoop'),btnEx:$('btnEx'),btnQEx:$('btnQEx'),
-  ep:$('ep'),epf:$('epf'),fpHash:$('fpHash'),oSz:$('oSz'),oMod:$('oMod'),oModS:$('oModS'),brRow:$('brRow'),toast:$('toast'),
-};
+// ============================================================
+// ===== FIX #1: ONE-TIME INIT GUARD ==========================
+// ============================================================
+let _appInited = false;
 
-// ══ STATE ══
-let actx=null,audioBuffer=null,srcNode=null,analyser=null,gainNode=null,bassF=null,trebF=null;
-let isPlaying=false,isLooping=false,startTime=0,pauseOffset=0,rafId=null,visMode='bars';
-let fxActive={},currentFmt='wav',currentBr=128,origName='audio';
-let pitch=0,speed=1,noise=0,bass=0,treble=0,fadeIn=0,fadeOut=0,vol=1;
-// Reusable typed arrays — allocated once
-let freqBuf=new Uint8Array(1024),timeBuf=new Uint8Array(1024);
-// Cached spectrum bar elements
-let specBars=[];
-// Throttle timestamps
-let lastSpec=0,lastProg=0;
-// Canvas size cache
-let cW=0,cH=0;
+// ============================================================
+// ===== DATA STORE ===========================================
+// ============================================================
+const ADMIN_CREDS_KEY='rpm_admin_creds';
+const USERS_KEY='rpm_users';
+const LOG_KEY='rpm_log';
+const SETTINGS_KEY='rpm_settings';
+const GATE_KEY='rpm_gate_passed';
 
-// ══ BUILD SPEC BARS ONCE ══
-(()=>{
-  const el=D.canvas.parentElement; // placeholder - will use specMini
-  const sm=$('specMini');
-  const f=document.createDocumentFragment();
-  for(let i=0;i<28;i++){
-    const b=document.createElement('div');
-    b.className='smb';
-    b.style.cssText=`background:hsl(${180+i*5},100%,55%);height:3px`;
-    f.appendChild(b);specBars.push(b);
+function getAdminCreds(){try{return JSON.parse(localStorage.getItem(ADMIN_CREDS_KEY))||{user:'admin',pass:'rpmxprime2024'};}catch(e){return{user:'admin',pass:'rpmxprime2024'};}}
+function setAdminCreds(u,p){localStorage.setItem(ADMIN_CREDS_KEY,JSON.stringify({user:u,pass:p}));}
+function getUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY))||[];}catch(e){return[];}}
+function saveUsers(u){localStorage.setItem(USERS_KEY,JSON.stringify(u));}
+function getLog(){try{return JSON.parse(localStorage.getItem(LOG_KEY))||[];}catch(e){return[];}}
+function saveLog(l){localStorage.setItem(LOG_KEY,JSON.stringify(l.slice(0,500)));}
+function getSettings(){
+  const def={freeLimit:5,vipLimit:0,maxFile:50,vipMaxFile:200,gateEnabled:true,gateDiscord:true,gateTikTok:true,gateWhitelist:true,discordLink:'https://discord.gg/5EAzVWSV',ttLink:'https://www.tiktok.com/@nicccl22',maintenance:false,autoBan:true,showBanner:false,bannerText:'',bannerType:'info'};
+  try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));return s?Object.assign(def,s):def;}catch(e){return def;}
+}
+function saveSettings(s){localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));}
+
+function addLog(type,msg,user){
+  const log=getLog();
+  const now=new Date();
+  const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  log.unshift({type,msg,user:user||'system',time,ts:Date.now()});
+  saveLog(log);
+  refreshDashboardActivity();
+}
+
+function getCurrentUserId(){
+  let id=localStorage.getItem('rpm_uid');
+  if(!id){id='u'+Math.random().toString(36).slice(2,9)+Date.now().toString(36);localStorage.setItem('rpm_uid',id);}
+  return id;
+}
+function getCurrentUser(){const uid=getCurrentUserId();return getUsers().find(u=>u.id===uid)||null;}
+
+function ensureUserExists(){
+  const uid=getCurrentUserId();
+  const users=getUsers();
+  if(!users.find(u=>u.id===uid)){
+    const nu={id:uid,name:'User_'+uid.slice(1,6),role:'user',limit:getSettings().freeLimit,exportsToday:0,exportsTotal:0,joined:new Date().toLocaleDateString(),banned:false,vipExpiry:null,vipSince:null,lastReset:new Date().toDateString()};
+    users.push(nu);saveUsers(users);
+    addLog('join','New user joined: '+nu.name,nu.name);
   }
-  sm.appendChild(f);
+  return getCurrentUser();
+}
+
+function checkDailyReset(){
+  const users=getUsers();const today=new Date().toDateString();let changed=false;
+  users.forEach(u=>{
+    if(u.lastReset!==today){u.exportsToday=0;u.lastReset=today;changed=true;}
+    if(u.vipExpiry&&u.vipExpiry!=='permanent'&&Date.now()>u.vipExpiry){u.role='user';u.vipExpiry=null;u.vipSince=null;u.limit=getSettings().freeLimit;changed=true;addLog('vip','VIP expired: '+u.name,u.name);}
+  });
+  if(changed)saveUsers(users);
+}
+
+function canExport(){
+  const user=ensureUserExists();
+  if(user.banned)return{ok:false,reason:'You are banned from this tool.'};
+  if(user.role==='admin')return{ok:true};
+  const settings=getSettings();
+  if(user.role==='vip'){const vl=(user.limit!=null)?user.limit:settings.vipLimit;if(vl===0)return{ok:true};if(user.exportsToday>=vl)return{ok:false,reason:`VIP daily limit reached (${vl}/day). Resets tomorrow!`};return{ok:true};}
+  const fl=(user.limit!=null)?user.limit:settings.freeLimit;
+  if(fl===0)return{ok:true};
+  if(user.exportsToday>=fl)return{ok:false,reason:`Daily export limit reached (${fl}/day). Upgrade to VIP for more!`};
+  return{ok:true};
+}
+
+function recordExport(filename){
+  const users=getUsers();const uid=getCurrentUserId();const u=users.find(x=>x.id===uid);
+  if(u){u.exportsToday=(u.exportsToday||0)+1;u.exportsTotal=(u.exportsTotal||0)+1;saveUsers(users);addLog('export','Exported: '+filename,u.name);updateExportCounterUI();updateLimitStripUI();}
+}
+
+function updateExportCounterUI(){
+  const user=getCurrentUser();if(!user)return;
+  const c=document.getElementById('exportCounter');if(c)c.textContent=(user.exportsToday||0)+' EXPORTS';
+}
+
+function updateLimitStripUI(){
+  const user=getCurrentUser();if(!user)return;
+  const settings=getSettings();
+  const rb=document.getElementById('userRoleBadge');
+  if(rb){
+    if(user.role==='admin'){rb.style.display='block';rb.className='badge badge-admin';rb.textContent='👑 ADMIN';}
+    else if(user.role==='vip'){rb.style.display='block';rb.className='badge badge-vip';rb.textContent='⭐ VIP';}
+    else rb.style.display='none';
+  }
+  const tn=document.getElementById('tierNotice');
+  const strip=document.getElementById('limitInfoStrip');
+  if(user.role==='admin'){if(tn)tn.innerHTML='';if(strip)strip.style.display='none';return;}
+  const lim=(user.limit!=null&&user.limit!==-1)?user.limit:(user.role==='vip'?settings.vipLimit:settings.freeLimit);
+  const used=user.exportsToday||0;
+  if(user.role==='vip'){
+    if(tn)tn.innerHTML=`<div class="tier-vip">⭐ <b>VIP MEMBER</b> — ${lim===0?'Unlimited':used+' / '+lim+' exports today'} · Enhanced processing</div>`;
+    if(strip)strip.style.display='none';
+  } else {
+    if(tn)tn.innerHTML=`<div class="tier-warn"><b>FREE TIER:</b> ${lim===0?'Unlimited':used+' / '+lim+' exports today'} · Songs under 3 min recommended · <a href="#" style="color:var(--warn)" onclick="toast('VIP','Contact admin to upgrade to VIP!','warn');return false">Upgrade to VIP</a></div>`;
+    if(lim>0&&used>0&&strip){strip.style.display='block';strip.textContent=`Exports today: ${used}/${lim} — ${Math.max(0,lim-used)} remaining`;}
+    else if(strip)strip.style.display='none';
+  }
+}
+
+// ============================================================
+// ===== GATE LOGIC ===========================================
+// ============================================================
+(function(){
+  const gateOverlay=document.getElementById('gateOverlay');
+  const mainApp=document.getElementById('mainApp');
+  const gateContinue=document.getElementById('gateContinue');
+  const btnYT=document.getElementById('btnYT');
+  const btnTT=document.getElementById('btnTT');
+  const gateYT=document.getElementById('gateYT');
+  const gateTT=document.getElementById('gateTT');
+  let ytClicked=false,ttClicked=false;
+
+  window.openAdminLogin=function(){document.getElementById('adminOverlay').classList.add('show');document.getElementById('adminLogin').style.display='flex';document.getElementById('adminPanel').classList.remove('show');};
+
+  const settings=getSettings();
+
+  // ===== FIX #1: Guard against double-init =====
+  if(!settings.gateEnabled||localStorage.getItem(GATE_KEY)==='true'){
+    gateOverlay.classList.add('hidden');
+    mainApp.style.display='';
+    if(!_appInited){_appInited=true;initApp();}
+    return;
+  }
+
+  function checkUnlock(){
+    const needDC=settings.gateDiscord,needTT=settings.gateTikTok;
+    const unlocked=(!needDC||ytClicked)&&(!needTT||ttClicked);
+    if(unlocked){gateContinue.disabled=false;gateContinue.className='gate-continue unlocked';gateContinue.textContent='🚀 CONTINUE TO RPMxPRIME BYPASS';}
+  }
+  btnYT.addEventListener('click',function(){ytClicked=true;gateYT.classList.add('done');checkUnlock();});
+  btnTT.addEventListener('click',function(){ttClicked=true;gateTT.classList.add('done');checkUnlock();});
+  gateContinue.addEventListener('click',function(){
+    if(gateContinue.disabled)return;
+    localStorage.setItem(GATE_KEY,'true');
+    gateOverlay.style.transition='opacity .4s';gateOverlay.style.opacity='0';
+    setTimeout(function(){
+      gateOverlay.classList.add('hidden');mainApp.style.display='';
+      // ===== FIX #1: Guard against double-init =====
+      if(!_appInited){_appInited=true;initApp();}
+    },400);
+  });
 })();
 
-// ══ AUDIO CTX ══
-function getCtx(){
-  if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();
-  if(actx.state==='suspended')actx.resume();
-  return actx;
+function initApp(){
+  checkDailyReset();ensureUserExists();updateExportCounterUI();updateLimitStripUI();mainAppInit();
 }
 
-// ══ FILE LOAD ══
-$('fileInput').onchange=e=>loadFile(e.target.files[0]);
-const uz=$('upZone');
-uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('dv');});
-uz.addEventListener('dragleave',()=>uz.classList.remove('dv'));
-uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('dv');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);});
+// ============================================================
+// ===== CLIENT-SIDE AUDIO PROCESSING =========================
+// ============================================================
 
-async function loadFile(file){
-  if(!file)return;
-  const ctx=getCtx();
-  origName=file.name.replace(/\.[^.]+$/,'');
-  D.fName.textContent=file.name;D.fMeta.textContent='Loading...';
-  D.fileInfo.style.display='block';
-  setStat('LOADING',false);
-  try{
-    audioBuffer=await ctx.decodeAudioData(await file.arrayBuffer());
-    // Resize reusable bufs to match analyser
-    const fc=Math.min(audioBuffer.length,2048);
-    freqBuf=new Uint8Array(fc);timeBuf=new Uint8Array(fc);
-    D.iDur.textContent=ft(audioBuffer.duration);
-    D.iSR.textContent=(audioBuffer.sampleRate/1000).toFixed(1)+'k';
-    D.iCh.textContent=audioBuffer.numberOfChannels>1?'STEREO':'MONO';
-    D.iSz.textContent=fb(file.size);
-    D.tTot.textContent=ft(audioBuffer.duration);
-    D.fMeta.textContent=fb(file.size)+' · '+ft(audioBuffer.duration);
-    ['btnPlay','btnStop','btnEx','btnQEx'].forEach(id=>$(id).disabled=false);
-    setStat('READY',true);genHash();updOut();startVis();
-    setTimeout(detectBPM,80);
-    toast('✓ Loaded: '+file.name.substring(0,28));
-  }catch(e){setStat('ERROR',false);toast('✕ '+e.message);}
-}
+/**
+ * Render audio with speed + pitch change using OfflineAudioContext
+ * Speed: via playbackRate (changes both tempo + pitch)
+ * Pitch correction: resample trick — change sample rate to compensate
+ * Result: independent pitch and speed (approximation in-browser)
+ */
+async function renderAudioWithEffects(audioBuffer, speed, pitchSemitones, volume){
+  // Pitch ratio
+  const pitchRatio = Math.pow(2, pitchSemitones/12);
+  // We want: final playback rate = speed * pitchRatio (so sample rate change compensates)
+  // Trick: render at normal rate with pitch-shifted buffer, then speed it up
 
-// ══ AUDIO GRAPH ══
-function buildGraph(buf){
-  if(srcNode){try{srcNode.disconnect();}catch(_){}}
-  const ctx=actx;
-  gainNode=ctx.createGain();gainNode.gain.value=vol;
-  analyser=ctx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=0.8;
-  // Resize typed arrays to actual bin count
-  const bc=analyser.frequencyBinCount;
-  if(freqBuf.length!==bc){freqBuf=new Uint8Array(bc);timeBuf=new Uint8Array(bc);}
-  bassF=ctx.createBiquadFilter();bassF.type='lowshelf';bassF.frequency.value=200;bassF.gain.value=bass;
-  trebF=ctx.createBiquadFilter();trebF.type='highshelf';trebF.frequency.value=4000;trebF.gain.value=treble;
-  srcNode=ctx.createBufferSource();srcNode.buffer=buf;srcNode.playbackRate.value=speed;srcNode.loop=isLooping;
-  srcNode.connect(bassF);bassF.connect(trebF);trebF.connect(gainNode);gainNode.connect(analyser);analyser.connect(ctx.destination);
-  srcNode.onended=()=>{if(!isLooping){isPlaying=false;pauseOffset=0;updPBtn();updPStat();}};
-}
+  const sampleRate = audioBuffer.sampleRate;
+  const numChannels = audioBuffer.numberOfChannels;
 
-// ══ PLAYBACK ══
-function togglePlay(){if(!audioBuffer)return;isPlaying?pauseAudio():playAudio();}
-function playAudio(){
-  const ctx=getCtx();
-  buildGraph(audioBuffer);
-  const off=Math.min(pauseOffset,audioBuffer.duration-0.01);
-  srcNode.start(0,off);startTime=ctx.currentTime;pauseOffset=off;
-  isPlaying=true;updPBtn();updPStat();
-}
-function pauseAudio(){
-  pauseOffset+=actx.currentTime-startTime;
-  try{srcNode.stop();}catch(_){}
-  isPlaying=false;updPBtn();updPStat();
-}
-function stopAudio(){
-  try{srcNode.stop();}catch(_){}
-  isPlaying=false;pauseOffset=0;
-  D.pFill.style.width='0%';D.tCur.textContent='0:00';
-  updPBtn();updPStat();
-}
-function toggleLoop(){isLooping=!isLooping;D.btnLoop.classList.toggle('lp',isLooping);if(srcNode)srcNode.loop=isLooping;}
-function seekAudio(e){
-  if(!audioBuffer)return;
-  const r=D.pTrack.getBoundingClientRect();
-  const pct=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
-  pauseOffset=pct*audioBuffer.duration;
-  D.pFill.style.width=(pct*100)+'%';D.tCur.textContent=ft(pauseOffset);
-  if(isPlaying){try{srcNode.stop();}catch(_){}playAudio();}
-}
-D.sVol.oninput=function(){vol=this.value/100;if(gainNode)gainNode.gain.value=vol;sp(this,0,150);};
-function updPBtn(){D.btnPlay.textContent=isPlaying?'⏸':'▶';}
-function updPStat(){
-  if(isPlaying){D.dPlay.className='dot pl';D.sPly.textContent='PLAYING';}
-  else{D.dPlay.className='dot';D.sPly.textContent=pauseOffset>0?'PAUSED':'STOPPED';}
-}
+  // Step 1: Pitch-shift by resampling (change sample rate interpretation)
+  // Create a buffer at pitchRatio-shifted sample rate and re-render
+  const pitchedLength = Math.round(audioBuffer.length / pitchRatio);
+  const pitchCtx = new OfflineAudioContext(numChannels, pitchedLength, sampleRate);
 
-// ══ SLIDERS — setup once, store value in variable ══
-function spv(el,mn,mx){const p=((el.value-mn)/(mx-mn)*100).toFixed(1);el.style.setProperty('--p',p+'%');}
-function mkSlider(id,mn,mx,cb){
-  const el=$(id);
-  el.oninput=function(){cb(parseFloat(this.value));spv(this,mn,mx);};
-  spv(el,mn,mx);
-}
-mkSlider('sPitch',-12,12,v=>{pitch=v;D.vPitch.textContent=(v>=0?'+':'')+v+' st';updFp();updOut();});
-mkSlider('sSpeed',0.5,2,v=>{speed=v;D.vSpeed.textContent=v.toFixed(2)+'×';if(srcNode&&isPlaying)srcNode.playbackRate.value=v;updFp();updOut();});
-mkSlider('sNoise',0,15,v=>{noise=v;D.vNoise.textContent=v.toFixed(1)+'%';updFp();updOut();});
-mkSlider('sBass',-6,12,v=>{bass=v;D.vBass.textContent=(v>=0?'+':'')+v+' dB';if(bassF)bassF.gain.value=v;});
-mkSlider('sTreble',-6,12,v=>{treble=v;D.vTreble.textContent=(v>=0?'+':'')+v+' dB';if(trebF)trebF.gain.value=v;});
-mkSlider('sFadeIn',0,5,v=>{fadeIn=v;D.vFadeIn.textContent=v.toFixed(1)+'s';updOut();});
-mkSlider('sFadeOut',0,5,v=>{fadeOut=v;D.vFadeOut.textContent=v.toFixed(1)+'s';updOut();});
-sp(D.sVol,0,150);function sp(el,mn,mx){spv(el,mn,mx);}
-
-// ══ FX ══
-function toggleFx(name,el){
-  fxActive[name]=!fxActive[name];
-  el.className='chip';
-  if(fxActive[name])el.classList.add(name==='echo'||name==='stereo'?'ac':name==='bitcrush'||name==='reverse'?'ao':'ag');
-  updFp();updOut();
-}
-
-// ══ FINGERPRINT ══
-function applyFpMode(){
-  const r={off:0,mild:1,medium:2,strong:3}[$('fpMode').value]||0;
-  if(!r)return;
-  setAll(mkParams(r));genHash();
-}
-function doRandomize(){
-  const r={off:0,mild:1,medium:2,strong:3}[$('fpMode').value]||1;
-  setAll(mkParams(r));genHash();toast('🔀 Fingerprint randomized!');
-}
-function mkParams(r){return{
-  pitch:+((Math.random()*r*2-r).toFixed(1)),
-  speed:+(1+Math.random()*0.05*r+0.01).toFixed(3),
-  noise:+(Math.random()*4*r+1).toFixed(1),
-  fadeIn:+(Math.random()*r*0.4).toFixed(1),
-  fadeOut:+(Math.random()*r*0.4).toFixed(1),
-};}
-function setAll(p){
-  function ss(el,mn,mx,v,cb){el.value=v;cb(v);spv(el,mn,mx);}
-  ss(D.sPitch,-12,12,p.pitch,v=>{pitch=v;D.vPitch.textContent=(v>=0?'+':'')+v+' st';});
-  ss(D.sSpeed,0.5,2,p.speed,v=>{speed=v;D.vSpeed.textContent=v.toFixed(2)+'×';});
-  ss(D.sNoise,0,15,p.noise,v=>{noise=v;D.vNoise.textContent=v.toFixed(1)+'%';});
-  ss(D.sFadeIn,0,5,p.fadeIn,v=>{fadeIn=v;D.vFadeIn.textContent=v.toFixed(1)+'s';});
-  ss(D.sFadeOut,0,5,p.fadeOut,v=>{fadeOut=v;D.vFadeOut.textContent=v.toFixed(1)+'s';});
-  updFp();updOut();
-}
-function genHash(){
-  const c='0123456789ABCDEF';
-  D.fpHash.textContent=Array.from({length:32},()=>c[Math.floor(Math.random()*16)]).join('').match(/.{8}/g).join(' ');
-  D.fpHash.classList.add('fph');setTimeout(()=>D.fpHash.classList.remove('fph'),350);
-}
-function updFp(){
-  const m=pitch!==0||speed!==1||noise>0||fadeIn>0||fadeOut>0||Object.values(fxActive).some(Boolean);
-  D.dFp.style.cssText=m?'background:var(--green);box-shadow:0 0 7px var(--green)':'';
-}
-function updOut(){
-  if(!audioBuffer)return;
-  const dur=audioBuffer.duration;
-  const kb=currentFmt==='wav'?Math.round((44+dur*audioBuffer.sampleRate*audioBuffer.numberOfChannels*2)/1024):Math.round(dur*currentBr/8);
-  D.oSz.textContent=kb>1024?(kb/1024).toFixed(1)+' MB':kb+' KB';
-  const m=[];
-  if(pitch!==0)m.push('Pitch '+(pitch>0?'+':'')+pitch+'st');
-  if(speed!==1)m.push('Speed '+speed.toFixed(2)+'×');
-  if(noise>0)m.push('Noise '+noise.toFixed(1)+'%');
-  if(fadeIn>0)m.push('FadeIn');if(fadeOut>0)m.push('FadeOut');
-  Object.entries(fxActive).filter(([,v])=>v).forEach(([k])=>m.push(k));
-  D.oMod.textContent=m.length?m.slice(0,3).join('+'):'NONE';
-  D.oModS.textContent=m.length?m.join(' · '):'No modification';
-}
-
-// ══ FORMAT & BITRATE ══
-function selFmt(fmt){
-  currentFmt=fmt;
-  document.querySelectorAll('.fc').forEach(c=>c.classList.remove('sel'));
-  $('ef-'+fmt).classList.add('sel');
-  D.brRow.style.display=fmt!=='wav'?'flex':'none';
-  updOut();
-}
-function selBr(br){
-  currentBr=br;
-  document.querySelectorAll('.bc').forEach(c=>c.classList.remove('sel'));
-  $('b'+br).classList.add('sel');
-  updOut();
-}
-
-// ══ BUILD PROCESSED BUFFER (export only, never during playback) ══
-function buildProc(){
-  if(!audioBuffer)return null;
-  const sR=audioBuffer.sampleRate,ch=fxActive.mono?1:audioBuffer.numberOfChannels,len=audioBuffer.length;
-  const out=actx.createBuffer(ch,len,sR);
-  for(let c=0;c<ch;c++){
-    const src=audioBuffer.getChannelData(Math.min(c,audioBuffer.numberOfChannels-1));
-    const dst=out.getChannelData(c);
-    if(fxActive.reverse){for(let i=0;i<len;i++)dst[i]=src[len-1-i];}else dst.set(src);
-    if(noise>0){const a=noise/100;for(let i=0;i<len;i++)dst[i]+=(Math.random()*2-1)*a;}
-    if(fxActive.norm){let mx=0;for(let i=0;i<len;i++)if(Math.abs(dst[i])>mx)mx=Math.abs(dst[i]);if(mx>0)for(let i=0;i<len;i++)dst[i]/=mx*1.01;}
-    if(fxActive.bitcrush){const st=2/256;for(let i=0;i<len;i++)dst[i]=Math.round(dst[i]/st)*st;}
-    if(fxActive.echo){const d=Math.floor(0.25*sR);for(let i=d;i<len;i++)dst[i]+=dst[i-d]*0.38;}
-    if(fxActive.stereo&&audioBuffer.numberOfChannels>1&&!fxActive.mono){const o=audioBuffer.getChannelData(c===0?1:0);for(let i=0;i<len;i++)dst[i]=dst[i]*1.2-o[i]*0.2;}
-    if(fadeIn>0){const s=Math.floor(fadeIn*sR);for(let i=0;i<Math.min(s,len);i++)dst[i]*=i/s;}
-    if(fadeOut>0){const s=Math.floor(fadeOut*sR);for(let i=0;i<Math.min(s,len);i++)dst[len-1-i]*=i/s;}
-    for(let i=0;i<len;i++)dst[i]=Math.max(-1,Math.min(1,dst[i]));
+  // Create a copy of the buffer at a different sample rate
+  const shiftedBuf = pitchCtx.createBuffer(numChannels, audioBuffer.length, Math.round(sampleRate * pitchRatio));
+  for(let ch=0; ch<numChannels; ch++){
+    shiftedBuf.copyToChannel(audioBuffer.getChannelData(ch), ch);
   }
-  return out;
+
+  const pitchSrc = pitchCtx.createBufferSource();
+  pitchSrc.buffer = shiftedBuf;
+  const gainNode = pitchCtx.createGain();
+  gainNode.gain.value = volume;
+  pitchSrc.connect(gainNode);
+  gainNode.connect(pitchCtx.destination);
+  pitchSrc.start(0);
+  const pitchedBuf = await pitchCtx.startRendering();
+
+  // Step 2: Apply speed change
+  const finalLength = Math.round(pitchedBuf.length / speed);
+  const speedCtx = new OfflineAudioContext(numChannels, finalLength, sampleRate);
+  const speedSrc = speedCtx.createBufferSource();
+  speedSrc.buffer = pitchedBuf;
+  speedSrc.playbackRate.value = speed;
+  speedSrc.connect(speedCtx.destination);
+  speedSrc.start(0);
+  return await speedCtx.startRendering();
 }
 
-// ══ EXPORT ══
-async function exportAudio(){
-  if(!audioBuffer)return;
-  D.btnEx.disabled=true;D.btnEx.textContent='⏳...';D.ep.style.display='block';D.epf.style.width='0%';
-  const sp=p=>D.epf.style.width=p+'%';
-  try{
-    sp(10);const proc=buildProc();sp(35);
-    if(currentFmt==='wav'){const d=toWav(proc);sp(90);dl(new Blob([d],{type:'audio/wav'}),origName+'_sf.wav');toast('✓ WAV exported!');}
-    else if(currentFmt==='mp3'){
-      if(typeof lamejs==='undefined')throw new Error('MP3 encoder unavailable');
-      const b=await encMp3(proc,currentBr,sp);sp(95);dl(b,origName+'_sf.mp3');toast('✓ MP3 ('+currentBr+'kbps)!');
-    }else{const b=await encOgg(proc,currentBr*1000);sp(95);dl(b,origName+'_sf.'+(b._ext||'ogg'));toast('✓ OGG exported!');}
-    sp(100);
-  }catch(e){toast('✕ '+e.message);try{dl(new Blob([toWav(buildProc())],{type:'audio/wav'}),origName+'_sf.wav');toast('⚠ Fallback WAV');}catch(_){}}
-  setTimeout(()=>{D.ep.style.display='none';D.btnEx.disabled=false;D.btnEx.textContent='⬇ DOWNLOAD';},1200);
-}
-async function quickExport(){doRandomize();await new Promise(r=>setTimeout(r,150));await exportAudio();}
+/** AudioBuffer → WAV Blob */
+function audioBufferToWav(buffer){
+  const numChannels = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const format = 1; // PCM
+  const bitDepth = 16;
+  const bytesPerSample = bitDepth/8;
+  const blockAlign = numChannels * bytesPerSample;
+  const byteRate = sampleRate * blockAlign;
+  const dataLength = buffer.length * blockAlign;
+  const headerLength = 44;
+  const arrayBuffer = new ArrayBuffer(headerLength + dataLength);
+  const view = new DataView(arrayBuffer);
 
-// ══ ENCODERS ══
-async function encMp3(buf,kbps,onP){
-  const sr=buf.sampleRate,ch=buf.numberOfChannels,len=buf.length;
-  const enc=new lamejs.Mp3Encoder(ch,sr,kbps),block=1152,chunks=[];
-  const ti=f=>{const a=new Int16Array(f.length);for(let i=0;i<f.length;i++){const s=Math.max(-1,Math.min(1,f[i]));a[i]=s<0?s*0x8000:s*0x7FFF;}return a;};
-  const Li=ti(buf.getChannelData(0)),Ri=ch>1?ti(buf.getChannelData(1)):Li;
-  for(let i=0;i<len;i+=block){
-    const c=ch>1?enc.encodeBuffer(Li.subarray(i,i+block),Ri.subarray(i,i+block)):enc.encodeBuffer(Li.subarray(i,i+block));
-    if(c.length)chunks.push(c);
-    if(i%(block*100)===0){onP&&onP(35+i/len*55|0);await new Promise(r=>setTimeout(r,0));}
-  }
-  const f=enc.flush();if(f.length)chunks.push(f);
-  const tot=chunks.reduce((a,c)=>a+c.length,0),out=new Uint8Array(tot);
-  let off=0;for(const c of chunks){out.set(c,off);off+=c.length;}
-  return new Blob([out],{type:'audio/mpeg'});
-}
-function encOgg(buf,bps){
-  return new Promise((res,rej)=>{
-    const ctx2=new AudioContext({sampleRate:buf.sampleRate});
-    const dest=ctx2.createMediaStreamDestination(),src=ctx2.createBufferSource();
-    src.buffer=buf;src.connect(dest);
-    const mimes=['audio/ogg;codecs=opus','audio/ogg','audio/webm;codecs=opus','audio/webm'];
-    const mime=mimes.find(m=>MediaRecorder.isTypeSupported(m))||'audio/webm;codecs=opus';
-    const ext=mime.includes('ogg')?'ogg':'webm',chunks=[];
-    const rec=new MediaRecorder(dest.stream,{mimeType:mime,audioBitsPerSecond:bps});
-    rec.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data);};
-    rec.onstop=async()=>{await ctx2.close();const b=new Blob(chunks,{type:mime});b._ext=ext;res(b);};
-    rec.onerror=e=>rej(e.error);rec.start(100);src.start(0);
-    setTimeout(()=>{try{rec.stop();src.stop();}catch(_){}},buf.duration*1000+300);
-  });
-}
-function toWav(buf){
-  const ch=buf.numberOfChannels,sr=buf.sampleRate,len=buf.length,bl=len*ch*2;
-  const ab=new ArrayBuffer(44+bl),v=new DataView(ab);
-  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
-  ws(0,'RIFF');v.setUint32(4,36+bl,true);ws(8,'WAVE');ws(12,'fmt ');
-  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);
-  v.setUint32(24,sr,true);v.setUint32(28,sr*ch*2,true);v.setUint16(32,ch*2,true);
-  v.setUint16(34,16,true);ws(36,'data');v.setUint32(40,bl,true);
-  let off=44;for(let i=0;i<len;i++)for(let c=0;c<ch;c++){const s=Math.max(-1,Math.min(1,buf.getChannelData(c)[i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}
-  return ab;
-}
-function dl(blob,name){
-  const url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url),5000);
-}
+  function writeStr(o,s){for(let i=0;i<s.length;i++)view.setUint8(o+i,s.charCodeAt(i));}
+  writeStr(0,'RIFF');
+  view.setUint32(4,36+dataLength,true);
+  writeStr(8,'WAVE');
+  writeStr(12,'fmt ');
+  view.setUint32(16,16,true);
+  view.setUint16(20,format,true);
+  view.setUint16(22,numChannels,true);
+  view.setUint32(24,sampleRate,true);
+  view.setUint32(28,byteRate,true);
+  view.setUint16(32,blockAlign,true);
+  view.setUint16(34,bitDepth,true);
+  writeStr(36,'data');
+  view.setUint32(40,dataLength,true);
 
-// ══ BPM DETECT ══
-function detectBPM(){
-  if(!audioBuffer)return;
-  setTimeout(()=>{
-    try{
-      const d=audioBuffer.getChannelData(0),ws=Math.floor(audioBuffer.sampleRate*0.02),en=[];
-      for(let i=0;i<d.length-ws;i+=ws){let e=0;for(let j=0;j<ws;j++)e+=d[i+j]*d[i+j];en.push(e/ws);}
-      const avg=en.reduce((a,b)=>a+b,0)/en.length,th=avg*1.5;
-      const pk=[];let last=-10;
-      for(let i=1;i<en.length-1;i++)if(en[i]>th&&en[i]>en[i-1]&&en[i]>en[i+1]&&i-last>10){pk.push(i);last=i;}
-      if(pk.length<4)return;
-      const ints=[];for(let i=1;i<Math.min(pk.length,20);i++)ints.push((pk[i]-pk[i-1])*ws/audioBuffer.sampleRate);
-      let bpm=Math.round(60/(ints.reduce((a,b)=>a+b,0)/ints.length));
-      while(bpm<60)bpm*=2;while(bpm>200)bpm/=2;
-      D.iBPM.textContent=bpm;
-    }catch(_){}
-  },60);
-}
-
-// ══ VISUALIZER — ZERO DOM queries inside loop ══
-function setVis(mode,el){
-  visMode=mode;
-  document.querySelectorAll('.vt').forEach(t=>t.classList.remove('act'));
-  el.classList.add('act');
-}
-
-function startVis(){
-  if(rafId)cancelAnimationFrame(rafId);
-  const canvas=D.canvas,ctx=canvas.getContext('2d',{alpha:false});
-  // ResizeObserver — efficient resize
-  const ro=new ResizeObserver(()=>{cW=canvas.width=canvas.offsetWidth;cH=canvas.height=canvas.offsetHeight;});
-  ro.observe(canvas.parentElement);
-  cW=canvas.width=canvas.offsetWidth;cH=canvas.height=canvas.offsetHeight;
-  // Offscreen for spectrogram
-  let specOff=null,specCtx=null;
-
-  // Pre-create gradient for bars (recreate only on resize)
-  let barGrad=null,lastGradH=0;
-
-  function frame(ts){
-    rafId=requestAnimationFrame(frame);
-    if(!cW||!cH)return;
-
-    // ── Get audio data ──
-    let hasData=false;
-    if(analyser){
-      analyser.getByteFrequencyData(freqBuf);
-      analyser.getByteTimeDomainData(timeBuf);
-      hasData=true;
+  let offset = 44;
+  // Interleave channels
+  const channels = [];
+  for(let c=0;c<numChannels;c++) channels.push(buffer.getChannelData(c));
+  for(let i=0;i<buffer.length;i++){
+    for(let c=0;c<numChannels;c++){
+      let s = Math.max(-1,Math.min(1,channels[c][i]));
+      s = s<0?s*0x8000:s*0x7FFF;
+      view.setInt16(offset,s,true);
+      offset+=2;
     }
+  }
+  return new Blob([arrayBuffer],{type:'audio/wav'});
+}
 
-    // ── Spectrum mini — throttled 20fps ──
-    if(hasData&&ts-lastSpec>50){
-      lastSpec=ts;
-      const bl=freqBuf.length;
-      for(let i=0;i<28;i++){
-        const h=Math.max(3,(freqBuf[Math.floor(i*bl/28)]/255)*64+0.5)|0;
-        specBars[i].style.height=h+'px';
+/** AudioBuffer → MP3 Blob using lamejs */
+function audioBufferToMp3(buffer){
+  const numChannels = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const bitRate = 128;
+
+  const mp3encoder = new lamejs.Mp3Encoder(numChannels, sampleRate, bitRate);
+  const mp3Data = [];
+  const sampleBlockSize = 1152;
+
+  const leftData = buffer.getChannelData(0);
+  const rightData = numChannels>1 ? buffer.getChannelData(1) : leftData;
+
+  // Convert Float32 to Int16
+  function floatTo16BitPCM(float32){
+    const int16 = new Int16Array(float32.length);
+    for(let i=0;i<float32.length;i++){
+      let s=Math.max(-1,Math.min(1,float32[i]));
+      int16[i]=s<0?s*0x8000:s*0x7FFF;
+    }
+    return int16;
+  }
+
+  const leftPCM = floatTo16BitPCM(leftData);
+  const rightPCM = floatTo16BitPCM(rightData);
+
+  for(let i=0;i<leftPCM.length;i+=sampleBlockSize){
+    const leftChunk = leftPCM.subarray(i,i+sampleBlockSize);
+    const rightChunk = rightPCM.subarray(i,i+sampleBlockSize);
+    let mp3buf;
+    if(numChannels>1){
+      mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+    } else {
+      mp3buf = mp3encoder.encodeBuffer(leftChunk);
+    }
+    if(mp3buf.length>0) mp3Data.push(mp3buf);
+  }
+  const final = mp3encoder.flush();
+  if(final.length>0) mp3Data.push(final);
+  return new Blob(mp3Data, {type:'audio/mp3'});
+}
+
+function triggerDownloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); try{a.remove()}catch(e){} }, 1000);
+}
+
+function stripExt(name){return name.replace(/\.[^.]+$/,'');}
+
+// ============================================================
+// ===== MAIN APP =============================================
+// ============================================================
+function mainAppInit(){
+  let files=[],activeIdx=0;
+  let speed=1.0,pitch=0,volume=1.0;
+  let isPlaying=false,playbackPos=0;
+  let audioCtx=null,sourceNode=null,gainNode=null;
+  let startTime=0,pauseOffset=0,raf=null;
+  let activeAutoMode=null;
+  let exportFormat='mp3';
+
+  const autoModes=[
+    {id:'autobypass',label:'⚡ AUTO BYPASS',desc:'Recommended · One click',speed:2.0,pitch:1,featured:true},
+    {id:'speed2x',label:'2x Speed',desc:'Speed only',speed:2.0,pitch:0},
+    {id:'speed15x',label:'1.5x Speed',desc:'Moderate',speed:1.5,pitch:0},
+    {id:'pitch3',label:'Pitch +3st',desc:'Pitch only',speed:1.0,pitch:3},
+    {id:'combo',label:'1.5x +2st',desc:'Speed + pitch',speed:1.5,pitch:2}
+  ];
+  const presets=[
+    {label:'Nightcore',speed:1.25,pitch:3},
+    {label:'Slowed',speed:0.8,pitch:-2},
+    {label:'Chipmunk',speed:1.0,pitch:7},
+    {label:'Deep',speed:1.0,pitch:-5},
+    {label:'Vaporwave',speed:0.7,pitch:-3},
+    {label:'Reset',speed:1.0,pitch:0}
+  ];
+  const formats=[
+    {id:'mp3',label:'MP3',sub:'128kbps · Universal'},
+    {id:'wav',label:'WAV',sub:'Lossless · Large'},
+  ];
+
+  const $=id=>document.getElementById(id);
+  const dropzone=$('dropzone'),fileInput=$('fileInput');
+  const hero=$('hero'),features=$('features'),editor=$('editor');
+  const fileTabs=$('fileTabs'),fileCount=$('fileCount');
+  const waveCanvas=$('waveCanvas'),wCtx=waveCanvas.getContext('2d');
+  const waveFileName=$('waveFileName'),waveTime=$('waveTime');
+  const btnPlay=$('btnPlay'),btnRew=$('btnRew'),btnStop=$('btnStop');
+  const btnExport=$('btnExport'),btnExportAll=$('btnExportAll');
+  const exportInfo=$('exportInfo');
+  const autoIndicator=$('autoIndicator');
+  const progressOverlay=$('progressOverlay');
+
+  window.toast=function(title,body,type){
+    type=type||'error';
+    const stack=$('toastStack');
+    const t=document.createElement('div');
+    t.className='toast '+type;
+    t.innerHTML='<div class="t-title">'+escapeHtml(title)+'</div>'+(body?'<div class="t-body">'+escapeHtml(body)+'</div>':'');
+    stack.appendChild(t);
+    setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(function(){t.remove();},400);},6000);
+  };
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+  function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+  function fmtTime(s){if(!isFinite(s)||s<0)s=0;return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
+  function fmtSize(b){return b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
+  function previewRate(){return speed*Math.pow(2,pitch/12);}
+
+  function showProgress(title,sub){$('progTitle').textContent=title;$('progSub').textContent=sub;$('progBarFill').style.width='0%';$('progStatus').textContent='Starting...';progressOverlay.classList.add('show');}
+  function updateProgress(pct,status){$('progBarFill').style.width=pct+'%';$('progStatus').textContent=status;}
+  function hideProgress(){progressOverlay.classList.remove('show');}
+
+  async function loadFile(file){
+    const ctx=getCtx();
+    const buf=await file.arrayBuffer();
+    const ab=await ctx.decodeAudioData(buf);
+    return{name:file.name,size:file.size,file:file,audioBuffer:ab,duration:ab.duration,previewBroken:false};
+  }
+
+  async function addFiles(fileList){
+    const arr=Array.from(fileList);
+    const valid=arr.filter(f=>(f.type&&f.type.startsWith('audio/'))||/\.(mp3|wav|ogg|flac|m4a|aac|webm|opus|wma)$/i.test(f.name));
+    const skipped=arr.length-valid.length;
+    if(skipped>0)toast('Some files skipped',skipped+' file(s) are not audio','warn');
+    for(const f of valid){
+      const maxSize=getSettings().maxFile*1024*1024;
+      if(f.size>maxSize){toast('File too large',f.name+' exceeds the limit','error');continue;}
+      try{
+        const loaded=await loadFile(f);
+        if(loaded.duration>240)toast('Long song warning',f.name+' is over 4 minutes — may take a while to export','warn');
+        files.push(loaded);
+      }catch(e){
+        toast('Cannot decode: '+f.name,'Format not supported in your browser','error');
       }
     }
-
-    // ── Progress — throttled 10fps ──
-    if(isPlaying&&ts-lastProg>100){
-      lastProg=ts;
-      const pos=Math.min(actx.currentTime-startTime+pauseOffset,audioBuffer.duration);
-      D.pFill.style.width=((pos/audioBuffer.duration*100).toFixed(1))+'%';
-      D.tCur.textContent=ft(pos);
+    if(files.length){
+      hero.style.display='none';features.style.display='none';editor.style.display='block';
+      dropzone.classList.remove('empty');dropzone.classList.add('has-files');
+      dropzone.innerHTML='<div class="sub">+ Drop more files or click to add</div>';
     }
+    renderTabs();selectFile(activeIdx);updateFileCount();
+  }
 
-    // ── Draw ──
-    ctx.fillStyle='#020509';ctx.fillRect(0,0,cW,cH);
+  function updateFileCount(){
+    fileCount.textContent=files.length+' FILE'+(files.length!==1?'S':'');
+    btnExportAll.style.display=files.length>1?'block':'none';
+    updateExportBtns();
+  }
 
-    if(!hasData){
-      if(audioBuffer){drawIdleWave(ctx);}
+  function renderTabs(){
+    fileTabs.innerHTML='';
+    files.forEach((f,i)=>{
+      const t=document.createElement('div');
+      t.className='file-tab'+(i===activeIdx?' active':'');
+      t.style.animationDelay=(i*40)+'ms';
+      const icon='♫';
+      const dur=fmtTime(f.duration);
+      t.innerHTML=`<span style="color:${i===activeIdx?'var(--accent)':'var(--dim)'}">${icon}</span><span class="fname">${escapeHtml(f.name)}</span><span class="fdur">${dur}</span><button class="fclose">×</button>`;
+      t.addEventListener('click',e=>{if(!e.target.classList.contains('fclose')){stopPlayback();selectFile(i);}});
+      t.querySelector('.fclose').addEventListener('click',e=>{e.stopPropagation();removeFile(i);});
+      fileTabs.appendChild(t);
+    });
+  }
+
+  function removeFile(idx){
+    if(idx===activeIdx&&isPlaying)stopPlayback();
+    files.splice(idx,1);
+    if(!files.length){
+      editor.style.display='none';hero.style.display='';features.style.display='';
+      dropzone.classList.add('empty');dropzone.classList.remove('has-files');
+      dropzone.innerHTML='<div class="icon">🎵</div><div class="title">Drop audio files here</div><div class="sub">MP3, WAV, OGG, FLAC, M4A — up to 50MB · short songs work best</div>';
+    }
+    if(activeIdx>=files.length)activeIdx=Math.max(0,files.length-1);
+    renderTabs();if(files.length)selectFile(activeIdx);updateFileCount();
+  }
+
+  function selectFile(idx){
+    activeIdx=idx;renderTabs();
+    const f=files[activeIdx];if(!f)return;
+    waveFileName.textContent=f.name;playbackPos=0;pauseOffset=0;drawWaveform();updateStats();updateExportInfo();
+  }
+
+  function drawWaveform(){
+    const f=files[activeIdx];
+    const dpr=window.devicePixelRatio||1;
+    const rect=waveCanvas.getBoundingClientRect();
+    waveCanvas.width=rect.width*dpr;waveCanvas.height=rect.height*dpr;
+    wCtx.scale(dpr,dpr);
+    const W=rect.width,H=rect.height;
+    wCtx.clearRect(0,0,W,H);wCtx.fillStyle='#161624';wCtx.fillRect(0,0,W,H);
+    if(!f||!f.audioBuffer)return;
+    const data=f.audioBuffer.getChannelData(0);
+    const step=Math.ceil(data.length/W);
+    for(let i=0;i<W;i++){
+      let mn=1,mx=-1;
+      for(let j=0;j<step;j++){const v=data[i*step+j]||0;if(v<mn)mn=v;if(v>mx)mx=v;}
+      const top=(1+mn)*H/2,bot=(1+mx)*H/2,bH=Math.max(bot-top,1);
+      const played=playbackPos>0&&(i/W)<playbackPos;
+      const g=wCtx.createLinearGradient(i,top,i,top+bH);
+      if(played){g.addColorStop(0,'#00e5ff');g.addColorStop(1,'#9c6cff');}
+      else{g.addColorStop(0,'#3a3a52');g.addColorStop(1,'#252540');}
+      wCtx.fillStyle=g;wCtx.fillRect(i,top,2,bH);
+    }
+    if(playbackPos>0&&playbackPos<1){
+      const x=playbackPos*W;
+      wCtx.strokeStyle='#fff';wCtx.lineWidth=2;wCtx.shadowColor='#00e5ff';wCtx.shadowBlur=8;
+      wCtx.beginPath();wCtx.moveTo(x,0);wCtx.lineTo(x,H);wCtx.stroke();wCtx.shadowBlur=0;
+    }
+    waveTime.textContent=fmtTime(f.duration*playbackPos)+' / '+fmtTime(f.duration)+' · '+fmtSize(f.size);
+  }
+
+  waveCanvas.addEventListener('click',e=>{
+    const f=files[activeIdx];if(!f||!f.audioBuffer)return;
+    const rect=waveCanvas.getBoundingClientRect();
+    pauseOffset=((e.clientX-rect.left)/rect.width)*f.audioBuffer.duration;
+    playbackPos=pauseOffset/f.audioBuffer.duration;drawWaveform();
+    if(isPlaying){stopSilent();startPlayback();}
+  });
+
+  function startPlayback(){
+    const f=files[activeIdx];if(!f||!f.audioBuffer)return;
+    const ctx=getCtx();
+    if(ctx.state==='suspended')ctx.resume();
+    const src=ctx.createBufferSource();src.buffer=f.audioBuffer;src.playbackRate.value=previewRate();
+    const gain=ctx.createGain();gain.gain.value=volume;gainNode=gain;
+    src.connect(gain);gain.connect(ctx.destination);src.start(0,pauseOffset||0);
+    startTime=ctx.currentTime-(pauseOffset||0)/previewRate();sourceNode=src;
+    isPlaying=true;btnPlay.textContent='⏸';
+    function tick(){
+      if(!isPlaying)return;
+      const elapsed=(ctx.currentTime-startTime)*previewRate();
+      const pos=elapsed/f.audioBuffer.duration;
+      if(pos>=1){stopPlayback();playbackPos=0;pauseOffset=0;drawWaveform();return;}
+      playbackPos=pos;drawWaveform();raf=requestAnimationFrame(tick);
+    }
+    raf=requestAnimationFrame(tick);
+    src.onended=()=>{if(sourceNode===src){stopPlayback();playbackPos=0;pauseOffset=0;drawWaveform();}};
+  }
+  function stopSilent(){if(sourceNode){try{sourceNode.stop();}catch(e){}sourceNode.disconnect();sourceNode=null;}if(raf)cancelAnimationFrame(raf);isPlaying=false;}
+  function stopPlayback(){stopSilent();btnPlay.textContent='▶';}
+  function togglePlay(){if(isPlaying){pauseOffset=(getCtx().currentTime-startTime)*previewRate();stopPlayback();}else startPlayback();}
+
+  function applyLive(){
+    if(sourceNode){const ctx=getCtx();const curOff=(ctx.currentTime-startTime)*sourceNode.playbackRate.value;const nr=previewRate();sourceNode.playbackRate.value=nr;startTime=ctx.currentTime-curOff/nr;}
+    if(gainNode)gainNode.gain.value=volume;
+    updateStats();updateExportInfo();highlightPreset();highlightAuto();
+  }
+
+  function updateKnob(id,pct,color){
+    const ring=$(id);
+    ring.style.background=`conic-gradient(from -135deg, ${color} 0deg, ${color} ${pct/100*270}deg, #252538 ${pct/100*270}deg, #252538 270deg, transparent 270deg)`;
+    const needle=ring.querySelector('.knob-needle');
+    needle.style.transform=`rotate(${-135+pct/100*270}deg)`;needle.style.background=color;needle.style.boxShadow=`0 0 6px ${color}`;
+  }
+
+  function syncUI(){
+    const sPct=((speed-0.25)/3.75)*100;
+    $('sliderSpeed').value=speed;$('sliderSpeedVal').textContent=speed.toFixed(2)+'x';$('sliderSpeedFill').style.width=sPct+'%';$('knobSpeedVal').textContent=speed.toFixed(2)+'x';
+    updateKnob('knobSpeed',sPct,'#00e5ff');
+    const pPct=((pitch+12)/24)*100;
+    $('sliderPitch').value=pitch;$('sliderPitchVal').textContent=pitch+' st';$('sliderPitchFill').style.width=pPct+'%';$('knobPitchVal').textContent=(pitch>0?'+':'')+pitch+'st';
+    updateKnob('knobPitch',pPct,'#9c6cff');
+    const vPct=(volume/2)*100;
+    $('sliderVolume').value=volume;$('sliderVolumeVal').textContent=Math.round(volume*100)+'%';$('sliderVolumeFill').style.width=vPct+'%';$('knobVolumeVal').textContent=Math.round(volume*100)+'%';
+    updateKnob('knobVolume',vPct,'#00e676');
+    applyLive();
+  }
+
+  function updateStats(){
+    const f=files[activeIdx];if(!f)return;
+    $('statRate').textContent=(f.audioBuffer?f.audioBuffer.sampleRate:'44100')+'Hz';
+    $('statCh').textContent=f.audioBuffer&&f.audioBuffer.numberOfChannels===1?'Mono':'Stereo';
+    $('statOrig').textContent=fmtTime(f.duration);
+    $('statProc').textContent=fmtTime(f.duration/speed);
+  }
+
+  function updateExportInfo(){
+    const f=files[activeIdx];if(!f)return;
+    exportInfo.innerHTML=`Output: ${exportFormat==='mp3'?'MP3 128kbps':'WAV 16bit PCM'} · ${f.audioBuffer?f.audioBuffer.sampleRate:44100}Hz<br>Speed: ${speed.toFixed(2)}x · Pitch: ${pitch>0?'+':''}${pitch}st · Independent`;
+  }
+
+  function updateExportBtns(){
+    const ext=exportFormat.toUpperCase();
+    btnExport.textContent=`EXPORT CURRENT → ${ext}`;
+    if(files.length>1)btnExportAll.textContent=`EXPORT ALL ${files.length} FILES → ${ext}`;
+  }
+
+  $('sliderSpeed').addEventListener('input',e=>{speed=parseFloat(e.target.value);activeAutoMode=null;syncUI();});
+  $('sliderPitch').addEventListener('input',e=>{pitch=parseInt(e.target.value);activeAutoMode=null;syncUI();});
+  $('sliderVolume').addEventListener('input',e=>{volume=parseFloat(e.target.value);syncUI();});
+
+  function setupKnob(knobId,param,min,max,stepSize){
+    const el=$(knobId);let dragging=false,sy=0,sv=0;
+    el.addEventListener('pointerdown',e=>{dragging=true;sy=e.clientY;sv=param==='speed'?speed:param==='pitch'?pitch:volume;el.setPointerCapture(e.pointerId);});
+    el.addEventListener('pointermove',e=>{
+      if(!dragging)return;
+      let nv=sv+((sy-e.clientY)/150)*(max-min);nv=Math.round(nv/stepSize)*stepSize;nv=Math.max(min,Math.min(max,nv));
+      if(param==='speed'){speed=nv;activeAutoMode=null;}else if(param==='pitch'){pitch=nv;activeAutoMode=null;}else volume=nv;
+      syncUI();
+    });
+    el.addEventListener('pointerup',()=>dragging=false);
+    el.addEventListener('pointercancel',()=>dragging=false);
+  }
+  setupKnob('knobSpeed','speed',0.25,4.0,0.05);
+  setupKnob('knobPitch','pitch',-12,12,1);
+  setupKnob('knobVolume','volume',0,2.0,0.05);
+
+  // ===== FIX #2: Build auto-modes ONCE (inside mainAppInit, not re-entered) =====
+  (function(){
+    const c=$('autoModes');
+    c.innerHTML=''; // Clear first to be safe
+    autoModes.forEach(m=>{
+      const b=document.createElement('button');
+      b.className='auto-btn'+(m.featured?' auto-featured':'');b.dataset.id=m.id;
+      b.innerHTML=`${m.label}<div class="detail">${m.desc}</div>`;
+      b.addEventListener('click',()=>{
+        if(activeAutoMode===m.id){activeAutoMode=null;speed=1.0;pitch=0;}
+        else{activeAutoMode=m.id;speed=m.speed;pitch=m.pitch;}
+        syncUI();
+      });
+      c.appendChild(b);
+    });
+  })();
+
+  function highlightAuto(){
+    document.querySelectorAll('.auto-btn').forEach(b=>b.classList.toggle('active',b.dataset.id===activeAutoMode));
+    const on=activeAutoMode!==null;
+    autoIndicator.style.display=on?'block':'none';
+    const s=$('autoSection');s.classList.toggle('auto-active-glow',on);
+    s.style.borderColor=on?'rgba(255,171,64,.3)':'';s.style.background=on?'rgba(255,171,64,.04)':'';
+  }
+
+  // ===== FIX #2: Build presets ONCE =====
+  (function(){
+    const g=$('presetsGrid');
+    g.innerHTML=''; // Clear first
+    presets.forEach(p=>{
+      const b=document.createElement('button');b.className='preset-btn';b.dataset.speed=p.speed;b.dataset.pitch=p.pitch;
+      b.innerHTML=`${p.label}<div class="preset-detail">${p.speed}x / ${p.pitch>0?'+':''}${p.pitch}st</div>`;
+      b.addEventListener('click',()=>{speed=p.speed;pitch=p.pitch;activeAutoMode=null;syncUI();});
+      g.appendChild(b);
+    });
+  })();
+
+  function highlightPreset(){
+    document.querySelectorAll('.preset-btn').forEach(b=>b.classList.toggle('active',Math.abs(speed-parseFloat(b.dataset.speed))<0.01&&pitch===parseInt(b.dataset.pitch)));
+  }
+
+  // ===== FIX #2: Build formats ONCE =====
+  (function(){
+    const c=$('formatSelector');
+    c.innerHTML=''; // Clear first
+    formats.forEach(f=>{
+      const b=document.createElement('button');b.className='format-btn'+(f.id===exportFormat?' active':'');b.dataset.fmt=f.id;
+      b.innerHTML=`${f.label}<div class="fmt-sub">${f.sub}</div>`;
+      b.addEventListener('click',()=>{
+        exportFormat=f.id;
+        document.querySelectorAll('.format-btn').forEach(x=>x.classList.toggle('active',x.dataset.fmt===f.id));
+        updateExportBtns();updateExportInfo();
+      });
+      c.appendChild(b);
+    });
+  })();
+
+  btnPlay.addEventListener('click',togglePlay);
+  btnRew.addEventListener('click',()=>{if(isPlaying)stopPlayback();pauseOffset=0;playbackPos=0;drawWaveform();});
+  btnStop.addEventListener('click',()=>{stopPlayback();pauseOffset=0;playbackPos=0;drawWaveform();});
+  dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('dragover');});
+  dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('dragover');addFiles(e.dataTransfer.files);});
+  dropzone.addEventListener('click',()=>fileInput.click());
+  fileInput.addEventListener('change',e=>{addFiles(e.target.files);e.target.value='';});
+
+  // ===== FIX #3: CLIENT-SIDE EXPORT =====
+  async function doExport(fileData){
+    const ext=exportFormat;
+    showProgress(`Processing → ${ext.toUpperCase()}`,`Speed ${speed.toFixed(2)}x · Pitch ${pitch>0?'+':''}${pitch}st`);
+    updateProgress(10,'Rendering audio...');
+
+    try{
+      // Render with effects
+      const rendered = await renderAudioWithEffects(fileData.audioBuffer, speed, pitch, volume);
+      updateProgress(60,'Encoding...');
+
+      let blob;
+      const outName = stripExt(fileData.name)+'_bypass.'+ext;
+
+      if(ext==='mp3'){
+        // Check if lamejs loaded
+        if(typeof lamejs === 'undefined'){
+          toast('MP3 encoder not loaded','Falling back to WAV — check your internet connection','warn');
+          blob = audioBufferToWav(rendered);
+          const wavName = stripExt(fileData.name)+'_bypass.wav';
+          updateProgress(95,'Downloading...');
+          triggerDownloadBlob(blob, wavName);
+          recordExport(wavName);
+          updateProgress(100,'Done!');
+          setTimeout(hideProgress,800);
+          toast('Exported as WAV',wavName,'success');
+          return;
+        }
+        blob = audioBufferToMp3(rendered);
+      } else {
+        blob = audioBufferToWav(rendered);
+      }
+
+      updateProgress(95,'Downloading...');
+      triggerDownloadBlob(blob, outName);
+      recordExport(outName);
+      updateProgress(100,'Done!');
+      setTimeout(hideProgress,800);
+      toast('Export complete',outName,'success');
+    }catch(e){
+      console.error('Export fail:',e);
+      hideProgress();
+      toast('Export failed',e.message||'Unknown error','error');
+      addLog('error','Export failed: '+e.message, getCurrentUser()?.name||'unknown');
+    }
+  }
+
+  btnExport.addEventListener('click',async()=>{
+    const f=files[activeIdx];if(!f)return;
+    const check=canExport();
+    if(!check.ok){
+      document.getElementById('limitMsg').textContent=check.reason;
+      document.getElementById('limitOverlay').classList.add('show');
       return;
     }
+    btnExport.disabled=true;
+    await doExport(f);
+    btnExport.disabled=false;updateExportBtns();
+  });
 
-    if(visMode==='bars'){
-      // Recreate gradient only when height changes
-      if(!barGrad||lastGradH!==cH){barGrad=ctx.createLinearGradient(0,cH,0,0);barGrad.addColorStop(0,'#00f0ff');barGrad.addColorStop(.55,'#00ff88');barGrad.addColorStop(1,'#ff6b00');lastGradH=cH;}
-      drawBars(ctx,barGrad);
+  btnExportAll.addEventListener('click',async()=>{
+    btnExportAll.disabled=true;
+    showProgress(`Bulk Export → ${exportFormat.toUpperCase()}`,`Processing ${files.length} files...`);
+    let ok=0,fail=0;
+    for(let i=0;i<files.length;i++){
+      const check=canExport();
+      if(!check.ok){
+        toast('Limit reached',check.reason,'warn');
+        hideProgress();
+        document.getElementById('limitMsg').textContent=check.reason;
+        document.getElementById('limitOverlay').classList.add('show');
+        break;
+      }
+      updateProgress((i/files.length)*100,`File ${i+1}/${files.length}: ${files[i].name}`);
+      try{
+        await doExport(files[i]);
+        ok++;
+        await new Promise(r=>setTimeout(r,300));
+      }catch(e){
+        fail++;
+        toast('Failed: '+files[i].name,e.message||'Unknown','error');
+      }
     }
-    else if(visMode==='wave')drawWave(ctx);
-    else if(visMode==='circle')drawRadial(ctx);
-    else if(visMode==='scope')drawScope(ctx);
-    else if(visMode==='spec'){
-      if(!specOff||specOff.width!==cW||specOff.height!==cH){specOff=new OffscreenCanvas(cW,cH);specCtx=specOff.getContext('2d');}
-      drawSpec(ctx,specCtx,specOff);
-    }
+    hideProgress();
+    if(ok>0)toast('Bulk done',`${ok} file(s) exported`,'success');
+    btnExportAll.disabled=false;updateExportBtns();
+  });
+
+  window.addEventListener('resize',()=>{if(files.length)drawWaveform();});
+
+  // Badge = client-side (no server check needed)
+  document.getElementById('serverBadge').textContent='⚡ Client-Side';
+  document.getElementById('serverBadge').className='badge badge-client';
+
+  syncUI();
+}
+
+// ============================================================
+// ===== ADMIN PANEL LOGIC ====================================
+// ============================================================
+let adminLoggedIn=false;
+
+window.closeAdmin=function(){document.getElementById('adminOverlay').classList.remove('show');};
+window.openAdminLogin=function(){document.getElementById('adminOverlay').classList.add('show');document.getElementById('adminLogin').style.display='flex';document.getElementById('adminPanel').classList.remove('show');};
+window.doAdminLogin=function(){
+  const u=document.getElementById('adminUser').value.trim();
+  const p=document.getElementById('adminPass').value;
+  const creds=getAdminCreds();
+  if(u===creds.user&&p===creds.pass){
+    adminLoggedIn=true;
+    document.getElementById('adminLogin').style.display='none';
+    document.getElementById('adminPanel').classList.add('show');
+    document.getElementById('adminUserLabel').textContent='Logged in as: '+u;
+    addLog('admin','Admin logged in: '+u,u);
+    refreshAdminData();
+  } else {
+    document.getElementById('adminPass').style.borderColor='var(--danger)';
+    setTimeout(()=>document.getElementById('adminPass').style.borderColor='',2000);
+    addLog('error','Failed admin login attempt',u);
   }
-  frame(0);
+};
+window.adminLogout=function(){adminLoggedIn=false;document.getElementById('adminPanel').classList.remove('show');document.getElementById('adminLogin').style.display='flex';document.getElementById('adminUser').value='';document.getElementById('adminPass').value='';};
+window.adminNav=function(page){
+  document.querySelectorAll('.admin-nav-item').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
+  document.querySelectorAll('.admin-page').forEach(el=>el.classList.toggle('active',el.id==='page-'+page));
+  if(page==='dashboard')refreshDashboardActivity();
+  if(page==='users')renderUsersTable();
+  if(page==='vip'){renderVipTable();populateVipUserSelect();}
+  if(page==='limits')populateLimitUserSelect();
+  if(page==='activity')renderLog();
+  if(page==='settings')loadSettings();
+};
+
+function refreshAdminData(){
+  const users=getUsers();const vips=users.filter(u=>u.role==='vip');const banned=users.filter(u=>u.banned);const totalExports=users.reduce((a,u)=>a+(u.exportsToday||0),0);
+  safeSet('statTotalUsers',users.length);safeSet('statVipUsers',vips.length);safeSet('statExportsToday',totalExports);safeSet('statBanned',banned.length);
+  renderDashUsers();refreshDashboardActivity();
 }
-
-function drawIdleWave(ctx){
-  const data=audioBuffer.getChannelData(0),step=Math.max(1,Math.floor(data.length/cW));
-  const mid=cH/2;
-  ctx.beginPath();ctx.strokeStyle='rgba(0,240,255,0.35)';ctx.lineWidth=1;
-  for(let x=0;x<cW;x++){const y=mid+data[x*step]*mid*0.8;x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
-  ctx.stroke();
-  ctx.strokeStyle='rgba(0,240,255,0.07)';ctx.beginPath();ctx.moveTo(0,mid);ctx.lineTo(cW,mid);ctx.stroke();
+function safeSet(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+function refreshDashboardActivity(){
+  const log=getLog();const el=document.getElementById('dashRecentActivity');if(!el)return;
+  el.innerHTML=log.slice(0,5).map(l=>`<div class="log-entry"><span class="log-time">${l.time}</span><span class="log-type log-${l.type}">${l.type.toUpperCase()}</span><span class="log-msg">${escAdm(l.msg)} <span style="color:var(--dim)">— ${l.user}</span></span></div>`).join('')||'<div style="padding:14px;color:var(--dim);font-family:monospace;font-size:11px">No activity yet</div>';
 }
-
-function drawBars(ctx,grad){
-  const bars=Math.min(90,cW/5|0),bw=cW/bars-1;
-  ctx.fillStyle=grad;
-  for(let i=0;i<bars;i++){
-    const v=freqBuf[Math.floor(i*freqBuf.length/bars)]/255;
-    const bh=(v*cH*0.9+0.5)|0;
-    const x=(i*(bw+1))|0;
-    if(v>0.65){ctx.shadowColor='#00f0ff';ctx.shadowBlur=7;}
-    ctx.fillRect(x,cH-bh,bw,bh);
-    if(bh>5){ctx.fillStyle='rgba(255,255,255,0.85)';ctx.fillRect(x,cH-bh-1.5,bw,1.5);ctx.fillStyle=grad;}
-  }
-  ctx.shadowBlur=0;
+function escAdm(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
+function renderDashUsers(){
+  const users=getUsers();const tbody=document.getElementById('dashUsersTbody');if(!tbody)return;
+  tbody.innerHTML=users.slice(0,5).map(u=>`<tr><td style="color:var(--dim)">${u.id.slice(0,8)}</td><td>${escAdm(u.name)}</td><td><span class="role-badge role-${u.banned?'banned':u.role}">${u.banned?'BANNED':u.role.toUpperCase()}</span></td><td style="color:var(--accent)">${u.exportsTotal||0}</td><td style="color:${u.banned?'var(--danger)':u.role==='vip'?'#ffd700':'var(--dim)'}">${u.banned?'🚫 Banned':u.role==='vip'?'⭐ VIP':'Active'}</td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:16px">No users yet</td></tr>';
 }
-
-function drawWave(ctx){
-  const mid=cH/2,sw=cW/timeBuf.length;
-  ctx.strokeStyle='rgba(0,240,255,0.06)';ctx.lineWidth=1;
-  for(let i=0;i<=4;i++){ctx.beginPath();ctx.moveTo(0,i/4*cH);ctx.lineTo(cW,i/4*cH);ctx.stroke();}
-  ctx.beginPath();ctx.strokeStyle='#00f0ff';ctx.lineWidth=2;ctx.shadowColor='#00f0ff';ctx.shadowBlur=5;
-  for(let i=0;i<timeBuf.length;i++){const y=mid+((timeBuf[i]-128)/128)*mid*.95;i===0?ctx.moveTo(0,y):ctx.lineTo(i*sw,y);}
-  ctx.stroke();ctx.shadowBlur=0;
+window.renderUsersTable=function(){
+  const users=getUsers();const search=(document.getElementById('userSearch')?.value||'').toLowerCase();
+  const filtered=users.filter(u=>u.name.toLowerCase().includes(search)||u.id.includes(search));
+  const tbody=document.getElementById('usersTbody');if(!tbody)return;
+  tbody.innerHTML=filtered.map((u,i)=>`<tr><td style="color:var(--dim)">${i+1}</td><td style="font-weight:600">${escAdm(u.name)}</td><td><span class="role-badge role-${u.banned?'banned':u.role}">${u.banned?'BANNED':u.role.toUpperCase()}</span></td><td><span style="color:var(--accent)">${u.exportsToday||0}</span> <span style="color:var(--dim)">/ ${u.exportsTotal||0} total</span></td><td>${u.limit===0?'∞':u.limit}/day</td><td style="color:var(--dim)">${u.joined||'—'}</td><td style="display:flex;gap:5px;flex-wrap:wrap">${u.role!=='admin'?`<button class="abtn abtn-vip" onclick="quickSetVip('${u.id}')">⭐</button>`:''}${!u.banned?`<button class="abtn abtn-danger" onclick="banUser('${u.id}')">BAN</button>`:`<button class="abtn abtn-success" onclick="unbanUser('${u.id}')">UNBAN</button>`}<button class="abtn abtn-accent" onclick="promoteUser('${u.id}')">ROLE</button><button class="abtn abtn-danger" onclick="deleteUser('${u.id}')">DEL</button></td></tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--dim);padding:16px">No users found</td></tr>';
+};
+window.toggleAddUserForm=function(){document.getElementById('addUserForm').classList.toggle('open');};
+window.addUser=function(){
+  const name=document.getElementById('newUserName').value.trim();const role=document.getElementById('newUserRole').value;const limit=parseInt(document.getElementById('newUserLimit').value)||5;
+  if(!name){alert('Enter a username!');return;}
+  const users=getUsers();const nu={id:'u'+Math.random().toString(36).slice(2,9)+Date.now().toString(36),name,role,limit,exportsToday:0,exportsTotal:0,joined:new Date().toLocaleDateString(),banned:false,vipExpiry:role==='vip'?'permanent':null,vipSince:role==='vip'?new Date().toLocaleDateString():null,lastReset:new Date().toDateString()};
+  users.push(nu);saveUsers(users);addLog('admin','Admin added user: '+name+' ('+role+')',getAdminCreds().user);renderUsersTable();refreshAdminData();document.getElementById('newUserName').value='';document.getElementById('addUserForm').classList.remove('open');
+};
+window.banUser=function(uid){if(!confirm('Ban this user?'))return;const users=getUsers();const u=users.find(x=>x.id===uid);if(u){u.banned=true;saveUsers(users);addLog('ban','Banned user: '+u.name,getAdminCreds().user);}renderUsersTable();refreshAdminData();};
+window.unbanUser=function(uid){const users=getUsers();const u=users.find(x=>x.id===uid);if(u){u.banned=false;saveUsers(users);addLog('admin','Unbanned user: '+u.name,getAdminCreds().user);}renderUsersTable();refreshAdminData();};
+window.deleteUser=function(uid){if(!confirm('Delete this user?'))return;saveUsers(getUsers().filter(x=>x.id!==uid));addLog('admin','Deleted user ID: '+uid,getAdminCreds().user);renderUsersTable();refreshAdminData();};
+window.promoteUser=function(uid){
+  const users=getUsers();const u=users.find(x=>x.id===uid);if(!u)return;
+  const roles=['user','vip','admin'];const cur=roles.indexOf(u.role);const next=roles[(cur+1)%roles.length];
+  if(!confirm(`Change ${u.name}'s role from ${u.role} to ${next}?`))return;
+  u.role=next;if(next==='vip'){u.vipSince=new Date().toLocaleDateString();u.vipExpiry='permanent';}else{u.vipSince=null;u.vipExpiry=null;}
+  saveUsers(users);addLog('admin',`Promoted ${u.name} to ${next}`,getAdminCreds().user);renderUsersTable();refreshAdminData();
+};
+window.quickSetVip=function(uid){
+  const users=getUsers();const u=users.find(x=>x.id===uid);if(!u)return;
+  u.role='vip';u.vipSince=new Date().toLocaleDateString();u.vipExpiry='permanent';u.limit=0;
+  saveUsers(users);addLog('vip','Quick VIP granted to: '+u.name,getAdminCreds().user);renderUsersTable();refreshAdminData();
+};
+function populateVipUserSelect(){const users=getUsers();const sel=document.getElementById('vipUserSelect');if(!sel)return;sel.innerHTML=users.map(u=>`<option value="${u.id}">${u.name} (${u.role})</option>`).join('');}
+window.grantVip=function(){
+  const uid=document.getElementById('vipUserSelect')?.value;const days=parseInt(document.getElementById('vipDuration')?.value)||30;const exportLim=parseInt(document.getElementById('vipExportLimit')?.value)||0;
+  const users=getUsers();const u=users.find(x=>x.id===uid);if(!u)return;
+  u.role='vip';u.vipSince=new Date().toLocaleDateString();u.limit=exportLim;u.vipExpiry=days===0?'permanent':Date.now()+(days*24*60*60*1000);
+  saveUsers(users);addLog('vip',`VIP granted to ${u.name} (${days===0?'permanent':days+' days'})`,getAdminCreds().user);renderVipTable();refreshAdminData();toast('VIP Granted','','success');
+};
+function renderVipTable(){
+  const users=getUsers().filter(u=>u.role==='vip');const tbody=document.getElementById('vipTbody');if(!tbody)return;
+  tbody.innerHTML=users.map(u=>`<tr><td style="font-weight:600">${escAdm(u.name)}</td><td style="color:var(--dim)">${u.vipSince||'—'}</td><td style="color:var(--warn)">${u.vipExpiry==='permanent'?'♾ Permanent':u.vipExpiry?new Date(u.vipExpiry).toLocaleDateString():'—'}</td><td>${u.limit===0?'<span style="color:var(--success)">∞ Unlimited</span>':u.limit+'/day'}</td><td><button class="abtn abtn-danger" onclick="revokeVip('${u.id}')">REVOKE</button></td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:16px">No VIP users</td></tr>';
 }
+window.revokeVip=function(uid){if(!confirm('Revoke VIP?'))return;const users=getUsers();const u=users.find(x=>x.id===uid);if(u){u.role='user';u.vipSince=null;u.vipExpiry=null;u.limit=getSettings().freeLimit;saveUsers(users);addLog('vip','VIP revoked from: '+u.name,getAdminCreds().user);}renderVipTable();refreshAdminData();};
+function populateLimitUserSelect(){const users=getUsers();const sel=document.getElementById('limitUserSelect');if(!sel)return;sel.innerHTML=users.map(u=>`<option value="${u.id}">${u.name} (${u.role}, ${u.limit===0?'∞':u.limit}/day)</option>`).join('');}
+window.saveGlobalLimits=function(){const s=getSettings();s.freeLimit=parseInt(document.getElementById('globalFreeLimit')?.value)||5;s.vipLimit=parseInt(document.getElementById('globalVipLimit')?.value)||0;s.maxFile=parseInt(document.getElementById('globalMaxFile')?.value)||50;s.vipMaxFile=parseInt(document.getElementById('globalVipMaxFile')?.value)||200;saveSettings(s);addLog('admin','Global limits updated',getAdminCreds().user);alert('Limits saved!');};
+window.setUserLimit=function(){const uid=document.getElementById('limitUserSelect')?.value;const val=parseInt(document.getElementById('limitNewVal')?.value)||0;const users=getUsers();const u=users.find(x=>x.id===uid);if(u){u.limit=val;saveUsers(users);addLog('admin',`Set limit for ${u.name} → ${val===0?'∞':val}/day`,getAdminCreds().user);populateLimitUserSelect();alert(`Limit set for ${u.name}: ${val===0?'Unlimited':val+'/day'}`);}};
+window.saveGateSettings=function(){const s=getSettings();s.gateEnabled=document.getElementById('gateEnabled')?.checked||false;s.gateDiscord=document.getElementById('gateDiscord')?.checked||false;s.gateTikTok=document.getElementById('gateTikTok')?.checked||false;s.gateWhitelist=document.getElementById('gateWhitelist')?.checked||false;s.discordLink=document.getElementById('gateDiscordLink')?.value||'';s.ttLink=document.getElementById('gateTTLink')?.value||'';saveSettings(s);addLog('admin','Gate settings updated',getAdminCreds().user);alert('Gate settings saved!');};
+window.resetGateForAll=function(){if(!confirm('Force all users to redo the gate?'))return;localStorage.removeItem(GATE_KEY);addLog('admin','Gate reset for all users',getAdminCreds().user);alert('Gate reset for all users!');};
+window.renderLog=function(){const log=getLog();const filter=document.getElementById('logFilter')?.value||'all';const filtered=filter==='all'?log:log.filter(l=>l.type===filter);const el=document.getElementById('activityLog');if(!el)return;el.innerHTML=filtered.map(l=>`<div class="log-entry"><span class="log-time">${l.time}</span><span class="log-type log-${l.type}">${l.type.toUpperCase()}</span><span class="log-msg">${escAdm(l.msg)} <span style="color:var(--dim)">— ${l.user}</span></span></div>`).join('')||'<div style="padding:20px;color:var(--dim);font-family:monospace;font-size:11px;text-align:center">No log entries</div>';};
+window.clearLog=function(){if(!confirm('Clear all activity logs?'))return;localStorage.removeItem(LOG_KEY);renderLog();refreshDashboardActivity();};
+function loadSettings(){const s=getSettings();setCheck('settMaintenance',s.maintenance);setCheck('settAutoBan',s.autoBan);setCheck('settBanner',s.showBanner);setVal('bannerText',s.bannerText);setVal('bannerType',s.bannerType);setVal('globalFreeLimit',s.freeLimit);setVal('globalVipLimit',s.vipLimit);setVal('globalMaxFile',s.maxFile);setVal('globalVipMaxFile',s.vipMaxFile);setCheck('gateEnabled',s.gateEnabled);setCheck('gateDiscord',s.gateDiscord);setCheck('gateTikTok',s.gateTikTok);setCheck('gateWhitelist',s.gateWhitelist);setVal('gateDiscordLink',s.discordLink);setVal('gateTTLink',s.ttLink);}
+function setCheck(id,val){const el=document.getElementById(id);if(el)el.checked=!!val;}
+function setVal(id,val){const el=document.getElementById(id);if(el)el.value=val||'';}
+window.changeAdminCreds=function(){const nu=document.getElementById('newAdminUser')?.value.trim();const np=document.getElementById('newAdminPass')?.value;const cp=document.getElementById('confirmAdminPass')?.value;if(!nu||!np){alert('Fill in all fields!');return;}if(np!==cp){alert('Passwords do not match!');return;}if(np.length<6){alert('Password must be at least 6 characters!');return;}setAdminCreds(nu,np);addLog('admin','Admin credentials changed',nu);alert('Credentials updated!');document.getElementById('newAdminUser').value='';document.getElementById('newAdminPass').value='';document.getElementById('confirmAdminPass').value='';};
+window.saveBanner=function(){const s=getSettings();s.showBanner=document.getElementById('settBanner')?.checked||false;s.bannerText=document.getElementById('bannerText')?.value||'';s.bannerType=document.getElementById('bannerType')?.value||'info';saveSettings(s);addLog('admin','Banner settings updated',getAdminCreds().user);alert('Banner settings saved!');};
+window.resetAllExportCounts=function(){if(!confirm('Reset all export counts?'))return;const users=getUsers();users.forEach(u=>{u.exportsToday=0;u.lastReset=new Date().toDateString();});saveUsers(users);addLog('admin','Reset all export counts',getAdminCreds().user);refreshAdminData();alert('All export counts reset!');};
+window.clearAllBans=function(){if(!confirm('Remove all bans?'))return;const users=getUsers();users.forEach(u=>{u.banned=false;});saveUsers(users);addLog('admin','All bans cleared',getAdminCreds().user);refreshAdminData();alert('All bans removed!');};
+window.resetAllData=function(){localStorage.removeItem(USERS_KEY);localStorage.removeItem(LOG_KEY);localStorage.removeItem(GATE_KEY);addLog('admin','ALL DATA RESET',getAdminCreds().user);refreshAdminData();alert('All data reset!');};
 
-function drawRadial(ctx){
-  const cx=cW/2,cy=cH/2,r=Math.min(cW,cH)*.26,bars=90;
-  ctx.strokeStyle='rgba(0,240,255,0.1)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
-  for(let i=0;i<bars;i++){
-    const v=freqBuf[Math.floor(i*freqBuf.length/bars)]/255;
-    const a=(i/bars)*Math.PI*2-Math.PI/2,l=v*r;
-    ctx.strokeStyle=`hsla(${180+i*2},100%,58%,${.4+v*.6})`;ctx.lineWidth=2;
-    if(v>.6){ctx.shadowColor=`hsl(${180+i*2},100%,58%)`;ctx.shadowBlur=7;}
-    ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.lineTo(cx+Math.cos(a)*(r+l),cy+Math.sin(a)*(r+l));ctx.stroke();
-  }
-  ctx.shadowBlur=0;ctx.fillStyle='rgba(0,240,255,.65)';ctx.font='bold 11px Orbitron';
-  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('SF',cx,cy);
-}
-
-function drawScope(ctx){
-  ctx.fillStyle='rgba(0,4,8,0.35)';ctx.fillRect(0,0,cW,cH);
-  const mid=cH/2,sw=cW/timeBuf.length;
-  ctx.strokeStyle='rgba(0,240,255,0.05)';ctx.lineWidth=1;
-  for(let i=0;i<=4;i++){ctx.beginPath();ctx.moveTo(i/4*cW,0);ctx.lineTo(i/4*cW,cH);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i/4*cH);ctx.lineTo(cW,i/4*cH);ctx.stroke();}
-  ctx.beginPath();ctx.strokeStyle='rgba(0,255,100,0.85)';ctx.lineWidth=1.5;ctx.shadowColor='#00ff64';ctx.shadowBlur=4;
-  for(let i=0;i<timeBuf.length;i++){const y=mid+((timeBuf[i]-128)/128)*mid*.95;i===0?ctx.moveTo(0,y):ctx.lineTo(i*sw,y);}
-  ctx.stroke();ctx.shadowBlur=0;
-}
-
-function drawSpec(ctx,sCtx,sOff){
-  const img=sCtx.getImageData(1,0,cW-1,cH);sCtx.putImageData(img,0,0);
-  for(let y=0;y<cH;y++){
-    const v=freqBuf[Math.floor((1-y/cH)*freqBuf.length*.7)]/255;
-    sCtx.fillStyle=`hsla(${220-v*180},100%,${40+v*40}%,${v})`;
-    sCtx.fillRect(cW-1,y,1,1);
-  }
-  ctx.drawImage(sOff,0,0);
-}
-
-// ══ UTILS ══
-function setStat(msg,ok){D.sTxt.textContent=msg;D.dLoad.className='dot'+(ok?' ok':'');}
-function ft(s){const m=s/60|0,sc=s%60|0;return m+':'+(sc<10?'0':'')+sc;}
-function fb(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
-function toast(msg){D.toast.textContent=msg;D.toast.classList.add('show');clearTimeout(D.toast._t);D.toast._t=setTimeout(()=>D.toast.classList.remove('show'),2400);}
-
-// ══ INIT ══
-startVis();
+document.getElementById('adminPass')?.addEventListener('keydown',function(e){if(e.key==='Enter')window.doAdminLogin();});
 </script>
 </body>
 </html>
