@@ -4,1478 +4,1430 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RPMxPRIME BYPASS — Roblox Audio Processor</title>
-<meta name="description" content="Upload, pitch-shift, speed-change and export audio for Roblox. Client-side processing with independent pitch & speed control.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♫</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<!-- lamejs for MP3 encoding -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
 <style>
-:root{--accent:#00e5ff;--accent2:#9c6cff;--bg:#06060c;--surface:#0e0e18;--surface2:#161624;--border:#252538;--text:#e0e0ec;--dim:#55557a;--success:#00e676;--warn:#ffab40;--danger:#ff5252}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-input[type="range"]{-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;width:100%}
-input[type="range"]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--border)}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);margin-top:-6px;box-shadow:0 0 10px var(--accent)}
+:root{--a:#00e5ff;--a2:#9c6cff;--bg:#06060c;--s:#0e0e18;--s2:#161624;--b:#252538;--t:#e0e0ec;--d:#55557a;--ok:#00e676;--w:#ffab40;--r:#ff5252;--g:#ffd700}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;width:100%}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--b)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--a);margin-top:-6px;box-shadow:0 0 10px var(--a)}
+
+/* OVERLAY */
+.ov{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.ov.hide{display:none}
+
+/* AUTH */
+.auth-box{max-width:420px;width:100%;animation:fadeIn .5s}
+.auth-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px}
+.logo-ico{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--a),var(--a2));display:grid;place-items:center;font-size:20px}
+.logo-txt{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:19px;letter-spacing:1px}
+.logo-txt .dot{color:var(--a)}
+.atabs{display:flex;border:1px solid var(--b);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.atab{flex:1;padding:10px;text-align:center;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;background:var(--s);color:var(--d);transition:all .2s}
+.atab.on{background:rgba(0,229,255,.1);color:var(--a);border-bottom:2px solid var(--a)}
+.aform{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:24px}
+.aform h2{font-size:17px;font-weight:700;margin-bottom:3px}
+.asub{font-size:11px;color:var(--d);margin-bottom:16px}
+.fg{margin-bottom:11px}
+.fl{font-size:10px;letter-spacing:1.5px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-bottom:4px;display:block;text-transform:uppercase}
+.fi{width:100%;padding:10px 13px;border-radius:8px;border:1px solid var(--b);background:var(--s2);color:var(--t);font-size:13px;font-family:'Outfit',sans-serif;transition:border-color .2s}
+.fi:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px rgba(0,229,255,.1)}
+.btn-a{width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;cursor:pointer;font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-top:4px;transition:all .2s}
+.btn-a:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,229,255,.3)}
+.aerr{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);border-radius:8px;padding:8px 12px;font-size:11px;color:#ff8080;margin-bottom:10px;font-family:'JetBrains Mono',monospace;display:none}
+.anote{font-size:10px;color:var(--d);text-align:center;margin-top:10px;font-family:'JetBrains Mono',monospace}
+
+/* GATE */
+.gate-box{max-width:460px;width:100%;text-align:center;animation:fadeIn .6s}
+.gate-title{font-size:24px;font-weight:800;margin-bottom:8px}
+.gate-acc{background:linear-gradient(135deg,var(--a),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.gate-sub{color:var(--d);font-size:12px;margin-bottom:22px;line-height:1.6}
+.gate-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.gstep{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:var(--s);border:1px solid var(--b);text-align:left;transition:border-color .3s}
+.gstep.done{border-color:var(--ok);background:rgba(0,230,118,.06)}
+.gstep-ico{font-size:22px;flex-shrink:0}
+.gstep-info{flex:1}
+.gstep-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.gstep-desc{font-size:11px;color:var(--d)}
+.gstep-btn{padding:7px 15px;border-radius:7px;border:none;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;flex-shrink:0}
+.gstep-btn.dc{background:#5865F2;color:#fff}
+.gstep-btn.tt{background:#111;color:#fff;border:1px solid #333}
+.gcheck{display:none;color:var(--ok);font-size:18px;flex-shrink:0}
+.gstep.done .gcheck{display:block}
+.gstep.done .gstep-btn{display:none}
+.gcont{width:100%;padding:13px;border-radius:12px;border:none;font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;cursor:pointer;transition:all .3s}
+.gcont.lock{background:var(--s2);color:var(--d);cursor:not-allowed;border:1px solid var(--b)}
+.gcont.open{background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;box-shadow:0 4px 24px rgba(0,229,255,.3)}
+.gcont.open:hover{transform:translateY(-2px)}
+.gnote{font-size:9px;color:var(--d);margin-top:10px;font-family:'JetBrains Mono',monospace}
+
+/* MODAL BASE */
+.modal-bg{position:fixed;inset:0;z-index:500;background:rgba(6,6,12,.88);display:none;place-items:center;backdrop-filter:blur(8px);padding:20px}
+.modal-bg.show{display:grid}
+.modal-box{background:var(--s);border:1px solid var(--b);border-radius:16px;padding:26px;max-width:560px;width:100%;animation:slideUp .3s ease-out;position:relative;max-height:90vh;overflow-y:auto}
+.mclose{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--d);cursor:pointer;font-size:20px;line-height:1}
+.mclose:hover{color:var(--t)}
+.modal-box h2{font-size:17px;font-weight:800;margin-bottom:4px}
+.msub{font-size:11px;color:var(--d);margin-bottom:18px}
+
+/* SUBSCRIPTION MODAL */
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:480px){.plans{grid-template-columns:1fr}}
+.plan{border:2px solid var(--b);border-radius:12px;padding:15px;position:relative;transition:border-color .3s,transform .2s}
+.plan:hover{transform:translateY(-2px)}
+.plan.hot{border-color:var(--g)}
+.pbadge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--g);color:#000;font-size:9px;font-weight:700;padding:2px 10px;border-radius:10px;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.plan-name{font-size:13px;font-weight:700;margin-bottom:4px}
+.plan-price{font-size:19px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:7px}
+.plan-price span{font-size:11px;color:var(--d);font-weight:400}
+.plan-feats{list-style:none;font-size:11px;color:var(--d);line-height:1.9}
+.plan-feats li{padding-left:14px;position:relative}
+.plan-feats li::before{content:'✓';position:absolute;left:0;color:var(--ok)}
+.plan.hot .plan-feats li::before{color:var(--g)}
+.btn-plan{width:100%;padding:9px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-top:9px;transition:all .2s}
+.btn-plan:hover{transform:translateY(-1px)}
+.plan.hot .btn-plan{background:linear-gradient(135deg,var(--g),#ff9500)}
+.mnote{font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace;text-align:center}
+
+/* BUY MODAL */
+.buy-modal-box{background:var(--s);border:1px solid var(--b);border-radius:16px;padding:26px;max-width:420px;width:100%;animation:slideUp .3s ease-out;position:relative}
+.buy-steps{display:flex;gap:0;margin-bottom:20px}
+.buy-step-dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;flex-shrink:0;transition:all .3s}
+.buy-step-dot.active{background:linear-gradient(135deg,var(--a),var(--a2));color:#fff}
+.buy-step-dot.done{background:var(--ok);color:#fff}
+.buy-step-dot.idle{background:var(--b);color:var(--d)}
+.buy-step-line{flex:1;height:2px;background:var(--b);align-self:center;margin:0 4px;transition:background .3s}
+.buy-step-line.done{background:var(--ok)}
+.buy-pane{display:none}
+.buy-pane.on{display:block}
+.buy-pkg{border:2px solid var(--b);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px}
+.buy-pkg:hover{border-color:var(--a)}
+.buy-pkg.sel{border-color:var(--a);background:rgba(0,229,255,.06)}
+.buy-pkg-ico{font-size:20px;flex-shrink:0}
+.buy-pkg-name{font-size:13px;font-weight:700}
+.buy-pkg-desc{font-size:10px;color:var(--d)}
+.buy-pkg-price{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:800;color:var(--g);flex-shrink:0}
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.pay-method{border:2px solid var(--b);border-radius:8px;padding:10px;cursor:pointer;text-align:center;transition:all .2s}
+.pay-method:hover{border-color:var(--a)}
+.pay-method.sel{border-color:var(--a);background:rgba(0,229,255,.06)}
+.pay-method-ico{font-size:20px;margin-bottom:4px}
+.pay-method-name{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.pay-method-sub{font-size:9px;color:var(--d)}
+.pay-info-box{background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:12px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8}
+.pay-info-box .pi-label{color:var(--d);font-size:9px;letter-spacing:1.5px;text-transform:uppercase}
+.pay-info-box .pi-value{color:var(--t);font-weight:700;font-size:13px}
+.pay-info-box .pi-note{font-size:9px;color:var(--w);margin-top:6px}
+.upload-proof-area{border:2px dashed var(--b);border-radius:8px;padding:18px;text-align:center;cursor:pointer;margin-bottom:10px;transition:all .2s}
+.upload-proof-area:hover{border-color:var(--a);background:rgba(0,229,255,.03)}
+.upload-proof-area.has-file{border-color:var(--ok);background:rgba(0,230,118,.04)}
+.proof-preview{max-width:100%;max-height:140px;border-radius:6px;margin-top:8px;display:none}
+.btn-buy-next{width:100%;padding:12px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;cursor:pointer;font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;transition:all .2s;margin-top:4px}
+.btn-buy-next:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,229,255,.3)}
+.btn-buy-next:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-buy-back{width:100%;padding:9px;border-radius:8px;border:1px solid var(--b);background:transparent;color:var(--d);cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace;margin-top:5px;transition:all .2s}
+.btn-buy-back:hover{border-color:var(--a);color:var(--t)}
+.order-summary{background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.2);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-size:11px}
+.order-row{display:flex;justify-content:space-between;margin-bottom:3px}
+.order-row.total{border-top:1px solid var(--b);padding-top:6px;margin-top:4px;font-size:13px;font-weight:700;color:var(--g)}
+.pending-badge{background:rgba(255,171,64,.1);border:1px solid rgba(255,171,64,.3);border-radius:8px;padding:14px;text-align:center;margin-bottom:12px}
+.pending-badge .pi{font-size:28px;margin-bottom:6px}
+.pending-badge h3{font-size:14px;font-weight:700;color:var(--w);margin-bottom:4px}
+.pending-badge p{font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace;line-height:1.6}
+
+/* ADMIN */
+.admin-bg{position:fixed;inset:0;z-index:600;background:rgba(6,6,12,.92);display:none;align-items:flex-start;justify-content:center;padding:20px;backdrop-filter:blur(8px);overflow-y:auto}
+.admin-bg.show{display:flex}
+.admin-box{background:var(--s);border:1px solid rgba(255,82,82,.3);border-radius:16px;padding:22px;max-width:960px;width:100%;margin:auto;animation:slideUp .3s ease-out}
+.ahdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.ahdr h2{font-size:15px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--r)}
+.astats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+@media(max-width:560px){.astats{grid-template-columns:1fr 1fr}}
+.astat{background:var(--s2);border:1px solid var(--b);border-radius:9px;padding:10px;text-align:center}
+.astat-l{font-size:8px;letter-spacing:2px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
+.astat-v{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--a)}
+.atabs2{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.atab2{padding:6px 12px;border-radius:7px;border:1px solid var(--b);background:var(--s2);color:var(--d);cursor:pointer;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:600;transition:all .2s}
+.atab2.on{border-color:var(--r);background:rgba(255,82,82,.1);color:var(--r)}
+.apane{display:none}
+.apane.on{display:block}
+.atable{width:100%;border-collapse:collapse;font-size:11px;font-family:'JetBrains Mono',monospace}
+.atable th{padding:6px 8px;text-align:left;border-bottom:1px solid var(--b);color:var(--d);font-size:9px;letter-spacing:1px}
+.atable td{padding:6px 8px;border-bottom:1px solid rgba(37,37,56,.5);vertical-align:middle}
+.atable tr:hover td{background:rgba(255,255,255,.02)}
+.abtn{padding:3px 8px;border-radius:5px;border:1px solid var(--b);background:var(--s2);color:var(--t);cursor:pointer;font-size:9px;font-family:'JetBrains Mono',monospace;transition:all .2s;margin-right:2px}
+.abtn:hover{border-color:var(--a)}
+.abtn.gold:hover{border-color:var(--g);color:var(--g)}
+.abtn.red:hover{border-color:var(--r);color:var(--r)}
+.abtn.green{border-color:rgba(0,230,118,.4);color:var(--ok)}
+.abtn.green:hover{background:rgba(0,230,118,.1)}
+.rbadge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.rbadge.free{background:rgba(85,85,122,.2);color:var(--d);border:1px solid var(--b)}
+.rbadge.pro{background:rgba(156,108,255,.15);color:var(--a2);border:1px solid rgba(156,108,255,.3)}
+.rbadge.vip{background:rgba(255,215,0,.15);color:var(--g);border:1px solid rgba(255,215,0,.3)}
+.rbadge.admin{background:rgba(255,82,82,.15);color:var(--r);border:1px solid rgba(255,82,82,.3)}
+.rbadge.pending{background:rgba(255,171,64,.15);color:var(--w);border:1px solid rgba(255,171,64,.3)}
+.alog{background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:10px;max-height:250px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.9}
+.arow{display:flex;gap:8px;flex-wrap:wrap}
+.arow .fi{flex:1;min-width:120px}
+.asect{font-size:9px;letter-spacing:2px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-bottom:8px;text-transform:uppercase}
+.order-card{background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:10px 12px;margin-bottom:7px;font-family:'JetBrains Mono',monospace;font-size:10px}
+.order-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.order-card .oc-user{font-weight:700;color:var(--t);font-size:11px}
+.order-card .oc-pkg{color:var(--g)}
+.order-card .oc-meta{color:var(--d);font-size:9px;line-height:1.6}
+.order-proof-thumb{width:60px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--b);cursor:pointer;margin-top:4px}
+
+/* MAIN APP */
 .app{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 20px 40px}
-.header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 0;margin-bottom:20px;border-bottom:1px solid var(--border);backdrop-filter:blur(16px);background:rgba(6,6,12,.8)}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-icon{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:16px;font-weight:800}
-.logo-text{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;letter-spacing:1px}
-.logo-text .dot{color:var(--accent)}
-.logo-sub{font-size:9px;color:var(--dim);letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-left:8px}
-.badge{font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace;padding:4px 10px;background:var(--surface2);border-radius:4px;border:1px solid var(--border)}
-.badge-server{color:var(--success);border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.06)}
-.badge-client{color:var(--accent);border-color:rgba(0,229,255,.3);background:rgba(0,229,255,.06)}
-.badge-vip{color:#ffd700;border-color:rgba(255,215,0,.3);background:rgba(255,215,0,.06)}
-.badge-admin{color:var(--danger);border-color:rgba(255,82,82,.3);background:rgba(255,82,82,.06)}
-.dropzone{border:2px dashed var(--border);border-radius:14px;text-align:center;cursor:pointer;transition:all .3s;background:var(--surface);margin-bottom:16px}
-.dropzone.empty{padding:52px 20px}
-.dropzone.has-files{padding:16px}
-.dropzone.dragover{border-color:var(--accent);background:rgba(0,229,255,.04)}
-.dropzone .icon{font-size:40px;margin-bottom:10px}
-.dropzone .title{font-size:17px;font-weight:600;margin-bottom:4px}
-.dropzone .sub{font-size:12px;color:var(--dim)}
-.tier-warn{background:rgba(255,171,64,.08);border:1px solid rgba(255,171,64,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:11px;color:var(--warn);font-family:'JetBrains Mono',monospace;line-height:1.5}
-.tier-warn b{color:var(--warn)}
-.tier-vip{background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:11px;color:#ffd700;font-family:'JetBrains Mono',monospace;line-height:1.5}
-.file-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.file-tab{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:8px;cursor:pointer;background:var(--surface);border:1px solid var(--border);font-size:11px;font-family:'JetBrains Mono',monospace;transition:all .2s;animation:slideUp .3s ease-out both}
-.file-tab.active{border-color:var(--accent);background:rgba(0,229,255,.07)}
-.file-tab .fname{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dim)}
-.file-tab.active .fname{color:var(--text)}
-.file-tab .fdur{color:var(--dim);font-size:9px}
-.file-tab .fclose{background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;padding:0 2px;line-height:1}
-.file-tab .fclose:hover{color:var(--danger)}
-.file-tab.broken{border-color:rgba(255,171,64,.4)}
-.wave-panel{background:var(--surface);border-radius:14px;padding:16px;border:1px solid var(--border);margin-bottom:16px}
-.wave-panel .info-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);flex-wrap:wrap;gap:4px}
-.wave-panel .info-row .fname{color:var(--text)}
-#waveCanvas{width:100%;height:100px;border-radius:8px;display:block;cursor:pointer}
-.transport{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px}
-.btn-transport{width:38px;height:38px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:15px;display:grid;place-items:center;transition:all .15s}
-.btn-transport:hover{border-color:var(--accent)}
-.btn-play{width:52px;height:52px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;cursor:pointer;font-size:20px;display:grid;place-items:center;box-shadow:0 0 24px rgba(0,229,255,.3);transition:transform .15s}
+.hdr{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:11px 0;margin-bottom:14px;border-bottom:1px solid var(--b);backdrop-filter:blur(16px);background:rgba(6,6,12,.85)}
+.hdr-logo{display:flex;align-items:center;gap:8px}
+.hdr-logo-ico{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--a),var(--a2));display:grid;place-items:center;font-size:14px}
+.hdr-logo-txt{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;letter-spacing:1px}
+.hdr-logo-txt .dot{color:var(--a)}
+.hdr-logo-sub{font-size:8px;color:var(--d);letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-left:5px}
+.hdr-right{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.bdg{font-size:10px;font-family:'JetBrains Mono',monospace;padding:4px 9px;border-radius:4px;border:1px solid var(--b);background:var(--s2);color:var(--d)}
+.bdg-ok{color:var(--ok)!important;border-color:rgba(0,230,118,.35)!important;background:rgba(0,230,118,.07)!important}
+.bdg-gold{color:var(--g)!important;border-color:rgba(255,215,0,.35)!important;background:rgba(255,215,0,.07)!important}
+.bdg-red{color:var(--r)!important;border-color:rgba(255,82,82,.35)!important;background:rgba(255,82,82,.07)!important}
+
+/* USER BAR */
+.ubar{background:var(--s);border:1px solid var(--b);border-radius:11px;padding:9px 13px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px}
+.uinfo{display:flex;align-items:center;gap:9px}
+.uav{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--a2));display:grid;place-items:center;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.uname{font-size:13px;font-weight:600}
+.urole{font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace}
+.uact{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.lbar{background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:5px 9px;font-family:'JetBrains Mono',monospace;font-size:11px;display:flex;align-items:center;gap:5px}
+.ltrack{width:65px;height:4px;background:var(--b);border-radius:2px;overflow:hidden}
+.lfill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--ok),var(--a));transition:width .4s}
+.lfill.warn{background:linear-gradient(90deg,var(--w),#ff8800)}
+.lfill.full{background:var(--r)}
+.bsm{padding:5px 10px;border-radius:6px;border:1px solid var(--b);background:var(--s2);color:var(--t);cursor:pointer;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:600;transition:all .2s;white-space:nowrap}
+.bsm:hover{border-color:var(--a)}
+.bsm.gold{border-color:rgba(255,215,0,.4);color:var(--g)}
+.bsm.gold:hover{border-color:var(--g);background:rgba(255,215,0,.08)}
+.bsm.red{color:var(--r);border-color:rgba(255,82,82,.4)}
+.bsm.red:hover{background:rgba(255,82,82,.08)}
+
+/* LIMIT BANNER */
+.limban{background:rgba(255,82,82,.08);border:1px solid rgba(255,82,82,.3);border-radius:9px;padding:9px 13px;margin-bottom:12px;font-size:11px;color:#ff8080;font-family:'JetBrains Mono',monospace;display:none;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.limban.show{display:flex}
+
+/* DROPZONE */
+.dz{border:2px dashed var(--b);border-radius:13px;text-align:center;cursor:pointer;transition:all .3s;background:var(--s);margin-bottom:12px}
+.dz.empty{padding:42px 20px}
+.dz.filled{padding:13px}
+.dz.drag{border-color:var(--a);background:rgba(0,229,255,.04)}
+.dz-ico{font-size:36px;margin-bottom:8px}
+.dz-ttl{font-size:16px;font-weight:600;margin-bottom:3px}
+.dz-sub{font-size:12px;color:var(--d)}
+
+/* INFO STRIP */
+.istrip{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.2);border-radius:9px;padding:7px 11px;margin-bottom:12px;font-size:11px;color:var(--a);font-family:'JetBrains Mono',monospace}
+
+/* HERO */
+.hero{text-align:center;padding:28px 0 14px;animation:fadeIn .6s}
+.hero h1{font-size:28px;font-weight:800;margin-bottom:6px}
+.hacc{background:linear-gradient(135deg,var(--a),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--d);font-size:13px;max-width:500px;margin:0 auto}
+.feats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:18px}
+@media(max-width:660px){.feats{grid-template-columns:1fr 1fr}}
+.feat{background:var(--s);border:1px solid var(--b);border-radius:11px;padding:13px;text-align:center;animation:slideUp .4s ease-out both}
+.feat-ico{font-size:20px;margin-bottom:5px}
+.feat-ttl{font-size:10px;font-weight:700;margin-bottom:3px;font-family:'JetBrains Mono',monospace}
+.feat-desc{font-size:9px;color:var(--d)}
+
+/* FILE TABS */
+.ftabs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.ftab{display:flex;align-items:center;gap:6px;padding:6px 9px;border-radius:7px;cursor:pointer;background:var(--s);border:1px solid var(--b);font-size:11px;font-family:'JetBrains Mono',monospace;transition:all .2s;animation:slideUp .3s ease-out both}
+.ftab.on{border-color:var(--a);background:rgba(0,229,255,.07)}
+.ftab .fn{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--d)}
+.ftab.on .fn{color:var(--t)}
+.ftab .fd{color:var(--d);font-size:9px}
+.ftab .fx{background:none;border:none;color:var(--d);cursor:pointer;font-size:12px;padding:0 2px;line-height:1}
+.ftab .fx:hover{color:var(--r)}
+
+/* WAVE */
+.wpanel{background:var(--s);border-radius:13px;padding:13px;border:1px solid var(--b);margin-bottom:12px}
+.winfo{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--d);flex-wrap:wrap;gap:4px}
+#wc{width:100%;height:88px;border-radius:7px;display:block;cursor:pointer}
+.transport{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:10px}
+.btn-t{width:34px;height:34px;border-radius:8px;background:var(--s2);border:1px solid var(--b);color:var(--t);cursor:pointer;font-size:13px;display:grid;place-items:center;transition:all .15s}
+.btn-t:hover{border-color:var(--a)}
+.btn-play{width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;cursor:pointer;font-size:17px;display:grid;place-items:center;box-shadow:0 0 18px rgba(0,229,255,.3);transition:transform .15s}
 .btn-play:hover{transform:scale(1.08)}
-.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-@media(max-width:700px){.main-grid{grid-template-columns:1fr}}
-.panel{background:var(--surface);border-radius:14px;padding:20px;border:1px solid var(--border)}
-.panel-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:18px}
-.knobs-row{display:flex;justify-content:space-around;margin-bottom:24px}
-.knob-wrap{text-align:center;user-select:none}
-.knob-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--dim);margin-bottom:8px;font-family:'JetBrains Mono',monospace}
-.knob-ring{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;margin:0 auto;cursor:ns-resize}
-.knob-inner{width:56px;height:56px;border-radius:50%;background:var(--surface);position:relative}
-.knob-needle{width:2px;height:18px;border-radius:1px;position:absolute;top:6px;left:50%;margin-left:-1px;transform-origin:bottom center}
-.knob-value{margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
-.slider-row{margin-bottom:14px}
-.slider-header{display:flex;justify-content:space-between;margin-bottom:5px}
-.slider-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);font-family:'JetBrains Mono',monospace}
-.slider-val{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace}
-.slider-track{position:relative;height:4px;background:var(--border);border-radius:2px}
-.slider-fill{position:absolute;left:0;top:0;height:100%;border-radius:2px;transition:width .08s}
-.info-strip{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.2);border-radius:8px;padding:8px 12px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent)}
-.limit-strip{background:rgba(255,82,82,.06);border:1px solid rgba(255,82,82,.2);border-radius:8px;padding:8px 12px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--danger)}
-.auto-section{background:var(--surface);border-radius:14px;padding:16px 20px;border:1px solid var(--border);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.auto-label{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.5px}
-.auto-desc{font-size:11px;color:var(--dim)}
-.auto-modes{display:flex;gap:6px;flex-wrap:wrap}
-.auto-btn{padding:8px 14px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;transition:all .2s;white-space:nowrap}
-.auto-btn:hover{border-color:var(--accent)}
-.auto-btn.active{border-color:var(--warn);background:rgba(255,171,64,.1);color:var(--warn);box-shadow:0 0 12px rgba(255,171,64,.15)}
-.auto-btn .detail{font-size:8px;color:var(--dim);margin-top:2px}
-.auto-btn.active .detail{color:rgba(255,171,64,.6)}
-.auto-featured{background:linear-gradient(135deg,rgba(255,171,64,.15),rgba(156,108,255,.15));border-color:var(--warn);color:var(--warn);font-size:12px;padding:10px 18px}
-.auto-featured:hover{box-shadow:0 0 16px rgba(255,171,64,.25);border-color:var(--warn)}
-.auto-featured.active{background:linear-gradient(135deg,rgba(255,171,64,.25),rgba(156,108,255,.25));box-shadow:0 0 20px rgba(255,171,64,.3)}
-.presets-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.preset-btn{padding:10px 6px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;transition:all .2s;text-align:center}
-.preset-btn:hover{border-color:var(--accent)}
-.preset-btn.active{border-color:var(--accent);background:rgba(0,229,255,.1);color:var(--accent)}
-.preset-btn .preset-detail{font-size:8px;color:var(--dim);margin-top:3px}
-.format-selector{display:flex;gap:6px;margin-bottom:12px}
-.format-btn{flex:1;padding:10px 8px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--dim);font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:700;text-align:center;transition:all .2s}
-.format-btn:hover{border-color:var(--accent);color:var(--text)}
-.format-btn.active{border-color:var(--accent);background:rgba(0,229,255,.1);color:var(--accent)}
-.format-btn .fmt-sub{font-size:8px;font-weight:400;margin-top:2px;color:var(--dim)}
-.format-btn.active .fmt-sub{color:rgba(0,229,255,.5)}
-.btn-export{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;cursor:pointer;font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;box-shadow:0 4px 20px rgba(0,229,255,.25);transition:all .2s;margin-bottom:8px}
-.btn-export:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(0,229,255,.35)}
-.btn-export:disabled{opacity:.5;cursor:wait;transform:none}
-.btn-export-all{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace;transition:all .2s;margin-bottom:8px}
-.btn-export-all:hover{border-color:var(--accent)}
-.btn-export-all:disabled{opacity:.5;cursor:wait}
-.export-info{font-size:9px;color:var(--dim);font-family:'JetBrains Mono',monospace;line-height:1.6}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-@media(max-width:500px){.stats-row{grid-template-columns:1fr 1fr}}
-.stat-card{background:var(--surface);border-radius:10px;padding:12px;border:1px solid var(--border);text-align:center}
-.stat-label{font-size:8px;letter-spacing:2px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-bottom:4px}
-.stat-value{font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent)}
-.footer{text-align:center;padding:28px;font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace;letter-spacing:1px}
-.footer .dot{color:var(--accent)}
-.hero{text-align:center;padding:40px 0 20px;animation:fadeIn .6s}
-.hero h1{font-size:32px;font-weight:800;margin-bottom:8px}
-.hero h1 .accent{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero p{color:var(--dim);font-size:14px;max-width:520px;margin:0 auto}
-.features{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-@media(max-width:700px){.features{grid-template-columns:1fr 1fr}}
-.feat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;animation:slideUp .4s ease-out both}
-.feat .feat-icon{font-size:22px;margin-bottom:8px}
-.feat .feat-title{font-size:11px;font-weight:700;margin-bottom:4px;font-family:'JetBrains Mono',monospace;letter-spacing:1px}
-.feat .feat-desc{font-size:10px;color:var(--dim)}
-.progress-overlay{position:fixed;inset:0;background:rgba(6,6,12,.85);z-index:200;display:none;place-items:center;backdrop-filter:blur(8px)}
-.progress-overlay.show{display:grid}
-.progress-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px 40px;text-align:center;max-width:400px;width:90%}
-.progress-box .prog-icon{font-size:36px;margin-bottom:12px}
-.progress-box .prog-title{font-size:16px;font-weight:700;margin-bottom:6px}
-.progress-box .prog-sub{font-size:12px;color:var(--dim);margin-bottom:16px}
-.prog-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .3s;width:0%}
-.prog-status{font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-top:8px}
-.toast-stack{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;max-width:340px;pointer-events:none}
-.toast{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:12px;animation:slideIn .3s ease-out;box-shadow:0 4px 20px rgba(0,0,0,.4);pointer-events:auto}
-.toast.error{border-color:var(--danger);background:rgba(255,82,82,.08);color:#ffaaaa}
-.toast.warn{border-color:var(--warn);background:rgba(255,171,64,.08);color:#ffd699}
-.toast.success{border-color:var(--success);background:rgba(0,230,118,.08);color:#aaffcc}
-.toast .t-title{font-weight:700;margin-bottom:2px;font-family:'JetBrains Mono',monospace;font-size:11px}
-.toast .t-body{color:var(--dim);font-size:11px;line-height:1.4}
+
+/* GRID */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:660px){.mgrid{grid-template-columns:1fr}}
+.panel{background:var(--s);border-radius:13px;padding:16px;border:1px solid var(--b)}
+.plbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--d);margin-bottom:14px;text-transform:uppercase}
+
+/* KNOBS */
+.knobs{display:flex;justify-content:space-around;margin-bottom:18px}
+.kwrap{text-align:center;user-select:none}
+.klbl{font-size:8px;text-transform:uppercase;letter-spacing:2px;color:var(--d);margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.kring{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;margin:0 auto;cursor:ns-resize}
+.kinner{width:50px;height:50px;border-radius:50%;background:var(--s);position:relative}
+.kneedle{width:2px;height:15px;border-radius:1px;position:absolute;top:6px;left:50%;margin-left:-1px;transform-origin:bottom center}
+.kval{margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+
+/* SLIDERS */
+.srow{margin-bottom:11px}
+.shdr{display:flex;justify-content:space-between;margin-bottom:4px}
+.slbl{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--d);font-family:'JetBrains Mono',monospace}
+.sval{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.strack{position:relative;height:4px;background:var(--b);border-radius:2px}
+.sfill{position:absolute;left:0;top:0;height:100%;border-radius:2px;transition:width .08s}
+.info-s{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.2);border-radius:7px;padding:6px 10px;margin-top:7px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--a)}
+
+/* AUTO */
+.autosec{background:var(--s);border-radius:13px;padding:13px 16px;border:1px solid var(--b);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px}
+.autolbl{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700}
+.autodesc{font-size:10px;color:var(--d)}
+.automodes{display:flex;gap:5px;flex-wrap:wrap}
+.abtn2{padding:6px 11px;border-radius:7px;cursor:pointer;border:1px solid var(--b);background:var(--s2);color:var(--t);font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:600;transition:all .2s;white-space:nowrap}
+.abtn2:hover{border-color:var(--a)}
+.abtn2.on{border-color:var(--w);background:rgba(255,171,64,.1);color:var(--w)}
+.abtn2 .dtl{font-size:8px;color:var(--d);margin-top:2px}
+.abtn2.on .dtl{color:rgba(255,171,64,.6)}
+.afeat{background:linear-gradient(135deg,rgba(255,171,64,.15),rgba(156,108,255,.15));border-color:var(--w);color:var(--w)}
+
+/* PRESETS */
+.pgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.pbtn{padding:8px 4px;border-radius:7px;cursor:pointer;border:1px solid var(--b);background:var(--s2);color:var(--t);font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:600;transition:all .2s;text-align:center}
+.pbtn:hover{border-color:var(--a)}
+.pbtn.on{border-color:var(--a);background:rgba(0,229,255,.1);color:var(--a)}
+.pbtn .pd{font-size:8px;color:var(--d);margin-top:2px}
+
+/* FORMAT */
+.fmtsel{display:flex;gap:5px;margin-bottom:9px}
+.fmtbtn{flex:1;padding:8px 5px;border-radius:7px;cursor:pointer;border:1px solid var(--b);background:var(--s2);color:var(--d);font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:700;text-align:center;transition:all .2s}
+.fmtbtn:hover{border-color:var(--a);color:var(--t)}
+.fmtbtn.on{border-color:var(--a);background:rgba(0,229,255,.1);color:var(--a)}
+.fmtbtn .fs{font-size:8px;font-weight:400;margin-top:2px;color:var(--d)}
+.fmtbtn.on .fs{color:rgba(0,229,255,.5)}
+
+/* EXPORT BTNS */
+.bexport{width:100%;padding:11px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;cursor:pointer;font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;box-shadow:0 4px 16px rgba(0,229,255,.2);transition:all .2s;margin-bottom:6px}
+.bexport:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 22px rgba(0,229,255,.3)}
+.bexport:disabled{opacity:.45;cursor:not-allowed}
+.bexall{width:100%;padding:8px;border-radius:7px;border:1px solid var(--b);background:var(--s2);color:var(--t);cursor:pointer;font-size:10px;font-family:'JetBrains Mono',monospace;transition:all .2s;margin-bottom:6px}
+.bexall:hover:not(:disabled){border-color:var(--a)}
+.bexall:disabled{opacity:.45;cursor:not-allowed}
+.expinfo{font-size:9px;color:var(--d);font-family:'JetBrains Mono',monospace;line-height:1.6}
+
+/* STATS */
+.statsrow{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+@media(max-width:460px){.statsrow{grid-template-columns:1fr 1fr}}
+.statcard{background:var(--s);border-radius:8px;padding:9px;border:1px solid var(--b);text-align:center}
+.stlbl{font-size:8px;letter-spacing:2px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
+.stval{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--a)}
+
+/* PROGRESS */
+.pogov{position:fixed;inset:0;background:rgba(6,6,12,.9);z-index:999;display:none;place-items:center;backdrop-filter:blur(8px)}
+.pogov.show{display:grid}
+.pobox{background:var(--s);border:1px solid var(--b);border-radius:15px;padding:26px 34px;text-align:center;max-width:360px;width:90%}
+.poico{font-size:30px;margin-bottom:9px}
+.pottl{font-size:14px;font-weight:700;margin-bottom:5px}
+.posub{font-size:11px;color:var(--d);margin-bottom:13px}
+.pobar{height:5px;background:var(--b);border-radius:3px;overflow:hidden}
+.pofill{height:100%;background:linear-gradient(90deg,var(--a),var(--a2));border-radius:3px;transition:width .3s;width:0%}
+.posts{font-size:9px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-top:6px}
+
+/* TOASTS */
+.toasts{position:fixed;bottom:16px;right:16px;z-index:800;display:flex;flex-direction:column;gap:6px;max-width:310px;pointer-events:none}
+.toast{background:var(--s);border:1px solid var(--b);border-radius:9px;padding:9px 11px;font-size:11px;animation:slideIn .3s ease-out;box-shadow:0 4px 16px rgba(0,0,0,.4);pointer-events:auto}
+.toast.error{border-color:var(--r);background:rgba(255,82,82,.08);color:#ffaaaa}
+.toast.warn{border-color:var(--w);background:rgba(255,171,64,.08);color:#ffd699}
+.toast.success{border-color:var(--ok);background:rgba(0,230,118,.08);color:#aaffcc}
+.toast .tt{font-weight:700;margin-bottom:2px;font-family:'JetBrains Mono',monospace;font-size:10px}
+.toast .tb{color:var(--d);font-size:10px;line-height:1.4}
+.footer{text-align:center;padding:22px;font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace}
+.footer .dot{color:var(--a)}
+
+/* IMAGE LIGHTBOX */
+.lightbox{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);display:none;place-items:center;cursor:pointer}
+.lightbox.show{display:grid}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:8px}
+
 @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(255,171,64,.2)}50%{box-shadow:0 0 16px rgba(255,171,64,.4)}}
-.auto-active-glow{animation:glow 2s ease-in-out infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinning{animation:spin 1s linear infinite;display:inline-block}
-
-/* ===== GATE OVERLAY ===== */
-.gate-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
-.gate-overlay.hidden{display:none}
-.gate-box{max-width:480px;width:100%;text-align:center;animation:fadeIn .6s}
-.gate-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:32px}
-.gate-logo .logo-icon{width:48px;height:48px;border-radius:12px;font-size:22px}
-.gate-title{font-size:26px;font-weight:800;margin-bottom:8px}
-.gate-title .accent{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.gate-sub{color:var(--dim);font-size:13px;margin-bottom:32px;line-height:1.6}
-.gate-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
-.gate-step{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:12px;background:var(--surface);border:1px solid var(--border);transition:all .3s;text-align:left}
-.gate-step.done{border-color:var(--success);background:rgba(0,230,118,.06)}
-.gate-step-icon{font-size:28px;flex-shrink:0}
-.gate-step-info{flex:1}
-.gate-step-title{font-size:13px;font-weight:700;margin-bottom:2px}
-.gate-step-desc{font-size:11px;color:var(--dim)}
-.gate-step-btn{padding:8px 18px;border-radius:8px;border:none;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;text-decoration:none;display:inline-block;flex-shrink:0}
-.gate-step-btn.yt{background:#5865F2;color:#fff}
-.gate-step-btn.yt:hover{background:#4752c4;box-shadow:0 0 12px rgba(88,101,242,.4)}
-.gate-step-btn.tt{background:#000;color:#fff;border:1px solid #333}
-.gate-step-btn.tt:hover{background:#1a1a1a}
-.gate-step .check{display:none;color:var(--success);font-size:20px;font-weight:700;flex-shrink:0}
-.gate-step.done .check{display:block}
-.gate-step.done .gate-step-btn{display:none}
-.gate-continue{width:100%;padding:14px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;cursor:pointer;transition:all .3s}
-.gate-continue.locked{background:var(--surface2);color:var(--dim);cursor:not-allowed;border:1px solid var(--border)}
-.gate-continue.unlocked{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 24px rgba(0,229,255,.3)}
-.gate-continue.unlocked:hover{transform:translateY(-2px);box-shadow:0 6px 32px rgba(0,229,255,.4)}
-.gate-note{font-size:9px;color:var(--dim);margin-top:16px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
-
-/* ===== LIMIT OVERLAY ===== */
-.limit-overlay{position:fixed;inset:0;z-index:8000;background:rgba(6,6,12,.95);display:none;place-items:center;backdrop-filter:blur(12px)}
-.limit-overlay.show{display:grid}
-.limit-box{background:var(--surface);border:1px solid rgba(255,82,82,.4);border-radius:20px;padding:40px;text-align:center;max-width:420px;width:90%}
-.limit-box .limit-icon{font-size:48px;margin-bottom:16px}
-.limit-box h2{font-size:22px;font-weight:800;margin-bottom:8px;color:var(--danger)}
-.limit-box p{color:var(--dim);font-size:13px;margin-bottom:20px;line-height:1.6}
-.limit-box .limit-vip-btn{width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;font-weight:700;font-size:13px;font-family:'JetBrains Mono',monospace;cursor:pointer}
-
-/* ===== ADMIN PANEL ===== */
-.admin-overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.97);display:none;backdrop-filter:blur(16px)}
-.admin-overlay.show{display:flex}
-.admin-login{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px}
-.admin-login-box{background:#0a0a12;border:1px solid rgba(255,82,82,.3);border-radius:20px;padding:40px;width:100%;max-width:400px;text-align:center}
-.admin-login-box .admin-logo{font-size:48px;margin-bottom:16px}
-.admin-login-box h2{font-size:20px;font-weight:800;margin-bottom:4px;color:var(--danger);font-family:'JetBrains Mono',monospace;letter-spacing:2px}
-.admin-login-box .admin-sub{font-size:11px;color:var(--dim);margin-bottom:28px;font-family:'JetBrains Mono',monospace}
-.admin-input{width:100%;padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:#111120;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:12px;outline:none;transition:border-color .2s}
-.admin-input:focus{border-color:var(--danger)}
-.admin-login-btn{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--danger),#c0392b);color:#fff;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .2s;margin-bottom:12px}
-.admin-login-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(255,82,82,.3)}
-.admin-close-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px}
-.admin-close-btn:hover{border-color:var(--danger);color:var(--danger)}
-.admin-panel{width:100%;display:none;flex-direction:column}
-.admin-panel.show{display:flex}
-.admin-sidebar{width:220px;background:#080810;border-right:1px solid rgba(255,82,82,.15);display:flex;flex-direction:column;flex-shrink:0}
-.admin-main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
-.admin-content{flex:1;padding:24px}
-.admin-header-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,82,82,.15);background:#060608}
-.admin-header-bar .admin-title{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;letter-spacing:2px;color:var(--danger)}
-.admin-header-bar .admin-user{font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace}
-.admin-sidebar-logo{padding:20px;border-bottom:1px solid rgba(255,82,82,.15)}
-.admin-sidebar-logo .brand{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--danger);letter-spacing:1px}
-.admin-sidebar-logo .sub{font-size:9px;color:var(--dim);font-family:'JetBrains Mono',monospace;letter-spacing:2px;margin-top:2px}
-.admin-nav{flex:1;padding:12px 0}
-.admin-nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11px;transition:all .2s;border-left:2px solid transparent}
-.admin-nav-item:hover{color:var(--text);background:rgba(255,82,82,.05)}
-.admin-nav-item.active{color:var(--danger);background:rgba(255,82,82,.08);border-left-color:var(--danger)}
-.admin-nav-item .nav-icon{font-size:14px;width:18px;text-align:center}
-.admin-logout{padding:16px 20px;border-top:1px solid rgba(255,82,82,.15)}
-.admin-logout button{width:100%;padding:8px;border-radius:8px;background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:var(--danger);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer}
-.admin-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-@media(max-width:900px){.admin-stats-grid{grid-template-columns:1fr 1fr}}
-.admin-stat{background:#0a0a14;border:1px solid var(--border);border-radius:12px;padding:16px}
-.admin-stat .as-label{font-size:9px;letter-spacing:2px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
-.admin-stat .as-val{font-size:24px;font-weight:800;font-family:'JetBrains Mono',monospace}
-.admin-stat .as-sub{font-size:10px;color:var(--dim);margin-top:4px}
-.admin-stat.danger .as-val{color:var(--danger)}
-.admin-stat.success .as-val{color:var(--success)}
-.admin-stat.warn .as-val{color:var(--warn)}
-.admin-stat.accent .as-val{color:var(--accent)}
-.admin-section{background:#0a0a14;border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden}
-.admin-section-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
-.admin-section-header .sec-title{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text)}
-.admin-section-header .sec-actions{display:flex;gap:8px;align-items:center}
-.admin-page{display:none}
-.admin-page.active{display:block}
-.admin-form-row{display:flex;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.03);align-items:center}
-.admin-form-row:last-child{border-bottom:none}
-.admin-form-group{flex:1}
-.admin-form-group label{display:block;font-size:9px;color:var(--dim);font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;margin-bottom:5px}
-.admin-inp{width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#111120;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .2s}
-.admin-inp:focus{border-color:var(--accent)}
-.admin-inp-sm{padding:6px 10px;font-size:11px}
-.admin-select{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#111120;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;cursor:pointer}
-.admin-table{width:100%;border-collapse:collapse}
-.admin-table th{padding:10px 14px;font-size:9px;letter-spacing:2px;color:var(--dim);font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--border);text-align:left;font-weight:600}
-.admin-table td{padding:10px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
-.admin-table tr:last-child td{border-bottom:none}
-.admin-table tr:hover td{background:rgba(255,255,255,.02)}
-.role-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:1px}
-.role-admin{background:rgba(255,82,82,.2);color:var(--danger);border:1px solid rgba(255,82,82,.3)}
-.role-vip{background:rgba(255,215,0,.15);color:#ffd700;border:1px solid rgba(255,215,0,.3)}
-.role-user{background:rgba(85,85,122,.2);color:var(--dim);border:1px solid rgba(85,85,122,.3)}
-.role-banned{background:rgba(255,82,82,.1);color:#ff8888;border:1px solid rgba(255,82,82,.2);text-decoration:line-through}
-.abtn{padding:5px 12px;border-radius:6px;border:none;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.5px}
-.abtn-danger{background:rgba(255,82,82,.15);color:var(--danger);border:1px solid rgba(255,82,82,.3)}
-.abtn-danger:hover{background:rgba(255,82,82,.25)}
-.abtn-success{background:rgba(0,230,118,.15);color:var(--success);border:1px solid rgba(0,230,118,.3)}
-.abtn-success:hover{background:rgba(0,230,118,.25)}
-.abtn-warn{background:rgba(255,171,64,.15);color:var(--warn);border:1px solid rgba(255,171,64,.3)}
-.abtn-warn:hover{background:rgba(255,171,64,.25)}
-.abtn-accent{background:rgba(0,229,255,.15);color:var(--accent);border:1px solid rgba(0,229,255,.3)}
-.abtn-accent:hover{background:rgba(0,229,255,.25)}
-.abtn-vip{background:rgba(255,215,0,.15);color:#ffd700;border:1px solid rgba(255,215,0,.3)}
-.abtn-vip:hover{background:rgba(255,215,0,.25)}
-.abtn-lg{padding:9px 20px;font-size:11px;border-radius:8px}
-.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
-.toggle input{opacity:0;width:0;height:0}
-.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:11px;cursor:pointer;transition:.3s}
-.toggle input:checked+.toggle-track{background:var(--accent)}
-.toggle-track::after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.3s}
-.toggle input:checked+.toggle-track::after{transform:translateX(18px)}
-.log-entry{display:flex;align-items:flex-start;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.03);font-family:'JetBrains Mono',monospace;font-size:10px}
-.log-entry:last-child{border-bottom:none}
-.log-entry .log-time{color:var(--dim);flex-shrink:0;min-width:54px}
-.log-entry .log-type{flex-shrink:0;min-width:60px}
-.log-entry .log-msg{color:var(--text);flex:1}
-.log-export{color:var(--accent)}
-.log-error{color:var(--danger)}
-.log-admin{color:var(--warn)}
-.log-ban{color:var(--danger)}
-.log-vip{color:#ffd700}
-.log-join{color:var(--success)}
-.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:800px){.settings-grid{grid-template-columns:1fr}}
-.settings-item{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.03)}
-.settings-item:last-child{border-bottom:none}
-.settings-item-info .si-title{font-size:12px;font-weight:600;margin-bottom:2px}
-.settings-item-info .si-desc{font-size:10px;color:var(--dim)}
-.num-inp-wrap{display:flex;align-items:center;gap:6px}
-.num-inp{width:70px;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:#111120;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;text-align:center}
-.num-inp-label{font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace}
-.add-user-form{padding:14px 18px;background:rgba(0,229,255,.03);border-bottom:1px solid rgba(0,229,255,.1);display:none}
-.add-user-form.open{display:block}
-.add-user-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-@keyframes adminFadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
-.admin-panel-wrap{display:flex;width:100%;height:100vh;animation:adminFadeIn .3s ease-out}
+.spin{animation:spin 1s linear infinite;display:inline-block}
+.aglow{animation:glow 2s ease-in-out infinite}
 </style>
+
+<script>
+document.addEventListener('keydown',function(e){
+  if(e.key==='F12'){e.preventDefault();return false;}
+  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&['I','J','C'].includes(e.key)){e.preventDefault();return false;}
+  if((e.ctrlKey||e.metaKey)&&e.key==='u'){e.preventDefault();return false;}
+},true);
+document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
+</script>
 </head>
 <body>
 
-<!-- ===== GATE OVERLAY ===== -->
-<div class="gate-overlay" id="gateOverlay">
-  <div class="gate-box">
-    <div class="gate-logo">
-      <div class="logo-icon" style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:22px;font-weight:800">♫</div>
-      <div>
-        <div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;letter-spacing:1px">RPMxPRIME<span style="color:var(--accent)">.</span>AUDIO</div>
-      </div>
+<!-- ===== AUTH ===== -->
+<div class="ov" id="authOv">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="logo-ico">♫</div>
+      <div class="logo-txt">RPMxDEV<span class="dot">.</span>BYPASS AUDIO</div>
     </div>
-    <div class="gate-title">Support Us to <span class="accent">Continue</span></div>
-    <div class="gate-sub">This tool is 100% free. To keep it running, please join our Discord and follow on TikTok first!</div>
-    <div class="gate-steps">
-      <div class="gate-step" id="gateYT">
-        <div class="gate-step-icon">💬</div>
-        <div class="gate-step-info">
-          <div class="gate-step-title">JOIN DISCORD</div>
-          <div class="gate-step-desc">@RPMxPRIME Community</div>
-        </div>
-        <a class="gate-step-btn yt" id="btnYT" href="https://discord.gg/5EAzVWSV" target="_blank">JOIN DULU GUYS</a>
-        <div class="check">✓</div>
-      </div>
-      <div class="gate-step" id="gateTT">
-        <div class="gate-step-icon">🎵</div>
-        <div class="gate-step-info">
-          <div class="gate-step-title">Follow on TikTok</div>
-          <div class="gate-step-desc">@nicccl22 — Main account</div>
-        </div>
-        <a class="gate-step-btn tt" id="btnTT" href="https://www.tiktok.com/@nicccl22" target="_blank">FOLLOW</a>
-        <div class="check">✓</div>
-      </div>
+    <div class="atabs">
+      <div class="atab on" id="tLogin" onclick="switchTab('login')">LOGIN</div>
+      <div class="atab" id="tReg" onclick="switchTab('reg')">BUAT AKUN</div>
     </div>
-    <button class="gate-continue locked" id="gateContinue" disabled>COMPLETE BOTH STEPS FIRST</button>
-    <div class="gate-note">After clicking both links, the continue button will unlock • Admin? <span style="color:var(--accent);cursor:pointer" onclick="openAdminLogin()">Click here</span></div>
+    <div class="aform" id="fLogin">
+      <h2>Selamat Datang 👋</h2>
+      <div class="asub">Login untuk akses RPMxPRIME BYPASS</div>
+      <div class="aerr" id="eLogin"></div>
+      <div class="fg"><label class="fl">Username</label><input class="fi" type="text" id="lUser" placeholder="username kamu" autocomplete="username"></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="lPass" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn-a" onclick="doLogin()">LOGIN →</button>
+      <div class="anote">Belum punya akun? → klik <b>BUAT AKUN</b></div>
+    </div>
+    <div class="aform" id="fReg" style="display:none">
+      <h2>Buat Akun Baru 🚀</h2>
+      <div class="asub">Gratis · 10 export/hari · reset tiap pagi</div>
+      <div class="aerr" id="eReg"></div>
+      <div class="fg"><label class="fl">Username</label><input class="fi" type="text" id="rUser" placeholder="min 3 karakter" autocomplete="username"></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="rEmail" placeholder="email@kamu.com" autocomplete="email"></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="rPass" placeholder="min 6 karakter" autocomplete="new-password"></div>
+      <button class="btn-a" onclick="doRegister()">BUAT AKUN →</button>
+      <div class="anote">Sudah punya akun? → klik <b>LOGIN</b></div>
+    </div>
   </div>
 </div>
 
-<!-- ===== LIMIT OVERLAY ===== -->
-<div class="limit-overlay" id="limitOverlay">
-  <div class="limit-box">
-    <div class="limit-icon">🚫</div>
-    <h2>Export Limit Reached</h2>
-    <p id="limitMsg">You've reached your daily export limit. Upgrade to VIP for unlimited exports or wait until tomorrow!</p>
-    <button class="limit-vip-btn" onclick="document.getElementById('limitOverlay').classList.remove('show')">✕ Close</button>
+<!-- ===== GATE ===== -->
+<div class="ov hide" id="gateOv">
+  <div class="gate-box">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px">
+      <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--a),var(--a2));display:grid;place-items:center;font-size:17px">♫</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:17px">RPMxDEV<span style="color:var(--a)">.</span>AUDIO</div>
+    </div>
+    <div class="gate-title">Support Us to <span class="gate-acc">Continue</span></div>
+    <div class="gate-sub">Tool ini 100% gratis & jalan di browser kamu.<br>Support dulu sebelum lanjut ya!</div>
+    <div class="gate-steps">
+      <div class="gstep" id="gsYT">
+        <div class="gstep-ico">💬</div>
+        <div class="gstep-info"><div class="gstep-title">JOIN Discord</div><div class="gstep-desc">@RPMxPRIME</div></div>
+        <a class="gstep-btn dc" id="gBtnYT" href="https://discord.gg/5EAzVWSV" target="_blank">JOIN</a>
+        <div class="gcheck">✓</div>
+      </div>
+      <div class="gstep" id="gsTT">
+        <div class="gstep-ico">🎵</div>
+        <div class="gstep-info"><div class="gstep-title">Follow TikTok</div><div class="gstep-desc">@nicccl22</div></div>
+        <a class="gstep-btn tt" id="gBtnTT" href="https://www.tiktok.com/@nicccl22" target="_blank">FOLLOW</a>
+        <div class="gcheck">✓</div>
+      </div>
+    </div>
+    <button class="gcont lock" id="gCont" disabled>COMPLETE BOTH STEPS FIRST</button>
+    <div class="gnote">Klik kedua link → tombol unlock otomatis</div>
   </div>
 </div>
+
+<!-- ===== SUB MODAL ===== -->
+<div class="modal-bg" id="subModal">
+  <div class="modal-box">
+    <button class="mclose" onclick="closeMod('subModal')">×</button>
+    <h2>⚡ Upgrade Plan</h2>
+    <div class="msub">Hapus limit harian & unlock semua fitur premium</div>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">FREE</div>
+        <div class="plan-price">Rp0<span>/bulan</span></div>
+        <ul class="plan-feats">
+          <li>10 export per hari</li>
+          <li>Reset tiap tengah malam</li>
+          <li>MP3 / OGG / WAV</li>
+          <li>100% di browser</li>
+        </ul>
+        <button class="btn-plan" style="background:var(--s2);color:var(--d);border:1px solid var(--b)" disabled>Plan Sekarang</button>
+      </div>
+      <div class="plan hot">
+        <div class="pbadge">🔥 POPULER</div>
+        <div class="plan-name" style="color:var(--g)">⭐ VIP</div>
+        <div class="plan-price" style="color:var(--g)">Rp25K<span>/bulan</span></div>
+        <ul class="plan-feats">
+          <li><b style="color:var(--g)">UNLIMITED</b> export</li>
+          <li>Priority processing</li>
+          <li>Badge VIP di profil</li>
+          <li>Support Discord</li>
+          <li>Early access fitur baru</li>
+        </ul>
+        <button class="btn-plan" onclick="closeMod('subModal');openBuyModal('vip_monthly')">BELI SEKARANG →</button>
+      </div>
+    </div>
+    <div style="border:1px solid rgba(156,108,255,.3);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:rgba(156,108,255,.05)">
+      <div style="font-size:11px;font-weight:700;color:var(--a2);margin-bottom:6px">💎 VIP TAHUNAN — Hemat 40%</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+        <div>
+          <div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--a2)">Rp180K<span style="font-size:11px;color:var(--d);font-weight:400">/tahun</span></div>
+          <div style="font-size:9px;color:var(--d);font-family:'JetBrains Mono',monospace">= Rp15K/bulan · hemat Rp120K/tahun</div>
+        </div>
+        <button class="btn-plan" style="width:auto;padding:9px 18px;background:linear-gradient(135deg,var(--a2),var(--a))" onclick="closeMod('subModal');openBuyModal('vip_yearly')">BELI →</button>
+      </div>
+    </div>
+    <div class="mnote">Pembayaran via DANA / GoPay / BCA · Konfirmasi ke Discord admin</div>
+  </div>
+</div>
+
+<!-- ===== BUY MODAL ===== -->
+<div class="modal-bg" id="buyModal">
+  <div class="buy-modal-box">
+    <button class="mclose" onclick="closeMod('buyModal')">×</button>
+    <h2 style="margin-bottom:14px">🛒 Pembelian Premium</h2>
+
+    <!-- Steps indicator -->
+    <div class="buy-steps" id="buySteps">
+      <div class="buy-step-dot active" id="bsd1">1</div>
+      <div class="buy-step-line" id="bsl1"></div>
+      <div class="buy-step-dot idle" id="bsd2">2</div>
+      <div class="buy-step-line" id="bsl2"></div>
+      <div class="buy-step-dot idle" id="bsd3">3</div>
+    </div>
+
+    <!-- Step 1: Pilih paket -->
+    <div class="buy-pane on" id="bp1">
+      <div style="font-size:12px;font-weight:700;margin-bottom:10px">Pilih Paket</div>
+      <div class="buy-pkg" id="pkg_vip_monthly" onclick="selPkg('vip_monthly')">
+        <div class="buy-pkg-ico">⭐</div>
+        <div><div class="buy-pkg-name">VIP Bulanan</div><div class="buy-pkg-desc">UNLIMITED export · 1 bulan</div></div>
+        <div class="buy-pkg-price">Rp25.000</div>
+      </div>
+      <div class="buy-pkg" id="pkg_vip_yearly" onclick="selPkg('vip_yearly')">
+        <div class="buy-pkg-ico">💎</div>
+        <div><div class="buy-pkg-name">VIP Tahunan</div><div class="buy-pkg-desc">UNLIMITED export · 12 bulan · hemat 40%</div></div>
+        <div class="buy-pkg-price">Rp180.000</div>
+      </div>
+      <button class="btn-buy-next" id="btnNext1" onclick="buyStep(2)" disabled>LANJUT →</button>
+    </div>
+
+    <!-- Step 2: Pilih pembayaran & info transfer -->
+    <div class="buy-pane" id="bp2">
+      <div style="font-size:12px;font-weight:700;margin-bottom:10px">Metode Pembayaran</div>
+      <div class="pay-methods">
+        <div class="pay-method" id="pm_dana" onclick="selPay('dana')">
+          <div class="pay-method-ico">💳</div>
+          <div class="pay-method-name">DANA</div>
+          <div class="pay-method-sub">Transfer instan</div>
+        </div>
+        <div class="pay-method" id="pm_gopay" onclick="selPay('gopay')">
+          <div class="pay-method-ico">💚</div>
+          <div class="pay-method-name">GoPay</div>
+          <div class="pay-method-sub">Transfer instan</div>
+        </div>
+        <div class="pay-method" id="pm_bca" onclick="selPay('bca')">
+          <div class="pay-method-ico">🏦</div>
+          <div class="pay-method-name">BCA</div>
+          <div class="pay-method-sub">Transfer bank</div>
+        </div>
+        <div class="pay-method" id="pm_bri" onclick="selPay('bri')">
+          <div class="pay-method-ico">🏧</div>
+          <div class="pay-method-name">BRI</div>
+          <div class="pay-method-sub">Transfer bank</div>
+        </div>
+      </div>
+      <div class="pay-info-box" id="payInfoBox" style="display:none">
+        <div class="pi-label">Transfer ke</div>
+        <div class="pi-value" id="piDest">—</div>
+        <div style="margin-top:6px"><span class="pi-label">Atas Nama</span></div>
+        <div style="font-size:12px;font-weight:700;color:var(--t)" id="piName">—</div>
+        <div style="margin-top:6px"><span class="pi-label">Nominal Tepat</span></div>
+        <div class="pi-value" id="piAmount" style="color:var(--g)">—</div>
+        <div class="pi-note">⚠ Transfer nominal TEPAT untuk verifikasi otomatis</div>
+      </div>
+      <button class="btn-buy-next" id="btnNext2" onclick="buyStep(3)" disabled>LANJUT →</button>
+      <button class="btn-buy-back" onclick="buyStep(1)">← Kembali</button>
+    </div>
+
+    <!-- Step 3: Upload bukti bayar -->
+    <div class="buy-pane" id="bp3">
+      <div class="order-summary" id="orderSummary"></div>
+      <div style="font-size:12px;font-weight:700;margin-bottom:8px">Upload Bukti Pembayaran</div>
+      <div class="upload-proof-area" id="proofArea" onclick="document.getElementById('proofInput').click()">
+        <div style="font-size:24px;margin-bottom:6px">📸</div>
+        <div style="font-size:12px;font-weight:600">Klik untuk upload screenshot</div>
+        <div style="font-size:10px;color:var(--d);margin-top:3px">JPG, PNG, WEBP — maks 5MB</div>
+        <img class="proof-preview" id="proofPreview">
+      </div>
+      <input type="file" id="proofInput" accept="image/*" hidden onchange="handleProof(event)">
+      <div class="fg" style="margin-bottom:10px">
+        <label class="fl">Catatan / Username Discord (opsional)</label>
+        <input class="fi" type="text" id="buyNote" placeholder="Contoh: discord @username#1234">
+      </div>
+      <button class="btn-buy-next" id="btnSubmit" onclick="submitOrder()" disabled>KIRIM ORDER →</button>
+      <button class="btn-buy-back" onclick="buyStep(2)">← Kembali</button>
+    </div>
+
+    <!-- Step done -->
+    <div class="buy-pane" id="bp4">
+      <div class="pending-badge">
+        <div class="pi">⏳</div>
+        <h3>Order Terkirim!</h3>
+        <p>Order kamu sedang diproses admin.<br>Biasanya diaktivasi dalam <b style="color:var(--w)">1–24 jam</b>.<br>Pantau Discord untuk konfirmasi.</p>
+      </div>
+      <div style="background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--d);margin-bottom:10px">
+        Order ID: <span id="finalOrderId" style="color:var(--a)">—</span><br>
+        Discord: <a href="https://discord.gg/5EAzVWSV" target="_blank" style="color:var(--a2)">discord.gg/5EAzVWSV</a>
+      </div>
+      <button class="btn-buy-next" onclick="closeMod('buyModal')">TUTUP</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN PANEL ===== -->
+<div class="admin-bg" id="adminPanel">
+  <div class="admin-box">
+    <div class="ahdr">
+      <h2>🔴 ADMIN PANEL — RPMxPRIME BYPASS</h2>
+      <button class="bsm red" onclick="closeMod('adminPanel')">× TUTUP</button>
+    </div>
+    <div class="astats">
+      <div class="astat"><div class="astat-l">TOTAL USERS</div><div class="astat-v" id="aS1">0</div></div>
+      <div class="astat"><div class="astat-l">VIP USERS</div><div class="astat-v" id="aS2" style="color:var(--g)">0</div></div>
+      <div class="astat"><div class="astat-l">EXPORTS TODAY</div><div class="astat-v" id="aS3">0</div></div>
+      <div class="astat"><div class="astat-l">PENDING ORDERS</div><div class="astat-v" id="aS4" style="color:var(--w)">0</div></div>
+    </div>
+    <div class="atabs2">
+      <div class="atab2 on" onclick="aTab('users')">👥 USERS</div>
+      <div class="atab2" onclick="aTab('orders')">🛒 ORDERS</div>
+      <div class="atab2" onclick="aTab('add')">➕ TAMBAH</div>
+      <div class="atab2" onclick="aTab('logs')">📋 LOGS</div>
+      <div class="atab2" onclick="aTab('cfg')">⚙️ CONFIG</div>
+    </div>
+    <div class="apane on" id="ap_users">
+      <div style="overflow-x:auto"><table class="atable"><thead><tr><th>USER</th><th>EMAIL</th><th>ROLE</th><th>USAGE HARI INI</th><th>CUSTOM LIMIT</th><th>ACTIONS</th></tr></thead><tbody id="aBody"></tbody></table></div>
+    </div>
+    <div class="apane" id="ap_orders">
+      <div class="asect">Pending Orders</div>
+      <div id="ordersContainer"></div>
+    </div>
+    <div class="apane" id="ap_add">
+      <div class="asect">Tambah User Baru</div>
+      <div class="arow"><input class="fi" id="nUN" placeholder="Username"><input class="fi" id="nUE" placeholder="Email"><input class="fi" type="password" id="nUP" placeholder="Password"></div>
+      <div class="arow" style="margin-top:7px">
+        <select class="fi" id="nUR"><option value="free">Free</option><option value="pro">Pro</option><option value="vip">VIP</option><option value="admin">Admin</option></select>
+        <input class="fi" type="number" id="nUL" placeholder="Custom limit (0=default)" min="0">
+        <button class="btn-a" style="max-width:130px;padding:9px;margin-top:0;font-size:10px" onclick="aAddUser()">TAMBAH →</button>
+      </div>
+    </div>
+    <div class="apane" id="ap_logs">
+      <div class="asect">Activity Log</div>
+      <div class="alog" id="aLog"><span style="color:var(--d)">Belum ada log...</span></div>
+    </div>
+    <div class="apane" id="ap_cfg">
+      <div class="asect">Global Config</div>
+      <div style="display:flex;flex-direction:column;gap:9px;max-width:380px">
+        <div style="display:flex;align-items:center;gap:10px"><label class="fl" style="min-width:170px;margin:0">Limit Free (per hari)</label><input class="fi" type="number" id="cfFL" value="10" style="max-width:80px"></div>
+        <div style="display:flex;align-items:center;gap:10px"><label class="fl" style="min-width:170px;margin:0">Limit Pro (per hari)</label><input class="fi" type="number" id="cfPL" value="50" style="max-width:80px"></div>
+        <div style="margin-top:4px"><div class="asect" style="margin-bottom:6px">Info Pembayaran (tampil ke pembeli)</div>
+          <div class="arow"><input class="fi" id="cfDANA" placeholder="No DANA"><input class="fi" id="cfGopay" placeholder="No GoPay"></div>
+          <div class="arow" style="margin-top:5px"><input class="fi" id="cfBCA" placeholder="No Rek BCA"><input class="fi" id="cfBRI" placeholder="No Rek BRI"></div>
+          <input class="fi" id="cfOwner" placeholder="Nama pemilik rekening" style="margin-top:5px">
+        </div>
+        <button class="bsm" style="width:130px;padding:9px;border-radius:7px;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;border:none;font-weight:700" onclick="saveCfg()">SIMPAN CONFIG</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROGRESS ===== -->
+<div class="pogov" id="progOv">
+  <div class="pobox">
+    <div class="poico"><span class="spin">⚙️</span></div>
+    <div class="pottl" id="pTitle">Processing...</div>
+    <div class="posub" id="pSub">Rendering audio di browser</div>
+    <div class="pobar"><div class="pofill" id="pFill"></div></div>
+    <div class="posts" id="pSts">Mohon tunggu...</div>
+  </div>
+</div>
+
+<!-- ===== IMAGE LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('show')">
+  <img id="lbImg" src="">
+</div>
+
+<!-- ===== TOASTS ===== -->
+<div class="toasts" id="toasts"></div>
 
 <!-- ===== MAIN APP ===== -->
 <div class="app" id="mainApp" style="display:none">
-  <div class="header">
-    <div class="logo">
-      <div class="logo-icon">♫</div>
-      <div>
-        <span class="logo-text">RPMxPRIME<span class="dot">.</span>AUDIO</span>
-        <span class="logo-sub">BYPASS STUDIO</span>
-      </div>
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="hdr-logo-ico">♫</div>
+      <div><span class="hdr-logo-txt">RPMxDEV<span class="dot">.</span>AUDIO</span><span class="hdr-logo-sub">BYPASS STUDIO</span></div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <div class="badge badge-client" id="serverBadge">⚡ Client-Side</div>
-      <div class="badge" id="userRoleBadge" style="display:none"></div>
-      <div class="badge" id="autoIndicator" style="display:none;color:var(--warn);border-color:rgba(255,171,64,.3);background:rgba(255,171,64,.06)">⚡ AUTO</div>
-      <div class="badge" id="fileCount">0 FILES</div>
-      <div class="badge" id="exportCounter" style="color:var(--accent)">0 EXPORTS</div>
+    <div class="hdr-right">
+      <div class="bdg bdg-ok" id="srvBadge">✅ Always Online</div>
+      <div class="bdg" id="autoInd" style="display:none;color:var(--w);border-color:rgba(255,171,64,.3);background:rgba(255,171,64,.06)">⚡ AUTO</div>
+      <div class="bdg" id="fCount">0 FILES</div>
     </div>
+  </div>
+
+  <div class="ubar">
+    <div class="uinfo">
+      <div class="uav" id="uAv">?</div>
+      <div><div class="uname" id="uName">—</div><div class="urole" id="uRole">Free User</div></div>
+    </div>
+    <div class="uact">
+      <div class="lbar"><span id="limTxt">0/10</span><div class="ltrack"><div class="lfill" id="limFill" style="width:0%"></div></div><span style="color:var(--d);font-size:9px">TODAY</span></div>
+      <button class="bsm gold" id="btnUpg" onclick="openMod('subModal')">⭐ UPGRADE</button>
+      <button class="bsm red" id="btnAdm" style="display:none" onclick="openAdmin()">🔴 ADMIN</button>
+      <button class="bsm red" onclick="doLogout()">LOGOUT</button>
+    </div>
+  </div>
+
+  <div class="limban" id="limBan">
+    <span>🚫 <b>Limit harian habis!</b> 10x export sudah tercapai. Reset jam 00:00 atau upgrade VIP untuk unlimited.</span>
+    <button class="bsm gold" onclick="openMod('subModal')">⭐ VIP</button>
   </div>
 
   <div class="hero" id="hero">
-    <h1>Process Audio for <span class="accent">Roblox</span></h1>
-    <p>Client-side processing — independent pitch & speed control, MP3/WAV export in-browser. Bypass Roblox copyright filters.</p>
+    <h1>Process Audio for <span class="hacc">Roblox</span></h1>
+    <p>Pitch & speed independen. Langsung download. Export MP3 asli — bukan WAV palsu!</p>
   </div>
 
-  <div id="tierNotice"></div>
+  <div class="istrip" id="istrip">⚡ <b>Bypass Audio — Selalu Online!</b> Export MP3 nyata via lamejs encoder. 100% privat.</div>
 
-  <div class="dropzone empty" id="dropzone">
-    <div class="icon">🎵</div>
-    <div class="title">Drop audio files here</div>
-    <div class="sub">MP3, WAV, OGG, FLAC, M4A — up to 50MB · short songs work best</div>
+  <div class="dz empty" id="dz">
+    <div class="dz-ico">🎵</div>
+    <div class="dz-ttl">Drop audio files kamu disini ya!</div>
+    <div class="dz-sub">MP3, WAV, OGG, FLAC, M4A — hingga 100MB per file</div>
   </div>
-  <input type="file" id="fileInput" accept="audio/*" multiple hidden>
+  <input type="file" id="fInput" accept="audio/*" multiple hidden>
 
-  <div class="features" id="features">
-    <div class="feat" style="animation-delay:.05s"><div class="feat-icon">⚡</div><div class="feat-title">AUTO BYPASS</div><div class="feat-desc">One-click Roblox copyright bypass</div></div>
-    <div class="feat" style="animation-delay:.1s"><div class="feat-icon">🎚️</div><div class="feat-title">INDEPENDENT</div><div class="feat-desc">Pitch & speed controlled separately</div></div>
-    <div class="feat" style="animation-delay:.15s"><div class="feat-icon">🎧</div><div class="feat-title">LIVE PREVIEW</div><div class="feat-desc">Hear changes before exporting</div></div>
-    <div class="feat" style="animation-delay:.2s"><div class="feat-icon">💾</div><div class="feat-title">IN-BROWSER</div><div class="feat-desc">No server needed — works offline</div></div>
+  <div class="feats" id="feats">
+    <div class="feat" style="animation-delay:.05s"><div class="feat-ico">⚡</div><div class="feat-ttl">AUTO BYPASS</div><div class="feat-desc">One-click copyright bypass</div></div>
+    <div class="feat" style="animation-delay:.1s"><div class="feat-ico">🎚️</div><div class="feat-ttl">INDEPENDENT</div><div class="feat-desc">Pitch & speed terpisah</div></div>
+    <div class="feat" style="animation-delay:.15s"><div class="feat-ico">🎵</div><div class="feat-ttl">TRUE MP3</div><div class="feat-desc">lamejs encoder — bukan WAV</div></div>
+    <div class="feat" style="animation-delay:.2s"><div class="feat-ico">💾</div><div class="feat-ttl">MULTI FORMAT</div><div class="feat-desc">Export MP3 / OGG / WAV</div></div>
   </div>
 
-  <div class="file-tabs" id="fileTabs"></div>
+  <div class="ftabs" id="ftabs"></div>
+
   <div id="editor" style="display:none">
-    <div class="auto-section" id="autoSection">
-      <div class="auto-left">
-        <div>
-          <div class="auto-label">⚡ AUTO BYPASS</div>
-          <div class="auto-desc">Automatically adjust to pass Roblox copyright — processed in-browser</div>
-        </div>
-      </div>
-      <div class="auto-modes" id="autoModes"></div>
+    <div class="autosec" id="autosec">
+      <div><div class="autolbl">⚡ AUTO BYPASS</div><div class="autodesc">Otomatis adjust untuk lolos filter copyright Roblox</div></div>
+      <div class="automodes" id="automodes"></div>
     </div>
-    <div class="wave-panel">
-      <div class="info-row">
-        <div>WAVEFORM — <span class="fname" id="waveFileName"></span></div>
-        <div id="waveTime">0:00 / 0:00</div>
-      </div>
-      <canvas id="waveCanvas"></canvas>
+    <div class="wpanel">
+      <div class="winfo"><div>WAVEFORM — <span id="wName" style="color:var(--t)"></span></div><div id="wTime">0:00 / 0:00</div></div>
+      <canvas id="wc"></canvas>
       <div class="transport">
-        <button class="btn-transport" id="btnRew" title="Restart">⏮</button>
-        <button class="btn-play" id="btnPlay" title="Play / Pause">▶</button>
-        <button class="btn-transport" id="btnStop" title="Stop">⏹</button>
+        <button class="btn-t" id="btnRew">⏮</button>
+        <button class="btn-play" id="btnPlay">▶</button>
+        <button class="btn-t" id="btnStop">⏹</button>
       </div>
     </div>
-    <div class="main-grid">
+    <div class="mgrid">
       <div class="panel">
-        <div class="panel-label">🎚️ AUDIO PROCESSOR — Client Side</div>
-        <div class="knobs-row">
-          <div class="knob-wrap"><div class="knob-label">Speed</div><div class="knob-ring" id="knobSpeed"><div class="knob-inner"><div class="knob-needle"></div></div></div><div class="knob-value" id="knobSpeedVal">1.00x</div></div>
-          <div class="knob-wrap"><div class="knob-label">Pitch</div><div class="knob-ring" id="knobPitch"><div class="knob-inner"><div class="knob-needle"></div></div></div><div class="knob-value" id="knobPitchVal">0st</div></div>
-          <div class="knob-wrap"><div class="knob-label">Volume</div><div class="knob-ring" id="knobVolume"><div class="knob-inner"><div class="knob-needle"></div></div></div><div class="knob-value" id="knobVolumeVal">100%</div></div>
+        <div class="plbl">🎚️ Audio Processor — Browser Engine</div>
+        <div class="knobs">
+          <div class="kwrap"><div class="klbl">Speed</div><div class="kring" id="kSpd"><div class="kinner"><div class="kneedle"></div></div></div><div class="kval" id="kvSpd">1.00x</div></div>
+          <div class="kwrap"><div class="klbl">Pitch</div><div class="kring" id="kPit"><div class="kinner"><div class="kneedle"></div></div></div><div class="kval" id="kvPit">0st</div></div>
+          <div class="kwrap"><div class="klbl">Volume</div><div class="kring" id="kVol"><div class="kinner"><div class="kneedle"></div></div></div><div class="kval" id="kvVol">100%</div></div>
         </div>
-        <div class="slider-row">
-          <div class="slider-header"><span class="slider-label">Speed (tempo)</span><span class="slider-val" id="sliderSpeedVal" style="color:var(--accent)">1.00x</span></div>
-          <div class="slider-track"><div class="slider-fill" id="sliderSpeedFill" style="background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div>
-          <input type="range" id="sliderSpeed" min="0.25" max="4" step="0.05" value="1">
-        </div>
-        <div class="slider-row">
-          <div class="slider-header"><span class="slider-label">Pitch (semitones)</span><span class="slider-val" id="sliderPitchVal" style="color:var(--accent2)">0 st</span></div>
-          <div class="slider-track"><div class="slider-fill" id="sliderPitchFill" style="background:linear-gradient(90deg,var(--accent2),var(--accent))"></div></div>
-          <input type="range" id="sliderPitch" min="-12" max="12" step="1" value="0">
-        </div>
-        <div class="slider-row">
-          <div class="slider-header"><span class="slider-label">Volume</span><span class="slider-val" id="sliderVolumeVal" style="color:var(--success)">100%</span></div>
-          <div class="slider-track"><div class="slider-fill" id="sliderVolumeFill" style="background:linear-gradient(90deg,var(--success),#00c853)"></div></div>
-          <input type="range" id="sliderVolume" min="0" max="2" step="0.05" value="1">
-        </div>
-        <div class="info-strip" id="infoStrip">Speed & pitch processed <strong>independently</strong> in-browser (playbackRate + pitch shift)</div>
-        <div class="limit-strip" id="limitInfoStrip" style="display:none"></div>
+        <div class="srow"><div class="shdr"><span class="slbl">Speed</span><span class="sval" id="svSpd" style="color:var(--a)">1.00x</span></div><div class="strack"><div class="sfill" id="sfSpd" style="background:linear-gradient(90deg,var(--a),var(--a2))"></div></div><input type="range" id="slSpd" min="0.25" max="4" step="0.05" value="1"></div>
+        <div class="srow"><div class="shdr"><span class="slbl">Pitch (semitones)</span><span class="sval" id="svPit" style="color:var(--a2)">0 st</span></div><div class="strack"><div class="sfill" id="sfPit" style="background:linear-gradient(90deg,var(--a2),var(--a))"></div></div><input type="range" id="slPit" min="-12" max="12" step="1" value="0"></div>
+        <div class="srow"><div class="shdr"><span class="slbl">Volume</span><span class="sval" id="svVol" style="color:var(--ok)">100%</span></div><div class="strack"><div class="sfill" id="sfVol" style="background:linear-gradient(90deg,var(--ok),#00c853)"></div></div><input type="range" id="slVol" min="0" max="2" step="0.05" value="1"></div>
+        <div class="info-s">Speed & pitch diproses <b>independen</b> via Web Audio API · Export MP3 asli via lamejs</div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:12px">
         <div class="panel" style="flex:1">
-          <div class="panel-label">🎯 PRESETS</div>
-          <div class="presets-grid" id="presetsGrid"></div>
+          <div class="plbl">🎯 Presets</div>
+          <div class="pgrid" id="pgrid"></div>
         </div>
         <div class="panel">
-          <div class="panel-label">💾 EXPORT — In-Browser</div>
-          <div class="format-selector" id="formatSelector"></div>
-          <button class="btn-export" id="btnExport">EXPORT CURRENT → MP3</button>
-          <button class="btn-export-all" id="btnExportAll" style="display:none">EXPORT ALL → MP3</button>
-          <div class="export-info" id="exportInfo">Output: MP3 · 44100Hz · Stereo</div>
+          <div class="plbl">💾 Export</div>
+          <div class="fmtsel" id="fmtsel"></div>
+          <button class="bexport" id="btnEx">EXPORT → MP3</button>
+          <button class="bexall" id="btnExAll" style="display:none">EXPORT ALL → MP3</button>
+          <div class="expinfo" id="expinfo">Output: MP3 · 44100Hz · Stereo</div>
         </div>
       </div>
     </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">SAMPLE RATE</div><div class="stat-value" id="statRate">—</div></div>
-      <div class="stat-card"><div class="stat-label">CHANNELS</div><div class="stat-value" id="statCh">—</div></div>
-      <div class="stat-card"><div class="stat-label">ORIGINAL</div><div class="stat-value" id="statOrig">—</div></div>
-      <div class="stat-card"><div class="stat-label">PROCESSED</div><div class="stat-value" id="statProc">—</div></div>
+    <div class="statsrow">
+      <div class="statcard"><div class="stlbl">SAMPLE RATE</div><div class="stval" id="stR">—</div></div>
+      <div class="statcard"><div class="stlbl">CHANNELS</div><div class="stval" id="stC">—</div></div>
+      <div class="statcard"><div class="stlbl">ORIGINAL</div><div class="stval" id="stO">—</div></div>
+      <div class="statcard"><div class="stlbl">PROCESSED</div><div class="stval" id="stP">—</div></div>
     </div>
   </div>
-  <div class="footer">RPMxPRIME<span class="dot">.</span>AUDIO STUDIO — Client-Side · Built for Roblox Creators</div>
-</div>
-
-<!-- ===== PROGRESS OVERLAY ===== -->
-<div class="progress-overlay" id="progressOverlay">
-  <div class="progress-box">
-    <div class="prog-icon"><span class="spinning">⚙️</span></div>
-    <div class="prog-title" id="progTitle">Processing Audio...</div>
-    <div class="prog-sub" id="progSub">Rendering audio in-browser</div>
-    <div class="prog-bar"><div class="prog-bar-fill" id="progBarFill"></div></div>
-    <div class="prog-status" id="progStatus">Starting...</div>
-  </div>
-</div>
-
-<div class="toast-stack" id="toastStack"></div>
-
-<!-- ===== ADMIN OVERLAY ===== -->
-<div class="admin-overlay" id="adminOverlay">
-  <div class="admin-login" id="adminLogin">
-    <div class="admin-login-box">
-      <div class="admin-logo">🛡️</div>
-      <h2>ADMIN ACCESS</h2>
-      <div class="admin-sub">RPMxPRIME Control Panel</div>
-      <input type="text" class="admin-input" id="adminUser" placeholder="Username" autocomplete="off">
-      <input type="password" class="admin-input" id="adminPass" placeholder="Password" autocomplete="off">
-      <button class="admin-login-btn" onclick="doAdminLogin()">LOGIN TO PANEL</button>
-      <button class="admin-close-btn" onclick="closeAdmin()">← BACK</button>
-    </div>
-  </div>
-  <div class="admin-panel" id="adminPanel">
-    <div class="admin-panel-wrap">
-      <div class="admin-sidebar">
-        <div class="admin-sidebar-logo">
-          <div class="brand">RPMxPRIME</div>
-          <div class="sub">ADMIN PANEL v2.0</div>
-        </div>
-        <nav class="admin-nav">
-          <div class="admin-nav-item active" onclick="adminNav('dashboard')" data-page="dashboard"><span class="nav-icon">📊</span> Dashboard</div>
-          <div class="admin-nav-item" onclick="adminNav('users')" data-page="users"><span class="nav-icon">👥</span> Users</div>
-          <div class="admin-nav-item" onclick="adminNav('vip')" data-page="vip"><span class="nav-icon">⭐</span> VIP Manager</div>
-          <div class="admin-nav-item" onclick="adminNav('limits')" data-page="limits"><span class="nav-icon">🚦</span> Limits & Quotas</div>
-          <div class="admin-nav-item" onclick="adminNav('gate')" data-page="gate"><span class="nav-icon">🔒</span> Gate Settings</div>
-          <div class="admin-nav-item" onclick="adminNav('activity')" data-page="activity"><span class="nav-icon">📋</span> Activity Log</div>
-          <div class="admin-nav-item" onclick="adminNav('settings')" data-page="settings"><span class="nav-icon">⚙️</span> Settings</div>
-        </nav>
-        <div class="admin-logout"><button onclick="adminLogout()">🚪 Logout</button></div>
-      </div>
-      <div class="admin-main">
-        <div class="admin-header-bar">
-          <div class="admin-title">🛡️ RPMxPRIME ADMIN</div>
-          <div class="admin-user" id="adminUserLabel">Logged in as: admin</div>
-        </div>
-        <div class="admin-content">
-          <div class="admin-page active" id="page-dashboard">
-            <div class="admin-stats-grid">
-              <div class="admin-stat accent"><div class="as-label">TOTAL USERS</div><div class="as-val" id="statTotalUsers">0</div><div class="as-sub">All registered</div></div>
-              <div class="admin-stat success"><div class="as-label">VIP USERS</div><div class="as-val" id="statVipUsers">0</div><div class="as-sub">Active VIP</div></div>
-              <div class="admin-stat warn"><div class="as-label">EXPORTS TODAY</div><div class="as-val" id="statExportsToday">0</div><div class="as-sub">Across all users</div></div>
-              <div class="admin-stat danger"><div class="as-label">BANNED USERS</div><div class="as-val" id="statBanned">0</div><div class="as-sub">Active bans</div></div>
-            </div>
-            <div class="admin-section">
-              <div class="admin-section-header"><div class="sec-title">📋 RECENT ACTIVITY</div><button class="abtn abtn-accent" onclick="adminNav('activity')">View All</button></div>
-              <div id="dashRecentActivity"></div>
-            </div>
-            <div class="admin-section" style="margin-bottom:0">
-              <div class="admin-section-header"><div class="sec-title">👥 RECENT USERS</div><button class="abtn abtn-accent" onclick="adminNav('users')">Manage All</button></div>
-              <table class="admin-table"><thead><tr><th>ID</th><th>NAME</th><th>ROLE</th><th>EXPORTS</th><th>STATUS</th></tr></thead><tbody id="dashUsersTbody"></tbody></table>
-            </div>
-          </div>
-          <div class="admin-page" id="page-users">
-            <div class="admin-section">
-              <div class="admin-section-header">
-                <div class="sec-title">👥 USER MANAGEMENT</div>
-                <div class="sec-actions">
-                  <input type="text" class="admin-inp admin-inp-sm" id="userSearch" placeholder="Search user..." oninput="renderUsersTable()" style="width:160px">
-                  <button class="abtn abtn-success" onclick="toggleAddUserForm()">+ Add User</button>
-                </div>
-              </div>
-              <div class="add-user-form" id="addUserForm">
-                <div class="add-user-row">
-                  <div class="admin-form-group"><label>USERNAME</label><input type="text" class="admin-inp" id="newUserName" placeholder="username"></div>
-                  <div class="admin-form-group"><label>ROLE</label><select class="admin-select" id="newUserRole"><option value="user">Free User</option><option value="vip">VIP</option><option value="admin">Admin</option></select></div>
-                  <div class="admin-form-group"><label>EXPORT LIMIT/DAY</label><input type="number" class="admin-inp" id="newUserLimit" placeholder="5" value="5" min="0"></div>
-                  <button class="abtn abtn-success abtn-lg" style="margin-top:18px" onclick="addUser()">ADD</button>
-                  <button class="abtn abtn-danger abtn-lg" style="margin-top:18px" onclick="toggleAddUserForm()">CANCEL</button>
-                </div>
-              </div>
-              <table class="admin-table"><thead><tr><th>#</th><th>USERNAME</th><th>ROLE</th><th>EXPORTS</th><th>LIMIT/DAY</th><th>JOINED</th><th>ACTIONS</th></tr></thead><tbody id="usersTbody"></tbody></table>
-            </div>
-          </div>
-          <div class="admin-page" id="page-vip">
-            <div class="admin-section" style="margin-bottom:16px">
-              <div class="admin-section-header"><div class="sec-title">⭐ GRANT VIP</div></div>
-              <div class="admin-form-row">
-                <div class="admin-form-group"><label>SELECT USER</label><select class="admin-select" id="vipUserSelect" style="width:100%"></select></div>
-                <div class="admin-form-group"><label>VIP DURATION</label><select class="admin-select" id="vipDuration"><option value="7">7 Days</option><option value="30">30 Days</option><option value="90">90 Days</option><option value="365">1 Year</option><option value="0">Permanent</option></select></div>
-                <div class="admin-form-group"><label>CUSTOM EXPORT LIMIT</label><input type="number" class="admin-inp" id="vipExportLimit" placeholder="Unlimited = 0" value="0" min="0"></div>
-                <button class="abtn abtn-vip abtn-lg" style="margin-top:18px;white-space:nowrap" onclick="grantVip()">⭐ GRANT VIP</button>
-              </div>
-            </div>
-            <div class="admin-section"><div class="admin-section-header"><div class="sec-title">⭐ ACTIVE VIP USERS</div></div><table class="admin-table"><thead><tr><th>USER</th><th>VIP SINCE</th><th>EXPIRES</th><th>EXPORT LIMIT</th><th>ACTIONS</th></tr></thead><tbody id="vipTbody"></tbody></table></div>
-          </div>
-          <div class="admin-page" id="page-limits">
-            <div class="admin-section" style="margin-bottom:16px">
-              <div class="admin-section-header"><div class="sec-title">🚦 GLOBAL EXPORT LIMITS</div></div>
-              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Free User Daily Export Limit</div><div class="si-desc">Max exports per day for free users (0 = unlimited)</div></div><div class="num-inp-wrap"><input type="number" class="num-inp" id="globalFreeLimit" value="5" min="0"><span class="num-inp-label">/day</span></div></div>
-              <div class="settings-item"><div class="settings-item-info"><div class="si-title">VIP User Daily Export Limit</div><div class="si-desc">Max exports per day for VIP users (0 = unlimited)</div></div><div class="num-inp-wrap"><input type="number" class="num-inp" id="globalVipLimit" value="0" min="0"><span class="num-inp-label">/day</span></div></div>
-              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Max File Size (MB)</div><div class="si-desc">Maximum upload size for free users</div></div><div class="num-inp-wrap"><input type="number" class="num-inp" id="globalMaxFile" value="50" min="1"><span class="num-inp-label">MB</span></div></div>
-              <div class="settings-item"><div class="settings-item-info"><div class="si-title">VIP Max File Size (MB)</div><div class="si-desc">Maximum upload size for VIP users</div></div><div class="num-inp-wrap"><input type="number" class="num-inp" id="globalVipMaxFile" value="200" min="1"><span class="num-inp-label">MB</span></div></div>
-              <div style="padding:14px 18px"><button class="abtn abtn-success abtn-lg" onclick="saveGlobalLimits()">💾 SAVE LIMITS</button></div>
-            </div>
-            <div class="admin-section">
-              <div class="admin-section-header"><div class="sec-title">🎯 PER-USER LIMIT OVERRIDE</div></div>
-              <div class="admin-form-row">
-                <div class="admin-form-group"><label>USER</label><select class="admin-select" id="limitUserSelect" style="width:100%"></select></div>
-                <div class="admin-form-group"><label>NEW DAILY LIMIT (0 = unlimited)</label><input type="number" class="admin-inp" id="limitNewVal" value="10" min="0"></div>
-                <button class="abtn abtn-warn abtn-lg" style="margin-top:18px" onclick="setUserLimit()">SET LIMIT</button>
-              </div>
-            </div>
-          </div>
-          <div class="admin-page" id="page-gate">
-            <div class="admin-section">
-              <div class="admin-section-header"><div class="sec-title">🔒 GATE / ACCESS CONTROL</div></div>
-              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Enable Gate</div><div class="si-desc">Require Discord + TikTok before accessing the tool</div></div><label class="toggle"><input type="checkbox" id="gateEnabled" checked><div class="toggle-track"></div></label></div>
-              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Require Discord Join</div><div class="si-desc">Step 1: Join Discord server</div></div><label class="toggle"><input type="checkbox" id="gateDiscord" checked><div class="toggle-track"></div></label></div>
-              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Require TikTok Follow</div><div class="si-desc">Step 2: Follow TikTok account</div></div><label class="toggle"><input type="checkbox" id="gateTikTok" checked><div class="toggle-track"></div></label></div>
-              <div class="settings-item"><div class="settings-item-info"><div class="si-title">Gate Bypass (Whitelist)</div><div class="si-desc">Whitelisted IDs skip the gate entirely</div></div><label class="toggle"><input type="checkbox" id="gateWhitelist" checked><div class="toggle-track"></div></label></div>
-              <div class="admin-form-row"><div class="admin-form-group"><label>DISCORD INVITE LINK</label><input type="text" class="admin-inp" id="gateDiscordLink" value="https://discord.gg/5EAzVWSV"></div></div>
-              <div class="admin-form-row"><div class="admin-form-group"><label>TIKTOK LINK</label><input type="text" class="admin-inp" id="gateTTLink" value="https://www.tiktok.com/@nicccl22"></div></div>
-              <div style="padding:14px 18px"><button class="abtn abtn-success abtn-lg" onclick="saveGateSettings()">💾 SAVE GATE SETTINGS</button><button class="abtn abtn-danger abtn-lg" style="margin-left:8px" onclick="resetGateForAll()">🔄 RESET GATE FOR ALL USERS</button></div>
-            </div>
-          </div>
-          <div class="admin-page" id="page-activity">
-            <div class="admin-section">
-              <div class="admin-section-header">
-                <div class="sec-title">📋 ACTIVITY LOG</div>
-                <div class="sec-actions">
-                  <select class="admin-select" id="logFilter" onchange="renderLog()"><option value="all">All Events</option><option value="export">Exports</option><option value="admin">Admin Actions</option><option value="ban">Bans</option><option value="vip">VIP Changes</option><option value="join">New Users</option><option value="error">Errors</option></select>
-                  <button class="abtn abtn-danger" onclick="clearLog()">🗑 Clear</button>
-                </div>
-              </div>
-              <div id="activityLog"></div>
-            </div>
-          </div>
-          <div class="admin-page" id="page-settings">
-            <div class="settings-grid">
-              <div class="admin-section">
-                <div class="admin-section-header"><div class="sec-title">⚙️ SYSTEM SETTINGS</div></div>
-                <div class="settings-item"><div class="settings-item-info"><div class="si-title">Maintenance Mode</div><div class="si-desc">Disable access for all non-admins</div></div><label class="toggle"><input type="checkbox" id="settMaintenance"><div class="toggle-track"></div></label></div>
-                <div class="settings-item"><div class="settings-item-info"><div class="si-title">Auto-Ban on Abuse</div><div class="si-desc">Ban users who exceed limit 3x</div></div><label class="toggle"><input type="checkbox" id="settAutoBan" checked><div class="toggle-track"></div></label></div>
-              </div>
-              <div class="admin-section">
-                <div class="admin-section-header"><div class="sec-title">🔑 ADMIN CREDENTIALS</div></div>
-                <div class="admin-form-row" style="flex-direction:column;gap:10px">
-                  <div class="admin-form-group" style="width:100%"><label>NEW ADMIN USERNAME</label><input type="text" class="admin-inp" id="newAdminUser" placeholder="New username"></div>
-                  <div class="admin-form-group" style="width:100%"><label>NEW ADMIN PASSWORD</label><input type="password" class="admin-inp" id="newAdminPass" placeholder="New password"></div>
-                  <div class="admin-form-group" style="width:100%"><label>CONFIRM PASSWORD</label><input type="password" class="admin-inp" id="confirmAdminPass" placeholder="Confirm password"></div>
-                  <button class="abtn abtn-warn abtn-lg" onclick="changeAdminCreds()">🔑 CHANGE CREDENTIALS</button>
-                </div>
-              </div>
-              <div class="admin-section">
-                <div class="admin-section-header"><div class="sec-title">📢 ANNOUNCEMENT BANNER</div></div>
-                <div class="admin-form-row" style="flex-direction:column;gap:10px">
-                  <div class="settings-item" style="padding:0"><div class="settings-item-info"><div class="si-title">Show Banner</div><div class="si-desc">Display announcement to all users</div></div><label class="toggle"><input type="checkbox" id="settBanner"><div class="toggle-track"></div></label></div>
-                  <div class="admin-form-group" style="width:100%"><label>BANNER TEXT</label><input type="text" class="admin-inp" id="bannerText" placeholder="e.g. Server maintenance tonight at 10PM"></div>
-                  <div class="admin-form-group" style="width:100%"><label>BANNER TYPE</label><select class="admin-select" id="bannerType" style="width:100%"><option value="info">Info (Blue)</option><option value="warn">Warning (Orange)</option><option value="danger">Alert (Red)</option><option value="success">Success (Green)</option></select></div>
-                  <button class="abtn abtn-success abtn-lg" onclick="saveBanner()">💾 SAVE BANNER</button>
-                </div>
-              </div>
-              <div class="admin-section">
-                <div class="admin-section-header"><div class="sec-title">🗑️ DATA MANAGEMENT</div></div>
-                <div style="padding:14px 18px;display:flex;flex-direction:column;gap:10px">
-                  <button class="abtn abtn-warn abtn-lg" style="width:100%" onclick="resetAllExportCounts()">🔄 Reset All Export Counts</button>
-                  <button class="abtn abtn-danger abtn-lg" style="width:100%" onclick="clearAllBans()">🔓 Remove All Bans</button>
-                  <button class="abtn abtn-danger abtn-lg" style="width:100%" onclick="if(confirm('Reset ALL data?'))resetAllData()">💥 RESET ALL DATA</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="footer">RPMxDEV<span class="dot">.</span>AUDIO BYPASS STUDIO · MP3 Encoder by lamejs</div>
 </div>
 
 <script>
-// ============================================================
-// ===== FIX #1: ONE-TIME INIT GUARD ==========================
-// ============================================================
-let _appInited = false;
-
-// ============================================================
-// ===== DATA STORE ===========================================
-// ============================================================
-const ADMIN_CREDS_KEY='rpm_admin_creds';
-const USERS_KEY='rpm_users';
-const LOG_KEY='rpm_log';
-const SETTINGS_KEY='rpm_settings';
-const GATE_KEY='rpm_gate_passed';
-
-function getAdminCreds(){try{return JSON.parse(localStorage.getItem(ADMIN_CREDS_KEY))||{user:'admin',pass:'rpmxprime2024'};}catch(e){return{user:'admin',pass:'rpmxprime2024'};}}
-function setAdminCreds(u,p){localStorage.setItem(ADMIN_CREDS_KEY,JSON.stringify({user:u,pass:p}));}
-function getUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY))||[];}catch(e){return[];}}
-function saveUsers(u){localStorage.setItem(USERS_KEY,JSON.stringify(u));}
-function getLog(){try{return JSON.parse(localStorage.getItem(LOG_KEY))||[];}catch(e){return[];}}
-function saveLog(l){localStorage.setItem(LOG_KEY,JSON.stringify(l.slice(0,500)));}
-function getSettings(){
-  const def={freeLimit:5,vipLimit:0,maxFile:50,vipMaxFile:200,gateEnabled:true,gateDiscord:true,gateTikTok:true,gateWhitelist:true,discordLink:'https://discord.gg/5EAzVWSV',ttLink:'https://www.tiktok.com/@nicccl22',maintenance:false,autoBan:true,showBanner:false,bannerText:'',bannerType:'info'};
-  try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));return s?Object.assign(def,s):def;}catch(e){return def;}
+// ================================
+// DATABASE (localStorage)
+// ================================
+const DB_K='RPMxDEV_v6',SS_K='RPMxDEV_ss6',GT_K='RPMxDEV_gt6';
+function loadDB(){try{const r=localStorage.getItem(DB_K);if(r)return JSON.parse(r);}catch(e){}return mkDB();}
+function mkDB(){
+  const d={
+    users:{admin:{u:'admin',e:'admin@prime.dev',p:btoa('223344'),r:'admin',c:Date.now(),lim:0}},
+    orders:[],
+    logs:[],
+    cfg:{
+      free:10,pro:50,
+      dana:'081234567890',gopay:'081234567890',bca:'1234567890',bri:'0987654321',
+      owner:'RPMxPRIME'
+    }
+  };
+  saveDB(d);return d;
 }
-function saveSettings(s){localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));}
+function saveDB(d){try{localStorage.setItem(DB_K,JSON.stringify(d));}catch(e){}}
+function getDB(){return loadDB();}
+function todayK(){const d=new Date;return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
+function getUsage(un){const db=getDB();return(db.users[un]&&db.users[un]['u_'+todayK()])||0;}
+function incUsage(un){const db=getDB();if(!db.users[un])return;db.users[un]['u_'+todayK()]=(db.users[un]['u_'+todayK()]||0)+1;saveDB(db);}
+function getLimit(un){const db=getDB(),u=db.users[un];if(!u)return 10;if(u.r==='vip'||u.r==='admin')return Infinity;if(u.lim>0)return u.lim;if(u.r==='pro')return db.cfg.pro||50;return db.cfg.free||10;}
+function canExp(un){const l=getLimit(un);return l===Infinity||getUsage(un)<l;}
+function addLog(action,user,detail,t){const db=getDB();db.logs=db.logs||[];db.logs.push({ts:Date.now(),a:action,u:user,d:detail,t:t||''});if(db.logs.length>200)db.logs=db.logs.slice(-200);saveDB(db);}
 
-function addLog(type,msg,user){
-  const log=getLog();
-  const now=new Date();
-  const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  log.unshift({type,msg,user:user||'system',time,ts:Date.now()});
-  saveLog(log);
-  refreshDashboardActivity();
+// ================================
+// AUTH
+// ================================
+let CU=null;
+function getSession(){try{const s=localStorage.getItem(SS_K);if(s)return JSON.parse(s);}catch(e){}return null;}
+function setSession(u){localStorage.setItem(SS_K,JSON.stringify({un:u.u,ts:Date.now()}));}
+function clearSession(){localStorage.removeItem(SS_K);}
+function switchTab(t){
+  document.getElementById('tLogin').classList.toggle('on',t==='login');
+  document.getElementById('tReg').classList.toggle('on',t==='reg');
+  document.getElementById('fLogin').style.display=t==='login'?'':'none';
+  document.getElementById('fReg').style.display=t==='reg'?'':'none';
 }
-
-function getCurrentUserId(){
-  let id=localStorage.getItem('rpm_uid');
-  if(!id){id='u'+Math.random().toString(36).slice(2,9)+Date.now().toString(36);localStorage.setItem('rpm_uid',id);}
-  return id;
+function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
+function doLogin(){
+  const u=document.getElementById('lUser').value.trim().toLowerCase(),p=document.getElementById('lPass').value;
+  if(!u||!p){showErr('eLogin','⚠ Username & password wajib');return;}
+  const db=getDB(),user=db.users[u];
+  if(!user||user.p!==btoa(p)){showErr('eLogin','❌ Username atau password salah');return;}
+  CU=user;setSession(user);addLog('LOGIN',u,'Login OK','');afterAuth();
 }
-function getCurrentUser(){const uid=getCurrentUserId();return getUsers().find(u=>u.id===uid)||null;}
-
-function ensureUserExists(){
-  const uid=getCurrentUserId();
-  const users=getUsers();
-  if(!users.find(u=>u.id===uid)){
-    const nu={id:uid,name:'User_'+uid.slice(1,6),role:'user',limit:getSettings().freeLimit,exportsToday:0,exportsTotal:0,joined:new Date().toLocaleDateString(),banned:false,vipExpiry:null,vipSince:null,lastReset:new Date().toDateString()};
-    users.push(nu);saveUsers(users);
-    addLog('join','New user joined: '+nu.name,nu.name);
-  }
-  return getCurrentUser();
+function doRegister(){
+  const u=document.getElementById('rUser').value.trim().toLowerCase(),e=document.getElementById('rEmail').value.trim(),p=document.getElementById('rPass').value;
+  if(!u||!e||!p){showErr('eReg','⚠ Semua field wajib');return;}
+  if(u.length<3){showErr('eReg','⚠ Username min 3 karakter');return;}
+  if(p.length<6){showErr('eReg','⚠ Password min 6 karakter');return;}
+  if(!/\S+@\S+\.\S+/.test(e)){showErr('eReg','⚠ Email tidak valid');return;}
+  const db=getDB();
+  if(db.users[u]){showErr('eReg','❌ Username sudah dipakai');return;}
+  const nu={u,e,p:btoa(p),r:'free',c:Date.now(),lim:0};
+  db.users[u]=nu;saveDB(db);CU=nu;setSession(nu);addLog('REGISTER',u,'Akun baru','');afterAuth();
 }
-
-function checkDailyReset(){
-  const users=getUsers();const today=new Date().toDateString();let changed=false;
-  users.forEach(u=>{
-    if(u.lastReset!==today){u.exportsToday=0;u.lastReset=today;changed=true;}
-    if(u.vipExpiry&&u.vipExpiry!=='permanent'&&Date.now()>u.vipExpiry){u.role='user';u.vipExpiry=null;u.vipSince=null;u.limit=getSettings().freeLimit;changed=true;addLog('vip','VIP expired: '+u.name,u.name);}
-  });
-  if(changed)saveUsers(users);
-}
-
-function canExport(){
-  const user=ensureUserExists();
-  if(user.banned)return{ok:false,reason:'You are banned from this tool.'};
-  if(user.role==='admin')return{ok:true};
-  const settings=getSettings();
-  if(user.role==='vip'){const vl=(user.limit!=null)?user.limit:settings.vipLimit;if(vl===0)return{ok:true};if(user.exportsToday>=vl)return{ok:false,reason:`VIP daily limit reached (${vl}/day). Resets tomorrow!`};return{ok:true};}
-  const fl=(user.limit!=null)?user.limit:settings.freeLimit;
-  if(fl===0)return{ok:true};
-  if(user.exportsToday>=fl)return{ok:false,reason:`Daily export limit reached (${fl}/day). Upgrade to VIP for more!`};
-  return{ok:true};
+function doLogout(){addLog('LOGOUT',CU?CU.u:'?','Logout','');CU=null;clearSession();document.getElementById('mainApp').style.display='none';document.getElementById('authOv').classList.remove('hide');document.getElementById('lUser').value='';document.getElementById('lPass').value='';}
+function afterAuth(){
+  document.getElementById('authOv').classList.add('hide');
+  const gk=GT_K+'_'+(CU?CU.u:'?');
+  if(localStorage.getItem(gk)==='1'){launchApp();}
+  else{document.getElementById('gateOv').classList.remove('hide');}
 }
 
-function recordExport(filename){
-  const users=getUsers();const uid=getCurrentUserId();const u=users.find(x=>x.id===uid);
-  if(u){u.exportsToday=(u.exportsToday||0)+1;u.exportsTotal=(u.exportsTotal||0)+1;saveUsers(users);addLog('export','Exported: '+filename,u.name);updateExportCounterUI();updateLimitStripUI();}
-}
-
-function updateExportCounterUI(){
-  const user=getCurrentUser();if(!user)return;
-  const c=document.getElementById('exportCounter');if(c)c.textContent=(user.exportsToday||0)+' EXPORTS';
-}
-
-function updateLimitStripUI(){
-  const user=getCurrentUser();if(!user)return;
-  const settings=getSettings();
-  const rb=document.getElementById('userRoleBadge');
-  if(rb){
-    if(user.role==='admin'){rb.style.display='block';rb.className='badge badge-admin';rb.textContent='👑 ADMIN';}
-    else if(user.role==='vip'){rb.style.display='block';rb.className='badge badge-vip';rb.textContent='⭐ VIP';}
-    else rb.style.display='none';
-  }
-  const tn=document.getElementById('tierNotice');
-  const strip=document.getElementById('limitInfoStrip');
-  if(user.role==='admin'){if(tn)tn.innerHTML='';if(strip)strip.style.display='none';return;}
-  const lim=(user.limit!=null&&user.limit!==-1)?user.limit:(user.role==='vip'?settings.vipLimit:settings.freeLimit);
-  const used=user.exportsToday||0;
-  if(user.role==='vip'){
-    if(tn)tn.innerHTML=`<div class="tier-vip">⭐ <b>VIP MEMBER</b> — ${lim===0?'Unlimited':used+' / '+lim+' exports today'} · Enhanced processing</div>`;
-    if(strip)strip.style.display='none';
-  } else {
-    if(tn)tn.innerHTML=`<div class="tier-warn"><b>FREE TIER:</b> ${lim===0?'Unlimited':used+' / '+lim+' exports today'} · Songs under 3 min recommended · <a href="#" style="color:var(--warn)" onclick="toast('VIP','Contact admin to upgrade to VIP!','warn');return false">Upgrade to VIP</a></div>`;
-    if(lim>0&&used>0&&strip){strip.style.display='block';strip.textContent=`Exports today: ${used}/${lim} — ${Math.max(0,lim-used)} remaining`;}
-    else if(strip)strip.style.display='none';
-  }
-}
-
-// ============================================================
-// ===== GATE LOGIC ===========================================
-// ============================================================
+// ================================
+// GATE
+// ================================
 (function(){
-  const gateOverlay=document.getElementById('gateOverlay');
-  const mainApp=document.getElementById('mainApp');
-  const gateContinue=document.getElementById('gateContinue');
-  const btnYT=document.getElementById('btnYT');
-  const btnTT=document.getElementById('btnTT');
-  const gateYT=document.getElementById('gateYT');
-  const gateTT=document.getElementById('gateTT');
-  let ytClicked=false,ttClicked=false;
-
-  window.openAdminLogin=function(){document.getElementById('adminOverlay').classList.add('show');document.getElementById('adminLogin').style.display='flex';document.getElementById('adminPanel').classList.remove('show');};
-
-  const settings=getSettings();
-
-  // ===== FIX #1: Guard against double-init =====
-  if(!settings.gateEnabled||localStorage.getItem(GATE_KEY)==='true'){
-    gateOverlay.classList.add('hidden');
-    mainApp.style.display='';
-    if(!_appInited){_appInited=true;initApp();}
-    return;
-  }
-
-  function checkUnlock(){
-    const needDC=settings.gateDiscord,needTT=settings.gateTikTok;
-    const unlocked=(!needDC||ytClicked)&&(!needTT||ttClicked);
-    if(unlocked){gateContinue.disabled=false;gateContinue.className='gate-continue unlocked';gateContinue.textContent='🚀 CONTINUE TO RPMxPRIME BYPASS';}
-  }
-  btnYT.addEventListener('click',function(){ytClicked=true;gateYT.classList.add('done');checkUnlock();});
-  btnTT.addEventListener('click',function(){ttClicked=true;gateTT.classList.add('done');checkUnlock();});
-  gateContinue.addEventListener('click',function(){
-    if(gateContinue.disabled)return;
-    localStorage.setItem(GATE_KEY,'true');
-    gateOverlay.style.transition='opacity .4s';gateOverlay.style.opacity='0';
-    setTimeout(function(){
-      gateOverlay.classList.add('hidden');mainApp.style.display='';
-      // ===== FIX #1: Guard against double-init =====
-      if(!_appInited){_appInited=true;initApp();}
-    },400);
+  let y=false,t=false;
+  document.getElementById('gBtnYT').addEventListener('click',()=>{y=true;document.getElementById('gsYT').classList.add('done');chk();});
+  document.getElementById('gBtnTT').addEventListener('click',()=>{t=true;document.getElementById('gsTT').classList.add('done');chk();});
+  function chk(){if(y&&t){const b=document.getElementById('gCont');b.disabled=false;b.className='gcont open';b.textContent='🚀 LANJUT KE BYPASS';}}
+  document.getElementById('gCont').addEventListener('click',()=>{
+    if(!CU)return;localStorage.setItem(GT_K+'_'+CU.u,'1');
+    const o=document.getElementById('gateOv');o.style.transition='opacity .4s';o.style.opacity='0';
+    setTimeout(()=>{o.classList.add('hide');o.style.opacity='';launchApp();},400);
   });
 })();
 
-function initApp(){
-  checkDailyReset();ensureUserExists();updateExportCounterUI();updateLimitStripUI();mainAppInit();
+// ================================
+// BUY MODAL
+// ================================
+let buyPkg=null,buyPayMethod=null,proofDataUrl=null,buyStep_cur=1;
+const PKG_INFO={
+  vip_monthly:{name:'VIP Bulanan',price:25000,label:'Rp25.000'},
+  vip_yearly:{name:'VIP Tahunan',price:180000,label:'Rp180.000'}
+};
+const PAY_INFO_MAP={
+  dana:{label:'DANA',field:'dana'},
+  gopay:{label:'GoPay',field:'gopay'},
+  bca:{label:'BCA',field:'bca'},
+  bri:{label:'BRI',field:'bri'}
+};
+
+function openBuyModal(pkg){
+  buyPkg=null;buyPayMethod=null;proofDataUrl=null;buyStep_cur=1;
+  document.getElementById('proofPreview').style.display='none';
+  document.getElementById('proofArea').classList.remove('has-file');
+  document.getElementById('buyNote').value='';
+  document.querySelectorAll('.buy-pkg').forEach(el=>el.classList.remove('sel'));
+  document.querySelectorAll('.pay-method').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('payInfoBox').style.display='none';
+  document.getElementById('btnNext1').disabled=true;
+  document.getElementById('btnNext2').disabled=true;
+  document.getElementById('btnSubmit').disabled=true;
+  ['bp1','bp2','bp3','bp4'].forEach((id,i)=>{document.getElementById(id).classList.toggle('on',i===0);});
+  updBuyStepUI(1);
+  openMod('buyModal');
+  if(pkg){selPkg(pkg);}
 }
-
-// ============================================================
-// ===== CLIENT-SIDE AUDIO PROCESSING =========================
-// ============================================================
-
-/**
- * Render audio with speed + pitch change using OfflineAudioContext
- * Speed: via playbackRate (changes both tempo + pitch)
- * Pitch correction: resample trick — change sample rate to compensate
- * Result: independent pitch and speed (approximation in-browser)
- */
-async function renderAudioWithEffects(audioBuffer, speed, pitchSemitones, volume){
-  // Pitch ratio
-  const pitchRatio = Math.pow(2, pitchSemitones/12);
-  // We want: final playback rate = speed * pitchRatio (so sample rate change compensates)
-  // Trick: render at normal rate with pitch-shifted buffer, then speed it up
-
-  const sampleRate = audioBuffer.sampleRate;
-  const numChannels = audioBuffer.numberOfChannels;
-
-  // Step 1: Pitch-shift by resampling (change sample rate interpretation)
-  // Create a buffer at pitchRatio-shifted sample rate and re-render
-  const pitchedLength = Math.round(audioBuffer.length / pitchRatio);
-  const pitchCtx = new OfflineAudioContext(numChannels, pitchedLength, sampleRate);
-
-  // Create a copy of the buffer at a different sample rate
-  const shiftedBuf = pitchCtx.createBuffer(numChannels, audioBuffer.length, Math.round(sampleRate * pitchRatio));
-  for(let ch=0; ch<numChannels; ch++){
-    shiftedBuf.copyToChannel(audioBuffer.getChannelData(ch), ch);
-  }
-
-  const pitchSrc = pitchCtx.createBufferSource();
-  pitchSrc.buffer = shiftedBuf;
-  const gainNode = pitchCtx.createGain();
-  gainNode.gain.value = volume;
-  pitchSrc.connect(gainNode);
-  gainNode.connect(pitchCtx.destination);
-  pitchSrc.start(0);
-  const pitchedBuf = await pitchCtx.startRendering();
-
-  // Step 2: Apply speed change
-  const finalLength = Math.round(pitchedBuf.length / speed);
-  const speedCtx = new OfflineAudioContext(numChannels, finalLength, sampleRate);
-  const speedSrc = speedCtx.createBufferSource();
-  speedSrc.buffer = pitchedBuf;
-  speedSrc.playbackRate.value = speed;
-  speedSrc.connect(speedCtx.destination);
-  speedSrc.start(0);
-  return await speedCtx.startRendering();
+function selPkg(id){
+  buyPkg=id;
+  document.querySelectorAll('.buy-pkg').forEach(el=>el.classList.toggle('sel',el.id==='pkg_'+id));
+  document.getElementById('btnNext1').disabled=false;
 }
-
-/** AudioBuffer → WAV Blob */
-function audioBufferToWav(buffer){
-  const numChannels = buffer.numberOfChannels;
-  const sampleRate = buffer.sampleRate;
-  const format = 1; // PCM
-  const bitDepth = 16;
-  const bytesPerSample = bitDepth/8;
-  const blockAlign = numChannels * bytesPerSample;
-  const byteRate = sampleRate * blockAlign;
-  const dataLength = buffer.length * blockAlign;
-  const headerLength = 44;
-  const arrayBuffer = new ArrayBuffer(headerLength + dataLength);
-  const view = new DataView(arrayBuffer);
-
-  function writeStr(o,s){for(let i=0;i<s.length;i++)view.setUint8(o+i,s.charCodeAt(i));}
-  writeStr(0,'RIFF');
-  view.setUint32(4,36+dataLength,true);
-  writeStr(8,'WAVE');
-  writeStr(12,'fmt ');
-  view.setUint32(16,16,true);
-  view.setUint16(20,format,true);
-  view.setUint16(22,numChannels,true);
-  view.setUint32(24,sampleRate,true);
-  view.setUint32(28,byteRate,true);
-  view.setUint16(32,blockAlign,true);
-  view.setUint16(34,bitDepth,true);
-  writeStr(36,'data');
-  view.setUint32(40,dataLength,true);
-
-  let offset = 44;
-  // Interleave channels
-  const channels = [];
-  for(let c=0;c<numChannels;c++) channels.push(buffer.getChannelData(c));
-  for(let i=0;i<buffer.length;i++){
-    for(let c=0;c<numChannels;c++){
-      let s = Math.max(-1,Math.min(1,channels[c][i]));
-      s = s<0?s*0x8000:s*0x7FFF;
-      view.setInt16(offset,s,true);
-      offset+=2;
-    }
-  }
-  return new Blob([arrayBuffer],{type:'audio/wav'});
+function selPay(method){
+  buyPayMethod=method;
+  document.querySelectorAll('.pay-method').forEach(el=>el.classList.toggle('sel',el.id==='pm_'+method));
+  const db=getDB(),cfg=db.cfg,pi=PAY_INFO_MAP[method];
+  const dest=cfg[pi.field]||'Belum dikonfigurasi';
+  const pkg=PKG_INFO[buyPkg];
+  // add unique cents to nominal for verification
+  const uniqueCents=CU?Array.from(CU.u).reduce((a,c)=>a+c.charCodeAt(0),0)%100:42;
+  const amount=pkg?pkg.price+uniqueCents:0;
+  document.getElementById('piDest').textContent=`${pi.label}: ${dest}`;
+  document.getElementById('piName').textContent=cfg.owner||'RPMxPRIME';
+  document.getElementById('piAmount').textContent='Rp'+amount.toLocaleString('id-ID');
+  document.getElementById('payInfoBox').style.display='block';
+  document.getElementById('btnNext2').disabled=false;
 }
-
-/** AudioBuffer → MP3 Blob using lamejs */
-function audioBufferToMp3(buffer){
-  const numChannels = buffer.numberOfChannels;
-  const sampleRate = buffer.sampleRate;
-  const bitRate = 128;
-
-  const mp3encoder = new lamejs.Mp3Encoder(numChannels, sampleRate, bitRate);
-  const mp3Data = [];
-  const sampleBlockSize = 1152;
-
-  const leftData = buffer.getChannelData(0);
-  const rightData = numChannels>1 ? buffer.getChannelData(1) : leftData;
-
-  // Convert Float32 to Int16
-  function floatTo16BitPCM(float32){
-    const int16 = new Int16Array(float32.length);
-    for(let i=0;i<float32.length;i++){
-      let s=Math.max(-1,Math.min(1,float32[i]));
-      int16[i]=s<0?s*0x8000:s*0x7FFF;
-    }
-    return int16;
-  }
-
-  const leftPCM = floatTo16BitPCM(leftData);
-  const rightPCM = floatTo16BitPCM(rightData);
-
-  for(let i=0;i<leftPCM.length;i+=sampleBlockSize){
-    const leftChunk = leftPCM.subarray(i,i+sampleBlockSize);
-    const rightChunk = rightPCM.subarray(i,i+sampleBlockSize);
-    let mp3buf;
-    if(numChannels>1){
-      mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
-    } else {
-      mp3buf = mp3encoder.encodeBuffer(leftChunk);
-    }
-    if(mp3buf.length>0) mp3Data.push(mp3buf);
-  }
-  const final = mp3encoder.flush();
-  if(final.length>0) mp3Data.push(final);
-  return new Blob(mp3Data, {type:'audio/mp3'});
+function buyStep(n){
+  if(n===2&&!buyPkg)return;
+  if(n===3&&!buyPayMethod)return;
+  buyStep_cur=n;
+  ['bp1','bp2','bp3','bp4'].forEach((id,i)=>{document.getElementById(id).classList.toggle('on',i===n-1);});
+  updBuyStepUI(n);
+  if(n===3){renderOrderSummary();}
 }
-
-function triggerDownloadBlob(blob, filename){
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  setTimeout(()=>{ URL.revokeObjectURL(url); try{a.remove()}catch(e){} }, 1000);
+function updBuyStepUI(n){
+  [1,2,3].forEach(i=>{
+    const dot=document.getElementById('bsd'+i);
+    dot.className='buy-step-dot '+(i<n?'done':i===n?'active':'idle');
+  });
+  [1,2].forEach(i=>{
+    const line=document.getElementById('bsl'+i);
+    line.classList.toggle('done',i<n);
+  });
 }
-
-function stripExt(name){return name.replace(/\.[^.]+$/,'');}
-
-// ============================================================
-// ===== MAIN APP =============================================
-// ============================================================
-function mainAppInit(){
-  let files=[],activeIdx=0;
-  let speed=1.0,pitch=0,volume=1.0;
-  let isPlaying=false,playbackPos=0;
-  let audioCtx=null,sourceNode=null,gainNode=null;
-  let startTime=0,pauseOffset=0,raf=null;
-  let activeAutoMode=null;
-  let exportFormat='mp3';
-
-  const autoModes=[
-    {id:'autobypass',label:'⚡ AUTO BYPASS',desc:'Recommended · One click',speed:2.0,pitch:1,featured:true},
-    {id:'speed2x',label:'2x Speed',desc:'Speed only',speed:2.0,pitch:0},
-    {id:'speed15x',label:'1.5x Speed',desc:'Moderate',speed:1.5,pitch:0},
-    {id:'pitch3',label:'Pitch +3st',desc:'Pitch only',speed:1.0,pitch:3},
-    {id:'combo',label:'1.5x +2st',desc:'Speed + pitch',speed:1.5,pitch:2}
-  ];
-  const presets=[
-    {label:'Nightcore',speed:1.25,pitch:3},
-    {label:'Slowed',speed:0.8,pitch:-2},
-    {label:'Chipmunk',speed:1.0,pitch:7},
-    {label:'Deep',speed:1.0,pitch:-5},
-    {label:'Vaporwave',speed:0.7,pitch:-3},
-    {label:'Reset',speed:1.0,pitch:0}
-  ];
-  const formats=[
-    {id:'mp3',label:'MP3',sub:'128kbps · Universal'},
-    {id:'wav',label:'WAV',sub:'Lossless · Large'},
-  ];
-
-  const $=id=>document.getElementById(id);
-  const dropzone=$('dropzone'),fileInput=$('fileInput');
-  const hero=$('hero'),features=$('features'),editor=$('editor');
-  const fileTabs=$('fileTabs'),fileCount=$('fileCount');
-  const waveCanvas=$('waveCanvas'),wCtx=waveCanvas.getContext('2d');
-  const waveFileName=$('waveFileName'),waveTime=$('waveTime');
-  const btnPlay=$('btnPlay'),btnRew=$('btnRew'),btnStop=$('btnStop');
-  const btnExport=$('btnExport'),btnExportAll=$('btnExportAll');
-  const exportInfo=$('exportInfo');
-  const autoIndicator=$('autoIndicator');
-  const progressOverlay=$('progressOverlay');
-
-  window.toast=function(title,body,type){
-    type=type||'error';
-    const stack=$('toastStack');
-    const t=document.createElement('div');
-    t.className='toast '+type;
-    t.innerHTML='<div class="t-title">'+escapeHtml(title)+'</div>'+(body?'<div class="t-body">'+escapeHtml(body)+'</div>':'');
-    stack.appendChild(t);
-    setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(function(){t.remove();},400);},6000);
+function renderOrderSummary(){
+  const pkg=PKG_INFO[buyPkg];const pi=PAY_INFO_MAP[buyPayMethod];
+  const uniqueCents=CU?Array.from(CU.u).reduce((a,c)=>a+c.charCodeAt(0),0)%100:42;
+  const amount=pkg?pkg.price+uniqueCents:0;
+  document.getElementById('orderSummary').innerHTML=`
+    <div class="order-row"><span>Paket</span><span style="color:var(--g)">${pkg?pkg.name:'—'}</span></div>
+    <div class="order-row"><span>Metode</span><span>${pi?pi.label:'—'}</span></div>
+    <div class="order-row"><span>Username</span><span style="color:var(--a)">${CU?CU.u:'—'}</span></div>
+    <div class="order-row total"><span>Total Transfer</span><span>Rp${amount.toLocaleString('id-ID')}</span></div>`;
+}
+function handleProof(e){
+  const f=e.target.files[0];if(!f)return;
+  if(f.size>5*1024*1024){toast('File terlalu besar','Maks 5MB','error');return;}
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    proofDataUrl=ev.target.result;
+    const prev=document.getElementById('proofPreview');
+    prev.src=proofDataUrl;prev.style.display='block';
+    document.getElementById('proofArea').classList.add('has-file');
+    document.getElementById('btnSubmit').disabled=false;
   };
-  function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  reader.readAsDataURL(f);
+}
+function submitOrder(){
+  if(!buyPkg||!buyPayMethod||!proofDataUrl){toast('Lengkapi semua data','Upload bukti bayar','error');return;}
+  const db=getDB();
+  const pkg=PKG_INFO[buyPkg];
+  const pi=PAY_INFO_MAP[buyPayMethod];
+  const uniqueCents=CU?Array.from(CU.u).reduce((a,c)=>a+c.charCodeAt(0),0)%100:42;
+  const amount=pkg?pkg.price+uniqueCents:0;
+  const orderId='ORD-'+Date.now().toString(36).toUpperCase();
+  const order={
+    id:orderId,
+    user:CU.u,
+    email:CU.e,
+    pkg:buyPkg,
+    pkgName:pkg.name,
+    method:buyPayMethod,
+    methodLabel:pi.label,
+    amount,
+    proof:proofDataUrl,
+    note:document.getElementById('buyNote').value,
+    status:'pending',
+    ts:Date.now()
+  };
+  db.orders=db.orders||[];
+  db.orders.push(order);
+  saveDB(db);
+  addLog('ORDER',CU.u,`${pkg.name} via ${pi.label} · ${orderId}`,'vip');
+  document.getElementById('finalOrderId').textContent=orderId;
+  buyStep_cur=4;
+  ['bp1','bp2','bp3','bp4'].forEach((id,i)=>{document.getElementById(id).classList.toggle('on',i===3);});
+  toast('Order terkirim! ✅','Tunggu konfirmasi admin 1–24 jam','success');
+}
 
-  function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
-  function fmtTime(s){if(!isFinite(s)||s<0)s=0;return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
-  function fmtSize(b){return b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
-  function previewRate(){return speed*Math.pow(2,pitch/12);}
+// ================================
+// LAUNCH
+// ================================
+function launchApp(){
+  if(!CU)return;
+  const db=getDB();CU=db.users[CU.u]||CU;
+  document.getElementById('mainApp').style.display='';
+  updateUBar();syncUI();
+}
+function updateUBar(){
+  if(!CU)return;
+  const db=getDB();CU=db.users[CU.u]||CU;
+  const used=getUsage(CU.u),lim=getLimit(CU.u),isVIP=CU.r==='vip'||CU.r==='admin';
+  document.getElementById('uAv').textContent=CU.u.charAt(0).toUpperCase();
+  document.getElementById('uName').textContent=CU.u;
+  const rl={admin:'🔴 Administrator',vip:'⭐ VIP Member',pro:'💎 Pro User',free:'Free User'};
+  const rc={admin:'var(--r)',vip:'var(--g)',pro:'var(--a2)',free:''};
+  document.getElementById('uRole').textContent=rl[CU.r]||'Free User';
+  document.getElementById('uRole').style.color=rc[CU.r]||'';
+  if(isVIP){document.getElementById('limTxt').textContent='∞ UNLIMITED';document.getElementById('limFill').style.width='20%';document.getElementById('limFill').className='lfill';}
+  else{const pct=Math.min((used/lim)*100,100);document.getElementById('limTxt').textContent=used+'/'+lim;document.getElementById('limFill').style.width=pct+'%';const f=document.getElementById('limFill');f.className='lfill'+(pct>=100?' full':pct>=70?' warn':'');}
+  document.getElementById('limBan').classList.toggle('show',!isVIP&&used>=lim);
+  document.getElementById('btnAdm').style.display=CU.r==='admin'?'':'none';
+  document.getElementById('btnUpg').style.display=isVIP?'none':'';
+  const ov=document.getElementById('vipBdg');if(ov)ov.remove();
+  if(isVIP){const b=document.createElement('div');b.id='vipBdg';b.className='bdg bdg-gold';b.textContent=CU.r==='admin'?'🔴 ADMIN':'⭐ VIP';document.querySelector('.hdr-right').prepend(b);}
+  updExpState();
+}
 
-  function showProgress(title,sub){$('progTitle').textContent=title;$('progSub').textContent=sub;$('progBarFill').style.width='0%';$('progStatus').textContent='Starting...';progressOverlay.classList.add('show');}
-  function updateProgress(pct,status){$('progBarFill').style.width=pct+'%';$('progStatus').textContent=status;}
-  function hideProgress(){progressOverlay.classList.remove('show');}
-
-  async function loadFile(file){
-    const ctx=getCtx();
-    const buf=await file.arrayBuffer();
-    const ab=await ctx.decodeAudioData(buf);
-    return{name:file.name,size:file.size,file:file,audioBuffer:ab,duration:ab.duration,previewBroken:false};
-  }
-
-  async function addFiles(fileList){
-    const arr=Array.from(fileList);
-    const valid=arr.filter(f=>(f.type&&f.type.startsWith('audio/'))||/\.(mp3|wav|ogg|flac|m4a|aac|webm|opus|wma)$/i.test(f.name));
-    const skipped=arr.length-valid.length;
-    if(skipped>0)toast('Some files skipped',skipped+' file(s) are not audio','warn');
-    for(const f of valid){
-      const maxSize=getSettings().maxFile*1024*1024;
-      if(f.size>maxSize){toast('File too large',f.name+' exceeds the limit','error');continue;}
-      try{
-        const loaded=await loadFile(f);
-        if(loaded.duration>240)toast('Long song warning',f.name+' is over 4 minutes — may take a while to export','warn');
-        files.push(loaded);
-      }catch(e){
-        toast('Cannot decode: '+f.name,'Format not supported in your browser','error');
-      }
-    }
-    if(files.length){
-      hero.style.display='none';features.style.display='none';editor.style.display='block';
-      dropzone.classList.remove('empty');dropzone.classList.add('has-files');
-      dropzone.innerHTML='<div class="sub">+ Drop more files or click to add</div>';
-    }
-    renderTabs();selectFile(activeIdx);updateFileCount();
-  }
-
-  function updateFileCount(){
-    fileCount.textContent=files.length+' FILE'+(files.length!==1?'S':'');
-    btnExportAll.style.display=files.length>1?'block':'none';
-    updateExportBtns();
-  }
-
-  function renderTabs(){
-    fileTabs.innerHTML='';
-    files.forEach((f,i)=>{
-      const t=document.createElement('div');
-      t.className='file-tab'+(i===activeIdx?' active':'');
-      t.style.animationDelay=(i*40)+'ms';
-      const icon='♫';
-      const dur=fmtTime(f.duration);
-      t.innerHTML=`<span style="color:${i===activeIdx?'var(--accent)':'var(--dim)'}">${icon}</span><span class="fname">${escapeHtml(f.name)}</span><span class="fdur">${dur}</span><button class="fclose">×</button>`;
-      t.addEventListener('click',e=>{if(!e.target.classList.contains('fclose')){stopPlayback();selectFile(i);}});
-      t.querySelector('.fclose').addEventListener('click',e=>{e.stopPropagation();removeFile(i);});
-      fileTabs.appendChild(t);
-    });
-  }
-
-  function removeFile(idx){
-    if(idx===activeIdx&&isPlaying)stopPlayback();
-    files.splice(idx,1);
-    if(!files.length){
-      editor.style.display='none';hero.style.display='';features.style.display='';
-      dropzone.classList.add('empty');dropzone.classList.remove('has-files');
-      dropzone.innerHTML='<div class="icon">🎵</div><div class="title">Drop audio files here</div><div class="sub">MP3, WAV, OGG, FLAC, M4A — up to 50MB · short songs work best</div>';
-    }
-    if(activeIdx>=files.length)activeIdx=Math.max(0,files.length-1);
-    renderTabs();if(files.length)selectFile(activeIdx);updateFileCount();
-  }
-
-  function selectFile(idx){
-    activeIdx=idx;renderTabs();
-    const f=files[activeIdx];if(!f)return;
-    waveFileName.textContent=f.name;playbackPos=0;pauseOffset=0;drawWaveform();updateStats();updateExportInfo();
-  }
-
-  function drawWaveform(){
-    const f=files[activeIdx];
-    const dpr=window.devicePixelRatio||1;
-    const rect=waveCanvas.getBoundingClientRect();
-    waveCanvas.width=rect.width*dpr;waveCanvas.height=rect.height*dpr;
-    wCtx.scale(dpr,dpr);
-    const W=rect.width,H=rect.height;
-    wCtx.clearRect(0,0,W,H);wCtx.fillStyle='#161624';wCtx.fillRect(0,0,W,H);
-    if(!f||!f.audioBuffer)return;
-    const data=f.audioBuffer.getChannelData(0);
-    const step=Math.ceil(data.length/W);
-    for(let i=0;i<W;i++){
-      let mn=1,mx=-1;
-      for(let j=0;j<step;j++){const v=data[i*step+j]||0;if(v<mn)mn=v;if(v>mx)mx=v;}
-      const top=(1+mn)*H/2,bot=(1+mx)*H/2,bH=Math.max(bot-top,1);
-      const played=playbackPos>0&&(i/W)<playbackPos;
-      const g=wCtx.createLinearGradient(i,top,i,top+bH);
-      if(played){g.addColorStop(0,'#00e5ff');g.addColorStop(1,'#9c6cff');}
-      else{g.addColorStop(0,'#3a3a52');g.addColorStop(1,'#252540');}
-      wCtx.fillStyle=g;wCtx.fillRect(i,top,2,bH);
-    }
-    if(playbackPos>0&&playbackPos<1){
-      const x=playbackPos*W;
-      wCtx.strokeStyle='#fff';wCtx.lineWidth=2;wCtx.shadowColor='#00e5ff';wCtx.shadowBlur=8;
-      wCtx.beginPath();wCtx.moveTo(x,0);wCtx.lineTo(x,H);wCtx.stroke();wCtx.shadowBlur=0;
-    }
-    waveTime.textContent=fmtTime(f.duration*playbackPos)+' / '+fmtTime(f.duration)+' · '+fmtSize(f.size);
-  }
-
-  waveCanvas.addEventListener('click',e=>{
-    const f=files[activeIdx];if(!f||!f.audioBuffer)return;
-    const rect=waveCanvas.getBoundingClientRect();
-    pauseOffset=((e.clientX-rect.left)/rect.width)*f.audioBuffer.duration;
-    playbackPos=pauseOffset/f.audioBuffer.duration;drawWaveform();
-    if(isPlaying){stopSilent();startPlayback();}
+// ================================
+// ADMIN
+// ================================
+function openAdmin(){if(!CU||CU.r!=='admin')return;refreshStats();renderUsers();renderLogs();renderOrders();loadCfg();document.getElementById('adminPanel').classList.add('show');}
+function aTab(t){
+  document.querySelectorAll('.atab2').forEach(x=>x.classList.remove('on'));
+  event.target.classList.add('on');
+  document.querySelectorAll('.apane').forEach(p=>p.classList.remove('on'));
+  const el=document.getElementById('ap_'+t);if(el)el.classList.add('on');
+  if(t==='users')renderUsers();
+  if(t==='logs')renderLogs();
+  if(t==='orders')renderOrders();
+}
+function refreshStats(){
+  const db=getDB(),us=Object.values(db.users);
+  document.getElementById('aS1').textContent=us.length;
+  document.getElementById('aS2').textContent=us.filter(u=>u.r==='vip').length;
+  document.getElementById('aS3').textContent=us.reduce((s,u)=>s+(u['u_'+todayK()]||0),0);
+  document.getElementById('aS4').textContent=(db.orders||[]).filter(o=>o.status==='pending').length;
+}
+function eh(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderUsers(){
+  const db=getDB(),tb=document.getElementById('aBody');tb.innerHTML='';
+  Object.values(db.users).forEach(u=>{
+    const used=getUsage(u.u),lim=getLimit(u.u),ls=lim===Infinity?'∞':used+'/'+lim;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-weight:600">${eh(u.u)}</td><td style="color:var(--d)">${eh(u.e)}</td><td><span class="rbadge ${u.r}">${u.r.toUpperCase()}</span></td><td style="color:${used>=(lim||10)?'var(--r)':'var(--ok)'}">${ls}</td><td><input type="number" value="${u.lim||0}" min="0" style="width:60px;background:var(--s2);border:1px solid var(--b);border-radius:5px;color:var(--t);padding:2px 5px;font-size:10px;font-family:'JetBrains Mono',monospace" onchange="setCL('${u.u}',this.value)"></td><td><button class="abtn gold" onclick="setRole('${u.u}','vip')">VIP</button><button class="abtn" onclick="setRole('${u.u}','pro')" style="color:var(--a2)">PRO</button><button class="abtn" onclick="setRole('${u.u}','free')">FREE</button><button class="abtn" onclick="resetL('${u.u}')">RESET</button>${u.u!=='admin'?`<button class="abtn red" onclick="delU('${u.u}')">DEL</button>`:''}</td>`;
+    tb.appendChild(tr);
   });
+}
+function renderOrders(){
+  const db=getDB(),orders=(db.orders||[]).slice().reverse();
+  const c=document.getElementById('ordersContainer');
+  if(!orders.length){c.innerHTML='<div style="color:var(--d);font-size:11px;font-family:JetBrains Mono,monospace;padding:10px">Belum ada order.</div>';return;}
+  c.innerHTML=orders.map(o=>{
+    const d=new Date(o.ts).toLocaleString('id-ID');
+    const statusClr=o.status==='pending'?'var(--w)':o.status==='approved'?'var(--ok)':'var(--r)';
+    return `<div class="order-card">
+      <div class="order-card-hdr">
+        <span class="oc-user">👤 ${eh(o.user)}</span>
+        <span style="color:${statusClr};font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700">${o.status.toUpperCase()}</span>
+      </div>
+      <div class="oc-pkg">📦 ${eh(o.pkgName)} · ${eh(o.methodLabel)} · Rp${(o.amount||0).toLocaleString('id-ID')}</div>
+      <div class="oc-meta">🕐 ${d} · ID: ${eh(o.id)}${o.note?'<br>📝 '+eh(o.note):''}</div>
+      ${o.proof?`<img class="order-proof-thumb" src="${o.proof}" onclick="showLightbox('${o.proof}')" title="Klik untuk perbesar">`:``}
+      ${o.status==='pending'?`<div style="margin-top:6px;display:flex;gap:4px">
+        <button class="abtn green" onclick="approveOrder('${o.id}')">✓ APPROVE VIP</button>
+        <button class="abtn red" onclick="rejectOrder('${o.id}')">✗ REJECT</button>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+function showLightbox(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('show');}
+function approveOrder(oid){
+  const db=getDB();
+  const order=db.orders.find(o=>o.id===oid);
+  if(!order)return;
+  order.status='approved';
+  order.approvedAt=Date.now();
+  // Grant VIP
+  if(db.users[order.user]){db.users[order.user].r='vip';}
+  saveDB(db);
+  addLog('APPROVE',CU.u,`Order ${oid} → ${order.user} VIP`,'vip');
+  renderOrders();refreshStats();renderUsers();
+  // Update CU if it's the same user (edge case admin approving own order)
+  if(CU&&CU.u===order.user){CU.r='vip';updateUBar();}
+  toast('Order approved! ✅',order.user+' sekarang VIP','success');
+}
+function rejectOrder(oid){
+  if(!confirm('Reject order ini?'))return;
+  const db=getDB();
+  const order=db.orders.find(o=>o.id===oid);
+  if(!order)return;
+  order.status='rejected';
+  saveDB(db);
+  addLog('REJECT',CU.u,`Order ${oid} ditolak`,'err');
+  renderOrders();refreshStats();
+  toast('Order ditolak',oid,'warn');
+}
+function setRole(u,r){const db=getDB();if(!db.users[u])return;const old=db.users[u].r;db.users[u].r=r;saveDB(db);addLog('ROLE',CU.u,`${u}:${old}→${r}`,r==='vip'?'vip':'');renderUsers();refreshStats();toast('Role diupdate',u+' jadi '+r.toUpperCase(),'success');if(CU&&CU.u===u){CU.r=r;updateUBar();}}
+function setCL(u,v){const db=getDB();if(!db.users[u])return;db.users[u].lim=parseInt(v)||0;saveDB(db);}
+function resetL(u){const db=getDB();db.users[u]['u_'+todayK()]=0;saveDB(db);addLog('RESET',CU.u,`${u} reset`,'');renderUsers();if(CU&&CU.u===u)updateUBar();toast('Limit direset',u+' bisa export lagi','success');}
+function delU(u){if(u==='admin')return;if(!confirm('Hapus user "'+u+'"?'))return;const db=getDB();delete db.users[u];saveDB(db);addLog('DEL',CU.u,u+' dihapus','err');renderUsers();refreshStats();toast('User dihapus',u,'warn');}
+function aAddUser(){
+  const u=document.getElementById('nUN').value.trim().toLowerCase(),e=document.getElementById('nUE').value.trim(),p=document.getElementById('nUP').value,r=document.getElementById('nUR').value,l=parseInt(document.getElementById('nUL').value)||0;
+  if(!u||!e||!p){toast('Error','Semua field wajib','error');return;}
+  const db=getDB();if(db.users[u]){toast('Error','Username sudah ada','error');return;}
+  db.users[u]={u,e,p:btoa(p),r,c:Date.now(),lim:l};saveDB(db);addLog('ADD',CU.u,`+${u}(${r})`,'');
+  ['nUN','nUE','nUP','nUL'].forEach(id=>document.getElementById(id).value='');
+  renderUsers();refreshStats();toast('User ditambah',u+' ('+r+')','success');
+}
+function renderLogs(){const db=getDB(),el=document.getElementById('aLog');if(!db.logs||!db.logs.length){el.innerHTML='<span style="color:var(--d)">Belum ada log...</span>';return;}el.innerHTML=db.logs.slice(-50).reverse().map(l=>{const d=new Date(l.ts),t=d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});const col={vip:'var(--g)',err:'var(--r)','':'var(--d)'};return`<div style="display:flex;gap:8px"><span style="color:var(--d);flex-shrink:0">${t}</span><span style="color:var(--a);flex-shrink:0">[${eh(l.a)}]</span><span style="color:${col[l.t]||'var(--d)'};">${eh(l.u)}: ${eh(l.d)}</span></div>`;}).join('');}
+function loadCfg(){
+  const db=getDB(),c=db.cfg||{};
+  document.getElementById('cfFL').value=c.free||10;
+  document.getElementById('cfPL').value=c.pro||50;
+  document.getElementById('cfDANA').value=c.dana||'';
+  document.getElementById('cfGopay').value=c.gopay||'';
+  document.getElementById('cfBCA').value=c.bca||'';
+  document.getElementById('cfBRI').value=c.bri||'';
+  document.getElementById('cfOwner').value=c.owner||'';
+}
+function saveCfg(){
+  const db=getDB();
+  db.cfg.free=parseInt(document.getElementById('cfFL').value)||10;
+  db.cfg.pro=parseInt(document.getElementById('cfPL').value)||50;
+  db.cfg.dana=document.getElementById('cfDANA').value.trim();
+  db.cfg.gopay=document.getElementById('cfGopay').value.trim();
+  db.cfg.bca=document.getElementById('cfBCA').value.trim();
+  db.cfg.bri=document.getElementById('cfBRI').value.trim();
+  db.cfg.owner=document.getElementById('cfOwner').value.trim();
+  saveDB(db);addLog('CFG',CU.u,'Config saved','');toast('Config disimpan','','success');
+}
 
-  function startPlayback(){
-    const f=files[activeIdx];if(!f||!f.audioBuffer)return;
-    const ctx=getCtx();
-    if(ctx.state==='suspended')ctx.resume();
-    const src=ctx.createBufferSource();src.buffer=f.audioBuffer;src.playbackRate.value=previewRate();
-    const gain=ctx.createGain();gain.gain.value=volume;gainNode=gain;
-    src.connect(gain);gain.connect(ctx.destination);src.start(0,pauseOffset||0);
-    startTime=ctx.currentTime-(pauseOffset||0)/previewRate();sourceNode=src;
-    isPlaying=true;btnPlay.textContent='⏸';
-    function tick(){
-      if(!isPlaying)return;
-      const elapsed=(ctx.currentTime-startTime)*previewRate();
-      const pos=elapsed/f.audioBuffer.duration;
-      if(pos>=1){stopPlayback();playbackPos=0;pauseOffset=0;drawWaveform();return;}
-      playbackPos=pos;drawWaveform();raf=requestAnimationFrame(tick);
+function openMod(id){document.getElementById(id).classList.add('show');}
+function closeMod(id){document.getElementById(id).classList.remove('show');}
+document.getElementById('subModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeMod('subModal');});
+document.getElementById('buyModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeMod('buyModal');});
+document.getElementById('adminPanel').addEventListener('click',e=>{if(e.target===e.currentTarget)closeMod('adminPanel');});
+
+// ================================
+// HELPERS
+// ================================
+function fmtT(s){if(!isFinite(s)||s<0)s=0;return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
+function fmtSz(b){return b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
+function toast(title,body,type){const s=document.getElementById('toasts'),t=document.createElement('div');t.className='toast '+(type||'error');t.innerHTML='<div class="tt">'+eh(title)+'</div>'+(body?'<div class="tb">'+eh(body)+'</div>':'');s.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);},5000);}
+function showProg(title,sub){document.getElementById('pTitle').textContent=title;document.getElementById('pSub').textContent=sub;document.getElementById('pFill').style.width='0%';document.getElementById('pSts').textContent='Mohon tunggu...';document.getElementById('progOv').classList.add('show');}
+function setProg(pct,sts){document.getElementById('pFill').style.width=pct+'%';document.getElementById('pSts').textContent=sts;}
+function hideProg(){document.getElementById('progOv').classList.remove('show');}
+function updExpState(){if(!CU)return;const ok=canExp(CU.u);document.getElementById('btnEx').disabled=!ok;document.getElementById('btnExAll').disabled=!ok;if(!ok)document.getElementById('btnEx').textContent='🚫 LIMIT HABIS — UPGRADE VIP';else updExpBtns();}
+
+// ================================
+// AUDIO ENGINE
+// ================================
+const MAXSZ=100*1024*1024;
+let files=[],ai=0,spd=1,pit=0,vol=1,playing=false,ppos=0,AC=null,SN=null,GN=null,ST=0,PO=0,RAF=null,amode=null,fmt='mp3';
+const AMODES=[{id:'bp',lbl:'⚡ AUTO BYPASS',desc:'Recommended',s:2,p:1,f:true},{id:'2x',lbl:'2× Speed',desc:'Speed only',s:2,p:0},{id:'15',lbl:'1.5× Speed',desc:'Moderate',s:1.5,p:0},{id:'p3',lbl:'Pitch +3st',desc:'Pitch only',s:1,p:3},{id:'co',lbl:'1.5× +2st',desc:'Speed+pitch',s:1.5,p:2}];
+const PRESETS=[{lbl:'Nightcore',s:1.25,p:3},{lbl:'Slowed',s:0.8,p:-2},{lbl:'Chipmunk',s:1,p:7},{lbl:'Deep',s:1,p:-5},{lbl:'Vaporwave',s:0.7,p:-3},{lbl:'Reset',s:1,p:0}];
+const FMTS=[{id:'mp3',lbl:'MP3',sub:'True MP3·lamejs'},{id:'ogg',lbl:'OGG',sub:'Roblox native'},{id:'wav',lbl:'WAV',sub:'Lossless·Best'}];
+function getAC(){if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();return AC;}
+function prvR(){return spd*Math.pow(2,pit/12);}
+
+async function loadFile(f){const ctx=getAC(),buf=await f.arrayBuffer(),ab=await ctx.decodeAudioData(buf);return{name:f.name,size:f.size,file:f,ab,dur:ab.duration,broken:false};}
+
+async function addFiles(list){
+  const arr=Array.from(list).filter(f=>(f.type&&f.type.startsWith('audio/'))||/\.(mp3|wav|ogg|flac|m4a|aac|opus|wma)$/i.test(f.name));
+  for(const f of arr){
+    if(f.size>MAXSZ){toast('Terlalu besar',f.name+' > 100MB','error');continue;}
+    try{const loaded=await loadFile(f);if(loaded.dur>300)toast('Lagu panjang',f.name+' > 5 menit — processing mungkin lambat','warn');files.push(loaded);}
+    catch(e){toast('Preview error',f.name+' — format ini tidak didukung preview browser, export tetap bisa','warn');files.push({name:f.name,size:f.size,file:f,ab:null,dur:0,broken:true});}
+  }
+  if(files.length){document.getElementById('hero').style.display='none';document.getElementById('feats').style.display='none';document.getElementById('editor').style.display='block';const dz=document.getElementById('dz');dz.classList.remove('empty');dz.classList.add('filled');dz.innerHTML='<div class="dz-sub">+ Drop more files or click to add</div>';}
+  renderTabs();selFile(ai);updFCount();
+}
+function updFCount(){document.getElementById('fCount').textContent=files.length+' FILE'+(files.length!==1?'S':'');document.getElementById('btnExAll').style.display=files.length>1?'block':'none';updExpBtns();updExpState();}
+function renderTabs(){
+  const c=document.getElementById('ftabs');c.innerHTML='';
+  files.forEach((f,i)=>{
+    const t=document.createElement('div');t.className='ftab'+(i===ai?' on':'');t.style.animationDelay=(i*40)+'ms';
+    t.innerHTML=`<span style="color:${f.broken?'var(--w)':(i===ai?'var(--a)':'var(--d)')}">${f.broken?'⚠':'♫'}</span><span class="fn">${eh(f.name)}</span><span class="fd">${f.broken?'(no preview)':fmtT(f.dur)}</span><button class="fx">×</button>`;
+    t.addEventListener('click',e=>{if(!e.target.classList.contains('fx')){stopPB();selFile(i);}});
+    t.querySelector('.fx').addEventListener('click',e=>{e.stopPropagation();rmFile(i);});
+    c.appendChild(t);
+  });
+}
+function rmFile(i){if(i===ai&&playing)stopPB();files.splice(i,1);if(!files.length){document.getElementById('editor').style.display='none';document.getElementById('hero').style.display='';document.getElementById('feats').style.display='';const dz=document.getElementById('dz');dz.classList.add('empty');dz.classList.remove('filled');dz.innerHTML='<div class="dz-ico">🎵</div><div class="dz-ttl">Drop audio files here</div><div class="dz-sub">MP3, WAV, OGG, FLAC, M4A — hingga 100MB per file</div>';}if(ai>=files.length)ai=Math.max(0,files.length-1);renderTabs();if(files.length)selFile(ai);updFCount();}
+function selFile(i){ai=i;renderTabs();const f=files[i];if(!f)return;document.getElementById('wName').textContent=f.name;ppos=0;PO=0;drawWave();updStats();updExpInfo();}
+
+// WAVEFORM
+const wcanv=document.getElementById('wc'),wctx=wcanv.getContext('2d');
+function drawWave(){
+  const f=files[ai],dpr=window.devicePixelRatio||1,rect=wcanv.getBoundingClientRect();
+  wcanv.width=rect.width*dpr;wcanv.height=rect.height*dpr;wctx.scale(dpr,dpr);
+  const W=rect.width,H=rect.height;wctx.clearRect(0,0,W,H);wctx.fillStyle='#161624';wctx.fillRect(0,0,W,H);
+  if(!f)return;
+  if(f.broken||!f.ab){wctx.fillStyle='#ffab40';wctx.font='600 12px JetBrains Mono,monospace';wctx.textAlign='center';wctx.fillText('⚠ Preview tidak tersedia untuk format ini',W/2,H/2-8);wctx.fillStyle='#55557a';wctx.font='10px JetBrains Mono,monospace';wctx.fillText('Export tetap bisa bekerja',W/2,H/2+12);document.getElementById('wTime').textContent=fmtSz(f.size)+' · export only';return;}
+  const data=f.ab.getChannelData(0),step=Math.ceil(data.length/W);
+  for(let i=0;i<W;i++){let mn=1,mx=-1;for(let j=0;j<step;j++){const v=data[i*step+j]||0;if(v<mn)mn=v;if(v>mx)mx=v;}const top=(1+mn)*H/2,bot=(1+mx)*H/2,bH=Math.max(bot-top,1),played=ppos>0&&(i/W)<ppos,g=wctx.createLinearGradient(i,top,i,top+bH);if(played){g.addColorStop(0,'#00e5ff');g.addColorStop(1,'#9c6cff');}else{g.addColorStop(0,'#3a3a52');g.addColorStop(1,'#252540');}wctx.fillStyle=g;wctx.fillRect(i,top,2,bH);}
+  if(ppos>0&&ppos<1){const x=ppos*W;wctx.strokeStyle='#fff';wctx.lineWidth=2;wctx.shadowColor='#00e5ff';wctx.shadowBlur=8;wctx.beginPath();wctx.moveTo(x,0);wctx.lineTo(x,H);wctx.stroke();wctx.shadowBlur=0;}
+  document.getElementById('wTime').textContent=fmtT(f.dur*ppos)+' / '+fmtT(f.dur)+' · '+fmtSz(f.size);
+}
+wcanv.addEventListener('click',e=>{const f=files[ai];if(!f||f.broken||!f.ab)return;const rect=wcanv.getBoundingClientRect();PO=((e.clientX-rect.left)/rect.width)*f.ab.duration;ppos=PO/f.ab.duration;drawWave();if(playing){stopSilent();startPB();}});
+function startPB(){
+  const f=files[ai];if(!f)return;
+  if(f.broken||!f.ab){toast('Preview N/A','Export langsung aja','warn');return;}
+  const ctx=getAC();if(ctx.state==='suspended')ctx.resume();
+  const src=ctx.createBufferSource();src.buffer=f.ab;src.playbackRate.value=prvR();
+  const g=ctx.createGain();g.gain.value=vol;GN=g;src.connect(g);g.connect(ctx.destination);
+  src.start(0,PO||0);ST=ctx.currentTime-(PO||0)/prvR();SN=src;playing=true;document.getElementById('btnPlay').textContent='⏸';
+  const tick=()=>{if(!playing)return;const el=(ctx.currentTime-ST)*prvR(),pos=el/f.ab.duration;if(pos>=1){stopPB();ppos=0;PO=0;drawWave();return;}ppos=pos;drawWave();RAF=requestAnimationFrame(tick);};
+  RAF=requestAnimationFrame(tick);src.onended=()=>{if(SN===src){stopPB();ppos=0;PO=0;drawWave();}};
+}
+function stopSilent(){if(SN){try{SN.stop();}catch(e){}SN.disconnect();SN=null;}if(RAF)cancelAnimationFrame(RAF);playing=false;}
+function stopPB(){stopSilent();document.getElementById('btnPlay').textContent='▶';}
+function togglePlay(){if(playing){PO=(getAC().currentTime-ST)*SN.playbackRate.value;stopPB();}else startPB();}
+function applyLive(){if(SN){const ctx=getAC(),co=(ctx.currentTime-ST)*SN.playbackRate.value,nr=prvR();SN.playbackRate.value=nr;ST=ctx.currentTime-co/nr;}if(GN)GN.gain.value=vol;updStats();updExpInfo();hlPre();hlAuto();}
+
+// KNOBS
+function updKnob(id,pct,c){const r=document.getElementById(id);r.style.background=`conic-gradient(from -135deg,${c} 0deg,${c} ${pct/100*270}deg,#252538 ${pct/100*270}deg,#252538 270deg,transparent 270deg)`;const n=r.querySelector('.kneedle');n.style.transform=`rotate(${-135+pct/100*270}deg)`;n.style.background=c;n.style.boxShadow=`0 0 6px ${c}`;}
+function syncUI(){
+  const sp=((spd-0.25)/3.75)*100;document.getElementById('slSpd').value=spd;document.getElementById('svSpd').textContent=spd.toFixed(2)+'x';document.getElementById('sfSpd').style.width=sp+'%';document.getElementById('kvSpd').textContent=spd.toFixed(2)+'x';updKnob('kSpd',sp,'#00e5ff');
+  const pp=((pit+12)/24)*100;document.getElementById('slPit').value=pit;document.getElementById('svPit').textContent=pit+' st';document.getElementById('sfPit').style.width=pp+'%';document.getElementById('kvPit').textContent=(pit>0?'+':'')+pit+'st';updKnob('kPit',pp,'#9c6cff');
+  const vp=(vol/2)*100;document.getElementById('slVol').value=vol;document.getElementById('svVol').textContent=Math.round(vol*100)+'%';document.getElementById('sfVol').style.width=vp+'%';document.getElementById('kvVol').textContent=Math.round(vol*100)+'%';updKnob('kVol',vp,'#00e676');
+  applyLive();
+}
+document.getElementById('slSpd').addEventListener('input',e=>{spd=parseFloat(e.target.value);amode=null;syncUI();});
+document.getElementById('slPit').addEventListener('input',e=>{pit=parseInt(e.target.value);amode=null;syncUI();});
+document.getElementById('slVol').addEventListener('input',e=>{vol=parseFloat(e.target.value);syncUI();});
+function mkKnob(id,param,mn,mx,st){
+  const el=document.getElementById(id);let drag=false,sy=0,sv=0;
+  el.addEventListener('pointerdown',e=>{drag=true;sy=e.clientY;sv=param==='s'?spd:param==='p'?pit:vol;el.setPointerCapture(e.pointerId);});
+  el.addEventListener('pointermove',e=>{if(!drag)return;let nv=sv+((sy-e.clientY)/150)*(mx-mn);nv=Math.round(nv/st)*st;nv=Math.max(mn,Math.min(mx,nv));if(param==='s'){spd=nv;amode=null;}else if(param==='p'){pit=nv;amode=null;}else vol=nv;syncUI();});
+  el.addEventListener('pointerup',()=>drag=false);el.addEventListener('pointercancel',()=>drag=false);
+}
+mkKnob('kSpd','s',0.25,4,0.05);mkKnob('kPit','p',-12,12,1);mkKnob('kVol','v',0,2,0.05);
+
+// AUTO MODES
+(()=>{const c=document.getElementById('automodes');AMODES.forEach(m=>{const b=document.createElement('button');b.className='abtn2'+(m.f?' afeat':'');b.dataset.id=m.id;b.innerHTML=`${m.lbl}<div class="dtl">${m.desc}</div>`;b.addEventListener('click',()=>{if(amode===m.id){amode=null;spd=1;pit=0;}else{amode=m.id;spd=m.s;pit=m.p;}syncUI();});c.appendChild(b);});})();
+function hlAuto(){document.querySelectorAll('.abtn2').forEach(b=>b.classList.toggle('on',b.dataset.id===amode));const on=amode!==null;document.getElementById('autoInd').style.display=on?'block':'none';const s=document.getElementById('autosec');s.classList.toggle('aglow',on);s.style.borderColor=on?'rgba(255,171,64,.3)':'';s.style.background=on?'rgba(255,171,64,.04)':'';}
+
+// PRESETS
+(()=>{PRESETS.forEach(p=>{const b=document.createElement('button');b.className='pbtn';b.dataset.s=p.s;b.dataset.p=p.p;b.innerHTML=`${p.lbl}<div class="pd">${p.s}x/${p.p>0?'+':''}${p.p}st</div>`;b.addEventListener('click',()=>{spd=p.s;pit=p.p;amode=null;syncUI();});document.getElementById('pgrid').appendChild(b);});})();
+function hlPre(){document.querySelectorAll('.pbtn').forEach(b=>b.classList.toggle('on',Math.abs(spd-parseFloat(b.dataset.s))<0.01&&pit===parseInt(b.dataset.p)));}
+
+// FORMAT
+(()=>{FMTS.forEach(f=>{const b=document.createElement('button');b.className='fmtbtn'+(f.id===fmt?' on':'');b.dataset.fmt=f.id;b.innerHTML=`${f.lbl}<div class="fs">${f.sub}</div>`;b.addEventListener('click',()=>{fmt=f.id;document.querySelectorAll('.fmtbtn').forEach(x=>x.classList.toggle('on',x.dataset.fmt===f.id));updExpBtns();updExpInfo();});document.getElementById('fmtsel').appendChild(b);});})();
+function updExpBtns(){if(!CU||!canExp(CU.u))return;const e=fmt.toUpperCase();document.getElementById('btnEx').textContent=`EXPORT → ${e}`;if(files.length>1)document.getElementById('btnExAll').textContent=`EXPORT ALL ${files.length} → ${e}`;}
+function updStats(){const f=files[ai];if(!f)return;document.getElementById('stR').textContent=f.broken?'—':'44100Hz';document.getElementById('stC').textContent=f.broken?'—':'Stereo';document.getElementById('stO').textContent=f.broken?'—':fmtT(f.dur);document.getElementById('stP').textContent=f.broken?'—':fmtT(f.dur/spd);}
+function updExpInfo(){const f=files[ai];if(!f)return;document.getElementById('expinfo').innerHTML=`Output: ${fmt.toUpperCase()} · 44100Hz · Stereo<br>Speed: ${spd.toFixed(2)}× · Pitch: ${pit>0?'+':''}${pit}st · Vol: ${Math.round(vol*100)}%`;}
+
+// ================================
+// AUDIO RENDER ENGINE
+// ================================
+function buf2wav(buffer){
+  const nCh=buffer.numberOfChannels,SR=buffer.sampleRate,len=buffer.length,bps=2,dLen=len*nCh*bps;
+  const wb=new ArrayBuffer(44+dLen),v=new DataView(wb);
+  const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+  w(0,'RIFF');v.setUint32(4,36+dLen,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,nCh,true);v.setUint32(24,SR,true);v.setUint32(28,SR*nCh*bps,true);v.setUint16(32,nCh*bps,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,dLen,true);
+  let off=44;
+  for(let i=0;i<len;i++)for(let ch=0;ch<nCh;ch++){const s=Math.max(-1,Math.min(1,buffer.getChannelData(ch)[i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}
+  return wb;
+}
+
+// ================================
+// TRUE MP3 ENCODER via lamejs
+// ================================
+async function encodeMp3(rendered,bitrate){
+  bitrate=bitrate||128;
+  const nCh=Math.min(rendered.numberOfChannels,2);
+  const ch0=rendered.getChannelData(0);
+  const ch1=nCh>1?rendered.getChannelData(1):ch0;
+
+  const toInt16=(f32)=>{
+    const i16=new Int16Array(f32.length);
+    for(let i=0;i<f32.length;i++){
+      const s=Math.max(-1,Math.min(1,f32[i]));
+      i16[i]=s<0?Math.ceil(s*0x8000):Math.floor(s*0x7FFF);
     }
-    raf=requestAnimationFrame(tick);
-    src.onended=()=>{if(sourceNode===src){stopPlayback();playbackPos=0;pauseOffset=0;drawWaveform();}};
+    return i16;
+  };
+
+  const left=toInt16(ch0);
+  const right=toInt16(ch1);
+  const encoder=new lamejs.Mp3Encoder(nCh,rendered.sampleRate,bitrate);
+  const CHUNK=1152;
+  const mp3Data=[];
+
+  setProg(80,'Encoding MP3...');
+  for(let i=0;i<left.length;i+=CHUNK){
+    const l=left.subarray(i,i+CHUNK);
+    const r=right.subarray(i,i+CHUNK);
+    const buf=nCh===1?encoder.encodeBuffer(l):encoder.encodeBuffer(l,r);
+    if(buf.length>0)mp3Data.push(new Int8Array(buf));
+    // yield every 50 chunks so UI stays responsive
+    if(i%(CHUNK*50)===0)await new Promise(r=>setTimeout(r,0));
   }
-  function stopSilent(){if(sourceNode){try{sourceNode.stop();}catch(e){}sourceNode.disconnect();sourceNode=null;}if(raf)cancelAnimationFrame(raf);isPlaying=false;}
-  function stopPlayback(){stopSilent();btnPlay.textContent='▶';}
-  function togglePlay(){if(isPlaying){pauseOffset=(getCtx().currentTime-startTime)*previewRate();stopPlayback();}else startPlayback();}
+  const end=encoder.flush();
+  if(end.length>0)mp3Data.push(new Int8Array(end));
+  return new Blob(mp3Data,{type:'audio/mp3'});
+}
 
-  function applyLive(){
-    if(sourceNode){const ctx=getCtx();const curOff=(ctx.currentTime-startTime)*sourceNode.playbackRate.value;const nr=previewRate();sourceNode.playbackRate.value=nr;startTime=ctx.currentTime-curOff/nr;}
-    if(gainNode)gainNode.gain.value=volume;
-    updateStats();updateExportInfo();highlightPreset();highlightAuto();
+async function renderAudio(fd){
+  const ctx=getAC();
+  const raw=await fd.file.arrayBuffer();
+  const decoded=await new Promise((res,rej)=>{const ac=new AudioContext();ac.decodeAudioData(raw.slice(0),res,rej);});
+  const pitchRate=Math.pow(2,pit/12);
+  const SR=44100;
+  const outLen=Math.max(1,Math.ceil(decoded.length/spd/pitchRate));
+  const nCh=Math.min(decoded.numberOfChannels,2);
+  const offCtx=new OfflineAudioContext(nCh,outLen,SR);
+  const src=offCtx.createBufferSource();
+  let buf=decoded;
+  if(pit!==0){
+    const shiftedSR=Math.round(decoded.sampleRate*pitchRate);
+    const sb=new AudioBuffer({numberOfChannels:nCh,length:decoded.length,sampleRate:shiftedSR});
+    for(let ch=0;ch<nCh;ch++)sb.copyToChannel(decoded.getChannelData(ch),ch);
+    buf=sb;
   }
+  src.buffer=buf;
+  src.playbackRate.value=spd;
+  const gn=offCtx.createGain();
+  gn.gain.value=Math.min(vol,1.8);
+  src.connect(gn);gn.connect(offCtx.destination);
+  src.start(0);
+  return offCtx.startRendering();
+}
 
-  function updateKnob(id,pct,color){
-    const ring=$(id);
-    ring.style.background=`conic-gradient(from -135deg, ${color} 0deg, ${color} ${pct/100*270}deg, #252538 ${pct/100*270}deg, #252538 270deg, transparent 270deg)`;
-    const needle=ring.querySelector('.knob-needle');
-    needle.style.transform=`rotate(${-135+pct/100*270}deg)`;needle.style.background=color;needle.style.boxShadow=`0 0 6px ${color}`;
-  }
+async function doExport(fd){
+  showProg('Processing Audio','Speed '+spd+'× · Pitch '+(pit>0?'+':'')+pit+'st · Vol '+Math.round(vol*100)+'%');
+  setProg(15,'Decoding audio...');
+  let rendered;
+  try{
+    setProg(30,'Rendering audio...');
+    rendered=await renderAudio(fd);
+    setProg(65,'Audio rendered...');
+  }catch(e){hideProg();throw new Error('Render gagal: '+(e.message||e));}
 
-  function syncUI(){
-    const sPct=((speed-0.25)/3.75)*100;
-    $('sliderSpeed').value=speed;$('sliderSpeedVal').textContent=speed.toFixed(2)+'x';$('sliderSpeedFill').style.width=sPct+'%';$('knobSpeedVal').textContent=speed.toFixed(2)+'x';
-    updateKnob('knobSpeed',sPct,'#00e5ff');
-    const pPct=((pitch+12)/24)*100;
-    $('sliderPitch').value=pitch;$('sliderPitchVal').textContent=pitch+' st';$('sliderPitchFill').style.width=pPct+'%';$('knobPitchVal').textContent=(pitch>0?'+':'')+pitch+'st';
-    updateKnob('knobPitch',pPct,'#9c6cff');
-    const vPct=(volume/2)*100;
-    $('sliderVolume').value=volume;$('sliderVolumeVal').textContent=Math.round(volume*100)+'%';$('sliderVolumeFill').style.width=vPct+'%';$('knobVolumeVal').textContent=Math.round(volume*100)+'%';
-    updateKnob('knobVolume',vPct,'#00e676');
-    applyLive();
-  }
+  const base=fd.name.replace(/\.[^.]+$/,'');
+  let blob,outName;
 
-  function updateStats(){
-    const f=files[activeIdx];if(!f)return;
-    $('statRate').textContent=(f.audioBuffer?f.audioBuffer.sampleRate:'44100')+'Hz';
-    $('statCh').textContent=f.audioBuffer&&f.audioBuffer.numberOfChannels===1?'Mono':'Stereo';
-    $('statOrig').textContent=fmtTime(f.duration);
-    $('statProc').textContent=fmtTime(f.duration/speed);
-  }
-
-  function updateExportInfo(){
-    const f=files[activeIdx];if(!f)return;
-    exportInfo.innerHTML=`Output: ${exportFormat==='mp3'?'MP3 128kbps':'WAV 16bit PCM'} · ${f.audioBuffer?f.audioBuffer.sampleRate:44100}Hz<br>Speed: ${speed.toFixed(2)}x · Pitch: ${pitch>0?'+':''}${pitch}st · Independent`;
-  }
-
-  function updateExportBtns(){
-    const ext=exportFormat.toUpperCase();
-    btnExport.textContent=`EXPORT CURRENT → ${ext}`;
-    if(files.length>1)btnExportAll.textContent=`EXPORT ALL ${files.length} FILES → ${ext}`;
-  }
-
-  $('sliderSpeed').addEventListener('input',e=>{speed=parseFloat(e.target.value);activeAutoMode=null;syncUI();});
-  $('sliderPitch').addEventListener('input',e=>{pitch=parseInt(e.target.value);activeAutoMode=null;syncUI();});
-  $('sliderVolume').addEventListener('input',e=>{volume=parseFloat(e.target.value);syncUI();});
-
-  function setupKnob(knobId,param,min,max,stepSize){
-    const el=$(knobId);let dragging=false,sy=0,sv=0;
-    el.addEventListener('pointerdown',e=>{dragging=true;sy=e.clientY;sv=param==='speed'?speed:param==='pitch'?pitch:volume;el.setPointerCapture(e.pointerId);});
-    el.addEventListener('pointermove',e=>{
-      if(!dragging)return;
-      let nv=sv+((sy-e.clientY)/150)*(max-min);nv=Math.round(nv/stepSize)*stepSize;nv=Math.max(min,Math.min(max,nv));
-      if(param==='speed'){speed=nv;activeAutoMode=null;}else if(param==='pitch'){pitch=nv;activeAutoMode=null;}else volume=nv;
-      syncUI();
+  if(fmt==='mp3'){
+    // *** FIX: True MP3 encoding via lamejs — no more 50MB WAV ***
+    if(typeof lamejs!=='undefined'){
+      blob=await encodeMp3(rendered,128);
+      outName=base+'_bypass.mp3';
+    }else{
+      // fallback jika lamejs gagal load
+      const wavBuf=buf2wav(rendered);
+      blob=new Blob([wavBuf],{type:'audio/wav'});
+      outName=base+'_bypass_fallback.wav';
+      toast('lamejs tidak tersedia','Disimpan sebagai WAV — refresh halaman','warn');
+    }
+  }else if(fmt==='ogg'&&typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported('audio/ogg;codecs=vorbis')){
+    blob=await new Promise(res=>{
+      const ac2=new AudioContext(),src2=ac2.createBufferSource();src2.buffer=rendered;
+      const dest=ac2.createMediaStreamDestination();src2.connect(dest);
+      const mr=new MediaRecorder(dest.stream,{mimeType:'audio/ogg;codecs=vorbis'});
+      const chunks=[];mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+      mr.onstop=()=>{ac2.close();res(new Blob(chunks,{type:'audio/ogg'}));};
+      mr.start();src2.start(0);
+      src2.onended=()=>setTimeout(()=>{try{mr.stop();}catch(e){}},200);
+      setTimeout(()=>{try{mr.stop();}catch(e){}},Math.ceil((rendered.duration+3)*1000));
     });
-    el.addEventListener('pointerup',()=>dragging=false);
-    el.addEventListener('pointercancel',()=>dragging=false);
-  }
-  setupKnob('knobSpeed','speed',0.25,4.0,0.05);
-  setupKnob('knobPitch','pitch',-12,12,1);
-  setupKnob('knobVolume','volume',0,2.0,0.05);
-
-  // ===== FIX #2: Build auto-modes ONCE (inside mainAppInit, not re-entered) =====
-  (function(){
-    const c=$('autoModes');
-    c.innerHTML=''; // Clear first to be safe
-    autoModes.forEach(m=>{
-      const b=document.createElement('button');
-      b.className='auto-btn'+(m.featured?' auto-featured':'');b.dataset.id=m.id;
-      b.innerHTML=`${m.label}<div class="detail">${m.desc}</div>`;
-      b.addEventListener('click',()=>{
-        if(activeAutoMode===m.id){activeAutoMode=null;speed=1.0;pitch=0;}
-        else{activeAutoMode=m.id;speed=m.speed;pitch=m.pitch;}
-        syncUI();
-      });
-      c.appendChild(b);
-    });
-  })();
-
-  function highlightAuto(){
-    document.querySelectorAll('.auto-btn').forEach(b=>b.classList.toggle('active',b.dataset.id===activeAutoMode));
-    const on=activeAutoMode!==null;
-    autoIndicator.style.display=on?'block':'none';
-    const s=$('autoSection');s.classList.toggle('auto-active-glow',on);
-    s.style.borderColor=on?'rgba(255,171,64,.3)':'';s.style.background=on?'rgba(255,171,64,.04)':'';
+    outName=base+'_bypass.ogg';
+  }else{
+    // WAV (lossless)
+    const wavBuf=buf2wav(rendered);
+    blob=new Blob([wavBuf],{type:'audio/wav'});
+    outName=base+'_bypass.wav';
+    if(fmt==='ogg')toast('OGG tidak didukung browser ini','Disimpan sebagai WAV','warn');
   }
 
-  // ===== FIX #2: Build presets ONCE =====
-  (function(){
-    const g=$('presetsGrid');
-    g.innerHTML=''; // Clear first
-    presets.forEach(p=>{
-      const b=document.createElement('button');b.className='preset-btn';b.dataset.speed=p.speed;b.dataset.pitch=p.pitch;
-      b.innerHTML=`${p.label}<div class="preset-detail">${p.speed}x / ${p.pitch>0?'+':''}${p.pitch}st</div>`;
-      b.addEventListener('click',()=>{speed=p.speed;pitch=p.pitch;activeAutoMode=null;syncUI();});
-      g.appendChild(b);
-    });
-  })();
+  setProg(95,'Menyiapkan download...');
+  return{blob,filename:outName};
+}
 
-  function highlightPreset(){
-    document.querySelectorAll('.preset-btn').forEach(b=>b.classList.toggle('active',Math.abs(speed-parseFloat(b.dataset.speed))<0.01&&pitch===parseInt(b.dataset.pitch)));
-  }
+function triggerDL(blob,filename){
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+}
 
-  // ===== FIX #2: Build formats ONCE =====
-  (function(){
-    const c=$('formatSelector');
-    c.innerHTML=''; // Clear first
-    formats.forEach(f=>{
-      const b=document.createElement('button');b.className='format-btn'+(f.id===exportFormat?' active':'');b.dataset.fmt=f.id;
-      b.innerHTML=`${f.label}<div class="fmt-sub">${f.sub}</div>`;
-      b.addEventListener('click',()=>{
-        exportFormat=f.id;
-        document.querySelectorAll('.format-btn').forEach(x=>x.classList.toggle('active',x.dataset.fmt===f.id));
-        updateExportBtns();updateExportInfo();
-      });
-      c.appendChild(b);
-    });
-  })();
+document.getElementById('btnEx').addEventListener('click',async()=>{
+  if(!CU)return;
+  if(!canExp(CU.u)){toast('Limit habis','Upgrade VIP untuk unlimited','warn');openMod('subModal');return;}
+  const f=files[ai];if(!f)return;
+  document.getElementById('btnEx').disabled=true;
+  try{
+    const res=await doExport(f);
+    setProg(100,'Download dimulai! 🎉');
+    triggerDL(res.blob,res.filename);
+    setTimeout(hideProg,800);
+    incUsage(CU.u);
+    addLog('EXPORT',CU.u,`${f.name}→${fmt.toUpperCase()}(${spd}×,${pit>0?'+':''}${pit}st)`,'');
+    updateUBar();
+    toast('Export berhasil! 🎉',res.filename,'success');
+  }catch(e){hideProg();toast('Export gagal',e.message||'Unknown error','error');}
+  updExpState();updExpBtns();
+});
 
-  btnPlay.addEventListener('click',togglePlay);
-  btnRew.addEventListener('click',()=>{if(isPlaying)stopPlayback();pauseOffset=0;playbackPos=0;drawWaveform();});
-  btnStop.addEventListener('click',()=>{stopPlayback();pauseOffset=0;playbackPos=0;drawWaveform();});
-  dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('dragover');});
-  dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('dragover'));
-  dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('dragover');addFiles(e.dataTransfer.files);});
-  dropzone.addEventListener('click',()=>fileInput.click());
-  fileInput.addEventListener('change',e=>{addFiles(e.target.files);e.target.value='';});
-
-  // ===== FIX #3: CLIENT-SIDE EXPORT =====
-  async function doExport(fileData){
-    const ext=exportFormat;
-    showProgress(`Processing → ${ext.toUpperCase()}`,`Speed ${speed.toFixed(2)}x · Pitch ${pitch>0?'+':''}${pitch}st`);
-    updateProgress(10,'Rendering audio...');
-
+document.getElementById('btnExAll').addEventListener('click',async()=>{
+  if(!CU)return;let ok=0,fail=0;
+  for(let i=0;i<files.length;i++){
+    if(!canExp(CU.u)){toast('Limit habis','Sisa tidak di-export','warn');break;}
     try{
-      // Render with effects
-      const rendered = await renderAudioWithEffects(fileData.audioBuffer, speed, pitch, volume);
-      updateProgress(60,'Encoding...');
-
-      let blob;
-      const outName = stripExt(fileData.name)+'_bypass.'+ext;
-
-      if(ext==='mp3'){
-        // Check if lamejs loaded
-        if(typeof lamejs === 'undefined'){
-          toast('MP3 encoder not loaded','Falling back to WAV — check your internet connection','warn');
-          blob = audioBufferToWav(rendered);
-          const wavName = stripExt(fileData.name)+'_bypass.wav';
-          updateProgress(95,'Downloading...');
-          triggerDownloadBlob(blob, wavName);
-          recordExport(wavName);
-          updateProgress(100,'Done!');
-          setTimeout(hideProgress,800);
-          toast('Exported as WAV',wavName,'success');
-          return;
-        }
-        blob = audioBufferToMp3(rendered);
-      } else {
-        blob = audioBufferToWav(rendered);
-      }
-
-      updateProgress(95,'Downloading...');
-      triggerDownloadBlob(blob, outName);
-      recordExport(outName);
-      updateProgress(100,'Done!');
-      setTimeout(hideProgress,800);
-      toast('Export complete',outName,'success');
-    }catch(e){
-      console.error('Export fail:',e);
-      hideProgress();
-      toast('Export failed',e.message||'Unknown error','error');
-      addLog('error','Export failed: '+e.message, getCurrentUser()?.name||'unknown');
-    }
+      const res=await doExport(files[i]);triggerDL(res.blob,res.filename);
+      incUsage(CU.u);addLog('EXP_BULK',CU.u,files[i].name+' OK','');ok++;
+      await new Promise(r=>setTimeout(r,500));
+    }catch(e){fail++;toast('Gagal: '+files[i].name,e.message,'error');}
   }
+  setProg(100,`Selesai: ${ok} berhasil, ${fail} gagal`);setTimeout(hideProg,1000);
+  if(ok>0)toast('Bulk export selesai',ok+' file berhasil','success');
+  updateUBar();updExpState();updExpBtns();
+});
 
-  btnExport.addEventListener('click',async()=>{
-    const f=files[activeIdx];if(!f)return;
-    const check=canExport();
-    if(!check.ok){
-      document.getElementById('limitMsg').textContent=check.reason;
-      document.getElementById('limitOverlay').classList.add('show');
-      return;
-    }
-    btnExport.disabled=true;
-    await doExport(f);
-    btnExport.disabled=false;updateExportBtns();
-  });
+// DROPZONE
+const dzEl=document.getElementById('dz'),fiEl=document.getElementById('fInput');
+dzEl.addEventListener('dragover',e=>{e.preventDefault();dzEl.classList.add('drag');});
+dzEl.addEventListener('dragleave',()=>dzEl.classList.remove('drag'));
+dzEl.addEventListener('drop',e=>{e.preventDefault();dzEl.classList.remove('drag');addFiles(e.dataTransfer.files);});
+dzEl.addEventListener('click',()=>fiEl.click());
+fiEl.addEventListener('change',e=>{addFiles(e.target.files);e.target.value='';});
 
-  btnExportAll.addEventListener('click',async()=>{
-    btnExportAll.disabled=true;
-    showProgress(`Bulk Export → ${exportFormat.toUpperCase()}`,`Processing ${files.length} files...`);
-    let ok=0,fail=0;
-    for(let i=0;i<files.length;i++){
-      const check=canExport();
-      if(!check.ok){
-        toast('Limit reached',check.reason,'warn');
-        hideProgress();
-        document.getElementById('limitMsg').textContent=check.reason;
-        document.getElementById('limitOverlay').classList.add('show');
-        break;
-      }
-      updateProgress((i/files.length)*100,`File ${i+1}/${files.length}: ${files[i].name}`);
-      try{
-        await doExport(files[i]);
-        ok++;
-        await new Promise(r=>setTimeout(r,300));
-      }catch(e){
-        fail++;
-        toast('Failed: '+files[i].name,e.message||'Unknown','error');
-      }
-    }
-    hideProgress();
-    if(ok>0)toast('Bulk done',`${ok} file(s) exported`,'success');
-    btnExportAll.disabled=false;updateExportBtns();
-  });
+// TRANSPORT
+document.getElementById('btnPlay').addEventListener('click',togglePlay);
+document.getElementById('btnRew').addEventListener('click',()=>{if(playing)stopPB();PO=0;ppos=0;drawWave();});
+document.getElementById('btnStop').addEventListener('click',()=>{stopPB();PO=0;ppos=0;drawWave();});
+window.addEventListener('resize',()=>{if(files.length)drawWave();});
 
-  window.addEventListener('resize',()=>{if(files.length)drawWaveform();});
+// KEYBOARD
+document.getElementById('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('lUser').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('rPass').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
 
-  // Badge = client-side (no server check needed)
-  document.getElementById('serverBadge').textContent='⚡ Client-Side';
-  document.getElementById('serverBadge').className='badge badge-client';
-
-  syncUI();
-}
-
-// ============================================================
-// ===== ADMIN PANEL LOGIC ====================================
-// ============================================================
-let adminLoggedIn=false;
-
-window.closeAdmin=function(){document.getElementById('adminOverlay').classList.remove('show');};
-window.openAdminLogin=function(){document.getElementById('adminOverlay').classList.add('show');document.getElementById('adminLogin').style.display='flex';document.getElementById('adminPanel').classList.remove('show');};
-window.doAdminLogin=function(){
-  const u=document.getElementById('adminUser').value.trim();
-  const p=document.getElementById('adminPass').value;
-  const creds=getAdminCreds();
-  if(u===creds.user&&p===creds.pass){
-    adminLoggedIn=true;
-    document.getElementById('adminLogin').style.display='none';
-    document.getElementById('adminPanel').classList.add('show');
-    document.getElementById('adminUserLabel').textContent='Logged in as: '+u;
-    addLog('admin','Admin logged in: '+u,u);
-    refreshAdminData();
-  } else {
-    document.getElementById('adminPass').style.borderColor='var(--danger)';
-    setTimeout(()=>document.getElementById('adminPass').style.borderColor='',2000);
-    addLog('error','Failed admin login attempt',u);
-  }
-};
-window.adminLogout=function(){adminLoggedIn=false;document.getElementById('adminPanel').classList.remove('show');document.getElementById('adminLogin').style.display='flex';document.getElementById('adminUser').value='';document.getElementById('adminPass').value='';};
-window.adminNav=function(page){
-  document.querySelectorAll('.admin-nav-item').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
-  document.querySelectorAll('.admin-page').forEach(el=>el.classList.toggle('active',el.id==='page-'+page));
-  if(page==='dashboard')refreshDashboardActivity();
-  if(page==='users')renderUsersTable();
-  if(page==='vip'){renderVipTable();populateVipUserSelect();}
-  if(page==='limits')populateLimitUserSelect();
-  if(page==='activity')renderLog();
-  if(page==='settings')loadSettings();
-};
-
-function refreshAdminData(){
-  const users=getUsers();const vips=users.filter(u=>u.role==='vip');const banned=users.filter(u=>u.banned);const totalExports=users.reduce((a,u)=>a+(u.exportsToday||0),0);
-  safeSet('statTotalUsers',users.length);safeSet('statVipUsers',vips.length);safeSet('statExportsToday',totalExports);safeSet('statBanned',banned.length);
-  renderDashUsers();refreshDashboardActivity();
-}
-function safeSet(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
-function refreshDashboardActivity(){
-  const log=getLog();const el=document.getElementById('dashRecentActivity');if(!el)return;
-  el.innerHTML=log.slice(0,5).map(l=>`<div class="log-entry"><span class="log-time">${l.time}</span><span class="log-type log-${l.type}">${l.type.toUpperCase()}</span><span class="log-msg">${escAdm(l.msg)} <span style="color:var(--dim)">— ${l.user}</span></span></div>`).join('')||'<div style="padding:14px;color:var(--dim);font-family:monospace;font-size:11px">No activity yet</div>';
-}
-function escAdm(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
-function renderDashUsers(){
-  const users=getUsers();const tbody=document.getElementById('dashUsersTbody');if(!tbody)return;
-  tbody.innerHTML=users.slice(0,5).map(u=>`<tr><td style="color:var(--dim)">${u.id.slice(0,8)}</td><td>${escAdm(u.name)}</td><td><span class="role-badge role-${u.banned?'banned':u.role}">${u.banned?'BANNED':u.role.toUpperCase()}</span></td><td style="color:var(--accent)">${u.exportsTotal||0}</td><td style="color:${u.banned?'var(--danger)':u.role==='vip'?'#ffd700':'var(--dim)'}">${u.banned?'🚫 Banned':u.role==='vip'?'⭐ VIP':'Active'}</td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:16px">No users yet</td></tr>';
-}
-window.renderUsersTable=function(){
-  const users=getUsers();const search=(document.getElementById('userSearch')?.value||'').toLowerCase();
-  const filtered=users.filter(u=>u.name.toLowerCase().includes(search)||u.id.includes(search));
-  const tbody=document.getElementById('usersTbody');if(!tbody)return;
-  tbody.innerHTML=filtered.map((u,i)=>`<tr><td style="color:var(--dim)">${i+1}</td><td style="font-weight:600">${escAdm(u.name)}</td><td><span class="role-badge role-${u.banned?'banned':u.role}">${u.banned?'BANNED':u.role.toUpperCase()}</span></td><td><span style="color:var(--accent)">${u.exportsToday||0}</span> <span style="color:var(--dim)">/ ${u.exportsTotal||0} total</span></td><td>${u.limit===0?'∞':u.limit}/day</td><td style="color:var(--dim)">${u.joined||'—'}</td><td style="display:flex;gap:5px;flex-wrap:wrap">${u.role!=='admin'?`<button class="abtn abtn-vip" onclick="quickSetVip('${u.id}')">⭐</button>`:''}${!u.banned?`<button class="abtn abtn-danger" onclick="banUser('${u.id}')">BAN</button>`:`<button class="abtn abtn-success" onclick="unbanUser('${u.id}')">UNBAN</button>`}<button class="abtn abtn-accent" onclick="promoteUser('${u.id}')">ROLE</button><button class="abtn abtn-danger" onclick="deleteUser('${u.id}')">DEL</button></td></tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--dim);padding:16px">No users found</td></tr>';
-};
-window.toggleAddUserForm=function(){document.getElementById('addUserForm').classList.toggle('open');};
-window.addUser=function(){
-  const name=document.getElementById('newUserName').value.trim();const role=document.getElementById('newUserRole').value;const limit=parseInt(document.getElementById('newUserLimit').value)||5;
-  if(!name){alert('Enter a username!');return;}
-  const users=getUsers();const nu={id:'u'+Math.random().toString(36).slice(2,9)+Date.now().toString(36),name,role,limit,exportsToday:0,exportsTotal:0,joined:new Date().toLocaleDateString(),banned:false,vipExpiry:role==='vip'?'permanent':null,vipSince:role==='vip'?new Date().toLocaleDateString():null,lastReset:new Date().toDateString()};
-  users.push(nu);saveUsers(users);addLog('admin','Admin added user: '+name+' ('+role+')',getAdminCreds().user);renderUsersTable();refreshAdminData();document.getElementById('newUserName').value='';document.getElementById('addUserForm').classList.remove('open');
-};
-window.banUser=function(uid){if(!confirm('Ban this user?'))return;const users=getUsers();const u=users.find(x=>x.id===uid);if(u){u.banned=true;saveUsers(users);addLog('ban','Banned user: '+u.name,getAdminCreds().user);}renderUsersTable();refreshAdminData();};
-window.unbanUser=function(uid){const users=getUsers();const u=users.find(x=>x.id===uid);if(u){u.banned=false;saveUsers(users);addLog('admin','Unbanned user: '+u.name,getAdminCreds().user);}renderUsersTable();refreshAdminData();};
-window.deleteUser=function(uid){if(!confirm('Delete this user?'))return;saveUsers(getUsers().filter(x=>x.id!==uid));addLog('admin','Deleted user ID: '+uid,getAdminCreds().user);renderUsersTable();refreshAdminData();};
-window.promoteUser=function(uid){
-  const users=getUsers();const u=users.find(x=>x.id===uid);if(!u)return;
-  const roles=['user','vip','admin'];const cur=roles.indexOf(u.role);const next=roles[(cur+1)%roles.length];
-  if(!confirm(`Change ${u.name}'s role from ${u.role} to ${next}?`))return;
-  u.role=next;if(next==='vip'){u.vipSince=new Date().toLocaleDateString();u.vipExpiry='permanent';}else{u.vipSince=null;u.vipExpiry=null;}
-  saveUsers(users);addLog('admin',`Promoted ${u.name} to ${next}`,getAdminCreds().user);renderUsersTable();refreshAdminData();
-};
-window.quickSetVip=function(uid){
-  const users=getUsers();const u=users.find(x=>x.id===uid);if(!u)return;
-  u.role='vip';u.vipSince=new Date().toLocaleDateString();u.vipExpiry='permanent';u.limit=0;
-  saveUsers(users);addLog('vip','Quick VIP granted to: '+u.name,getAdminCreds().user);renderUsersTable();refreshAdminData();
-};
-function populateVipUserSelect(){const users=getUsers();const sel=document.getElementById('vipUserSelect');if(!sel)return;sel.innerHTML=users.map(u=>`<option value="${u.id}">${u.name} (${u.role})</option>`).join('');}
-window.grantVip=function(){
-  const uid=document.getElementById('vipUserSelect')?.value;const days=parseInt(document.getElementById('vipDuration')?.value)||30;const exportLim=parseInt(document.getElementById('vipExportLimit')?.value)||0;
-  const users=getUsers();const u=users.find(x=>x.id===uid);if(!u)return;
-  u.role='vip';u.vipSince=new Date().toLocaleDateString();u.limit=exportLim;u.vipExpiry=days===0?'permanent':Date.now()+(days*24*60*60*1000);
-  saveUsers(users);addLog('vip',`VIP granted to ${u.name} (${days===0?'permanent':days+' days'})`,getAdminCreds().user);renderVipTable();refreshAdminData();toast('VIP Granted','','success');
-};
-function renderVipTable(){
-  const users=getUsers().filter(u=>u.role==='vip');const tbody=document.getElementById('vipTbody');if(!tbody)return;
-  tbody.innerHTML=users.map(u=>`<tr><td style="font-weight:600">${escAdm(u.name)}</td><td style="color:var(--dim)">${u.vipSince||'—'}</td><td style="color:var(--warn)">${u.vipExpiry==='permanent'?'♾ Permanent':u.vipExpiry?new Date(u.vipExpiry).toLocaleDateString():'—'}</td><td>${u.limit===0?'<span style="color:var(--success)">∞ Unlimited</span>':u.limit+'/day'}</td><td><button class="abtn abtn-danger" onclick="revokeVip('${u.id}')">REVOKE</button></td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:16px">No VIP users</td></tr>';
-}
-window.revokeVip=function(uid){if(!confirm('Revoke VIP?'))return;const users=getUsers();const u=users.find(x=>x.id===uid);if(u){u.role='user';u.vipSince=null;u.vipExpiry=null;u.limit=getSettings().freeLimit;saveUsers(users);addLog('vip','VIP revoked from: '+u.name,getAdminCreds().user);}renderVipTable();refreshAdminData();};
-function populateLimitUserSelect(){const users=getUsers();const sel=document.getElementById('limitUserSelect');if(!sel)return;sel.innerHTML=users.map(u=>`<option value="${u.id}">${u.name} (${u.role}, ${u.limit===0?'∞':u.limit}/day)</option>`).join('');}
-window.saveGlobalLimits=function(){const s=getSettings();s.freeLimit=parseInt(document.getElementById('globalFreeLimit')?.value)||5;s.vipLimit=parseInt(document.getElementById('globalVipLimit')?.value)||0;s.maxFile=parseInt(document.getElementById('globalMaxFile')?.value)||50;s.vipMaxFile=parseInt(document.getElementById('globalVipMaxFile')?.value)||200;saveSettings(s);addLog('admin','Global limits updated',getAdminCreds().user);alert('Limits saved!');};
-window.setUserLimit=function(){const uid=document.getElementById('limitUserSelect')?.value;const val=parseInt(document.getElementById('limitNewVal')?.value)||0;const users=getUsers();const u=users.find(x=>x.id===uid);if(u){u.limit=val;saveUsers(users);addLog('admin',`Set limit for ${u.name} → ${val===0?'∞':val}/day`,getAdminCreds().user);populateLimitUserSelect();alert(`Limit set for ${u.name}: ${val===0?'Unlimited':val+'/day'}`);}};
-window.saveGateSettings=function(){const s=getSettings();s.gateEnabled=document.getElementById('gateEnabled')?.checked||false;s.gateDiscord=document.getElementById('gateDiscord')?.checked||false;s.gateTikTok=document.getElementById('gateTikTok')?.checked||false;s.gateWhitelist=document.getElementById('gateWhitelist')?.checked||false;s.discordLink=document.getElementById('gateDiscordLink')?.value||'';s.ttLink=document.getElementById('gateTTLink')?.value||'';saveSettings(s);addLog('admin','Gate settings updated',getAdminCreds().user);alert('Gate settings saved!');};
-window.resetGateForAll=function(){if(!confirm('Force all users to redo the gate?'))return;localStorage.removeItem(GATE_KEY);addLog('admin','Gate reset for all users',getAdminCreds().user);alert('Gate reset for all users!');};
-window.renderLog=function(){const log=getLog();const filter=document.getElementById('logFilter')?.value||'all';const filtered=filter==='all'?log:log.filter(l=>l.type===filter);const el=document.getElementById('activityLog');if(!el)return;el.innerHTML=filtered.map(l=>`<div class="log-entry"><span class="log-time">${l.time}</span><span class="log-type log-${l.type}">${l.type.toUpperCase()}</span><span class="log-msg">${escAdm(l.msg)} <span style="color:var(--dim)">— ${l.user}</span></span></div>`).join('')||'<div style="padding:20px;color:var(--dim);font-family:monospace;font-size:11px;text-align:center">No log entries</div>';};
-window.clearLog=function(){if(!confirm('Clear all activity logs?'))return;localStorage.removeItem(LOG_KEY);renderLog();refreshDashboardActivity();};
-function loadSettings(){const s=getSettings();setCheck('settMaintenance',s.maintenance);setCheck('settAutoBan',s.autoBan);setCheck('settBanner',s.showBanner);setVal('bannerText',s.bannerText);setVal('bannerType',s.bannerType);setVal('globalFreeLimit',s.freeLimit);setVal('globalVipLimit',s.vipLimit);setVal('globalMaxFile',s.maxFile);setVal('globalVipMaxFile',s.vipMaxFile);setCheck('gateEnabled',s.gateEnabled);setCheck('gateDiscord',s.gateDiscord);setCheck('gateTikTok',s.gateTikTok);setCheck('gateWhitelist',s.gateWhitelist);setVal('gateDiscordLink',s.discordLink);setVal('gateTTLink',s.ttLink);}
-function setCheck(id,val){const el=document.getElementById(id);if(el)el.checked=!!val;}
-function setVal(id,val){const el=document.getElementById(id);if(el)el.value=val||'';}
-window.changeAdminCreds=function(){const nu=document.getElementById('newAdminUser')?.value.trim();const np=document.getElementById('newAdminPass')?.value;const cp=document.getElementById('confirmAdminPass')?.value;if(!nu||!np){alert('Fill in all fields!');return;}if(np!==cp){alert('Passwords do not match!');return;}if(np.length<6){alert('Password must be at least 6 characters!');return;}setAdminCreds(nu,np);addLog('admin','Admin credentials changed',nu);alert('Credentials updated!');document.getElementById('newAdminUser').value='';document.getElementById('newAdminPass').value='';document.getElementById('confirmAdminPass').value='';};
-window.saveBanner=function(){const s=getSettings();s.showBanner=document.getElementById('settBanner')?.checked||false;s.bannerText=document.getElementById('bannerText')?.value||'';s.bannerType=document.getElementById('bannerType')?.value||'info';saveSettings(s);addLog('admin','Banner settings updated',getAdminCreds().user);alert('Banner settings saved!');};
-window.resetAllExportCounts=function(){if(!confirm('Reset all export counts?'))return;const users=getUsers();users.forEach(u=>{u.exportsToday=0;u.lastReset=new Date().toDateString();});saveUsers(users);addLog('admin','Reset all export counts',getAdminCreds().user);refreshAdminData();alert('All export counts reset!');};
-window.clearAllBans=function(){if(!confirm('Remove all bans?'))return;const users=getUsers();users.forEach(u=>{u.banned=false;});saveUsers(users);addLog('admin','All bans cleared',getAdminCreds().user);refreshAdminData();alert('All bans removed!');};
-window.resetAllData=function(){localStorage.removeItem(USERS_KEY);localStorage.removeItem(LOG_KEY);localStorage.removeItem(GATE_KEY);addLog('admin','ALL DATA RESET',getAdminCreds().user);refreshAdminData();alert('All data reset!');};
-
-document.getElementById('adminPass')?.addEventListener('keydown',function(e){if(e.key==='Enter')window.doAdminLogin();});
+// ================================
+// INIT
+// ================================
+(function init(){
+  const sess=getSession();
+  if(sess&&sess.un){const db=getDB(),u=db.users[sess.un];if(u){CU=u;afterAuth();return;}}
+  document.getElementById('authOv').classList.remove('hide');
+})();
 </script>
 </body>
 </html>
