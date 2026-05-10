@@ -580,7 +580,8 @@ const FIREBASE_CONFIG = {
   projectId:         "website-uplode",
   storageBucket:     "website-uplode.firebasestorage.app",
   messagingSenderId: "1023692632323",
-  appId:             "1:1023692632323:web:240b2ee7788617c200b936"
+  appId:             "1:1023692632323:web:240b2ee7788617c200b936",
+  measurementId:     "G-F9Z0KTYWNP"
 };
 /* ============================================================ */
 
@@ -728,13 +729,18 @@ async function doLogin(){
 }
 
 async function doRegister(){
-  const uname = sanitize(document.getElementById('rUser').value.toLowerCase(), 30);
-  const email = sanitize(document.getElementById('rEmail').value, 100);
+  // Auto-lowercase username — no more "VIPP22" rejection
+  const uname = sanitize(document.getElementById('rUser').value,30).toLowerCase().replace(/\s+/g,'');
+  const email = sanitize(document.getElementById('rEmail').value.trim(), 100);
   const pass  = document.getElementById('rPass').value;
+
+  // All validation BEFORE setBtnLoading so button never gets stuck
   if(!uname||!email||!pass){showErr('eReg','⚠ Semua field wajib');return;}
   if(uname.length<3){showErr('eReg','⚠ Username min 3 karakter');return;}
-  if(!/^[a-z0-9_]{3,30}$/.test(uname)){showErr('eReg','⚠ Username: huruf kecil, angka, underscore saja');return;}
+  if(!/^[a-z0-9_]{3,30}$/.test(uname)){showErr('eReg','⚠ Username: huruf, angka, underscore saja (min 3)');return;}
   if(pass.length<6){showErr('eReg','⚠ Password min 6 karakter');return;}
+  if(!/\S+@\S+\.\S+/.test(email)){showErr('eReg','⚠ Format email tidak valid');return;}
+
   setBtnLoading('btnReg',true);
   try{
     // Check username uniqueness
@@ -755,9 +761,11 @@ async function doRegister(){
     });
     // onAuthStateChanged handles navigation
   }catch(e){
-    const msg = e.code==='auth/email-already-in-use'
-      ? '❌ Email sudah terdaftar'
-      : '❌ '+e.message;
+    let msg='❌ '+e.message;
+    if(e.code==='auth/email-already-in-use') msg='❌ Email sudah terdaftar, coba login';
+    else if(e.code==='auth/invalid-email')   msg='❌ Format email tidak valid';
+    else if(e.code==='auth/weak-password')   msg='❌ Password terlalu lemah (min 6 karakter)';
+    else if(e.code==='auth/network-request-failed') msg='❌ Tidak ada koneksi internet';
     showErr('eReg', msg);
     setBtnLoading('btnReg',false,'BUAT AKUN →');
   }
@@ -774,10 +782,17 @@ async function doLogout(){
    AUTH STATE OBSERVER — single source of truth
    Fires on: login, logout, page refresh, token refresh
    ============================================================ */
+// Timeout fallback: if Firebase takes >8s, show auth screen anyway
+const _fbTimeout = setTimeout(()=>{
+  document.getElementById('fbLoading').classList.add('hide');
+  document.getElementById('authOv').classList.remove('hide');
+  toast('Koneksi lambat','Coba refresh halaman','warn');
+}, 8000);
+
 auth.onAuthStateChanged(async(firebaseUser)=>{
+  clearTimeout(_fbTimeout);
   document.getElementById('fbLoading').classList.add('hide');
   if(!firebaseUser){
-    // Logged out
     document.getElementById('mainApp').style.display='none';
     document.getElementById('authOv').classList.remove('hide');
     document.getElementById('gateOv').classList.add('hide');
@@ -785,20 +800,19 @@ auth.onAuthStateChanged(async(firebaseUser)=>{
     setBtnLoading('btnReg',false,'BUAT AKUN →');
     return;
   }
-  // Logged in — load profile + config in parallel
   try{
+    // Use cache-first (source:'cache') for instant load, then get fresh data
     const [profSnap] = await Promise.all([
-      userRef(firebaseUser.uid).get(),
+      userRef(firebaseUser.uid).get({source:'cache'}).catch(()=>userRef(firebaseUser.uid).get()),
       loadConfig()
     ]);
     if(!profSnap.exists){
-      // Profile missing — sign out
       toast('Error','Profil tidak ditemukan. Coba daftar ulang.','error');
       await auth.signOut();return;
     }
     CU = profSnap.data();
     CU.uid = firebaseUser.uid;
-    // Live profile listener — role changes, usage, limit updates push in realtime
+    // Realtime listener — role/usage changes sync instantly
     userRef(CU.uid).onSnapshot(snap=>{
       if(!snap.exists)return;
       CU = snap.data();CU.uid=firebaseUser.uid;
@@ -812,11 +826,14 @@ auth.onAuthStateChanged(async(firebaseUser)=>{
 });
 
 /* ============================================================
-   GATE
+   GATE — localStorage for instant response, Firestore fire-and-forget
    ============================================================ */
+function gateKey(){return 'RPMxGate_'+(CU?CU.uid:'anon');}
+function gateCompleted(){return localStorage.getItem(gateKey())==='1'||CU.gateCompleted;}
+
 function afterAuth(){
   document.getElementById('authOv').classList.add('hide');
-  if(CU.gateCompleted){launchApp();}
+  if(gateCompleted()){launchApp();}
   else{document.getElementById('gateOv').classList.remove('hide');}
 }
 (function(){
@@ -824,14 +841,16 @@ function afterAuth(){
   document.getElementById('gBtnYT').addEventListener('click',()=>{y=true;document.getElementById('gsYT').classList.add('done');chk();});
   document.getElementById('gBtnTT').addEventListener('click',()=>{t=true;document.getElementById('gsTT').classList.add('done');chk();});
   function chk(){if(y&&t){const b=document.getElementById('gCont');b.disabled=false;b.className='gcont open';b.textContent='🚀 LANJUT KE BYPASS';}}
-  document.getElementById('gCont').addEventListener('click',async()=>{
+  document.getElementById('gCont').addEventListener('click',()=>{
     if(!CU)return;
-    // Save gate completion to Firestore — persists across devices
-    await userRef(CU.uid).update({gateCompleted:true});
+    // localStorage = instant (no network wait)
+    localStorage.setItem(gateKey(),'1');
     CU.gateCompleted=true;
+    // Non-blocking Firestore update for cross-device persistence
+    userRef(CU.uid).update({gateCompleted:true}).catch(()=>{});
     const o=document.getElementById('gateOv');
-    o.style.transition='opacity .35s';o.style.opacity='0';
-    setTimeout(()=>{o.classList.add('hide');o.style.opacity='';launchApp();},350);
+    o.style.transition='opacity .3s';o.style.opacity='0';
+    setTimeout(()=>{o.classList.add('hide');o.style.opacity='';launchApp();},300);
   });
 })();
 
