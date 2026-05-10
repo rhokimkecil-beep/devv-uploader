@@ -512,7 +512,7 @@ body.exporting .spin{animation:spin .8s linear infinite}
       <div class="lbar"><span id="limTxt">0/10</span><div class="ltrack"><div class="lfill" id="limFill" style="width:0%"></div></div><span style="color:var(--d);font-size:9px">TODAY</span></div>
       <button class="bsm gold" id="btnUpg" onclick="openMod('subModal')">⭐ UPGRADE</button>
       <button class="bsm red" id="btnAdm" style="display:none" onclick="openAdmin()">🔴 ADMIN</button>
-      <button class="bsm red" onclick="doLogout()">LOGOUT</button>
+      <button class="bsm red" onclick="if(confirm('Yakin mau logout?'))doLogout()">LOGOUT</button>
     </div>
   </div>
   <div class="limban" id="limBan"><span>🚫 <b>Limit harian habis!</b> Upgrade VIP untuk unlimited.</span><button class="bsm gold" onclick="openMod('subModal')">⭐ VIP</button></div>
@@ -772,10 +772,12 @@ async function doRegister(){
 }
 
 async function doLogout(){
-  await addLog('LOGOUT','Logout','');
-  _adminUnsubs.forEach(u=>u());_adminUnsubs=[];
+  // Non-blocking — never await anything before signOut
+  addLog('LOGOUT','Logout','').catch(()=>{});
+  _adminUnsubs.forEach(u=>u());
+  _adminUnsubs=[];
   CU=null;
-  await auth.signOut();
+  try{ await auth.signOut(); }catch(e){ location.reload(); }
 }
 
 /* ============================================================
