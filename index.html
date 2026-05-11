@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RPMxPRIME BYPASS — Roblox Audio Processor</title>
+<title>RPMxPRIME BYPASS — Roblox Audio Processor + Live Chat</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♫</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--a:#00e5ff;--a2:#9c6cff;--bg:#06060c;--s:#0e0e18;--s2:#161624;--b:#252538;--t:#e0e0ec;--d:#55557a;--ok:#00e676;--w:#ffab40;--r:#ff5252;--g:#ffd700}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background-color:var(--bg);background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px;background-attachment:local;color:var(--t);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+body{background-color:#06060c;color:var(--t);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
 input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;width:100%}
 input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--b)}
@@ -116,7 +116,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 /* ADMIN */
 .admin-bg{position:fixed;inset:0;z-index:600;background:rgba(6,6,12,.95);display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
 .admin-bg.show{display:flex}
-.admin-box{background:var(--s);border:1px solid rgba(255,82,82,.3);border-radius:16px;padding:22px;max-width:960px;width:100%;margin:auto;animation:slideUp .25s ease-out}
+.admin-box{background:var(--s);border:1px solid rgba(255,82,82,.3);border-radius:16px;padding:22px;max-width:1100px;width:100%;margin:auto;animation:slideUp .25s ease-out}
 .ahdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
 .ahdr h2{font-size:15px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--r)}
 .astats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
@@ -124,7 +124,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .astat{background:var(--s2);border:1px solid var(--b);border-radius:9px;padding:10px;text-align:center}
 .astat-l{font-size:8px;letter-spacing:2px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
 .astat-v{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--a)}
-/* realtime dot pulse */
 .rt-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:5px;animation:rtpulse 1.8s ease-in-out infinite}
 @keyframes rtpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 .atabs2{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
@@ -150,7 +149,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .order-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
 .order-card .oc-user{font-weight:700;color:var(--t);font-size:11px}.order-card .oc-pkg{color:var(--g)}.order-card .oc-meta{color:var(--d);font-size:9px;line-height:1.6}
 .order-proof-thumb{width:60px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--b);cursor:pointer;margin-top:4px}
-
+.announcement-preview{background:var(--s2);border-left:3px solid var(--g);border-radius:8px;margin-bottom:14px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.announcement-preview .msg{flex:1;font-size:12px;font-family:'Outfit',sans-serif}
+.announcement-preview .clr{border-radius:4px;width:28px;height:28px}
 /* MAIN */
 .app{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 20px 40px}
 .hdr{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:11px 0;margin-bottom:14px;border-bottom:1px solid var(--b);background:rgba(6,6,12,.97);will-change:transform}
@@ -248,6 +249,29 @@ body.exporting .spin{animation:spin .8s linear infinite}
 .footer{text-align:center;padding:22px;font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace}.footer .dot{color:var(--a)}
 .lightbox{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:none;place-items:center;cursor:pointer}.lightbox.show{display:grid}.lightbox img{max-width:90vw;max-height:90vh;border-radius:8px}
 
+/* LIVE CHAT STYLES */
+#chatFloatBtn{position:fixed;bottom:24px;right:24px;z-index:700;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--a2));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .15s,opacity .15s}
+#chatFloatBtn:hover{transform:scale(1.08);opacity:.9}
+.chat-modal{max-width:480px;width:100%;height:80vh;max-height:600px;display:flex;flex-direction:column;background:var(--s);border:1px solid var(--b);border-radius:20px;overflow:hidden}
+.chat-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(0,0,0,.3);border-bottom:1px solid var(--b)}
+.chat-header h3{font-size:15px;font-family:'JetBrains Mono',monospace;color:var(--a)}
+.chat-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.chat-msg{display:flex;gap:8px;align-items:flex-start}
+.chat-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--a2));display:grid;place-items:center;font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.chat-bubble{background:var(--s2);border-radius:12px;padding:6px 12px;max-width:80%;border:1px solid var(--b)}
+.chat-name{font-size:10px;font-weight:600;color:var(--a);margin-right:6px;font-family:'JetBrains Mono',monospace}
+.chat-badge{font-size:8px;background:var(--g);color:#000;padding:2px 4px;border-radius:4px;margin-left:5px}
+.chat-text{font-size:12px;word-wrap:break-word;margin-top:2px}
+.chat-time{font-size:9px;color:var(--d);margin-left:8px}
+.chat-input-area{display:flex;gap:8px;padding:12px;border-top:1px solid var(--b);background:rgba(0,0,0,.2)}
+.chat-input-area .fi{flex:1;margin:0}
+.chat-input-area button{padding:8px 14px;border-radius:20px;border:none;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;font-weight:700;cursor:pointer}
+
+.btn-discord{width:100%;padding:12px;border-radius:10px;border:none;background:#5865F2;color:#fff;cursor:pointer;font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-top:8px;transition:opacity .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-discord:hover{transform:translateY(-1px);opacity:.9}
+.or-divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--d);font-size:11px;font-family:'JetBrains Mono',monospace}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--b)}
+
 /* Firebase loading overlay */
 .fb-loading{position:fixed;inset:0;z-index:99999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
 .fb-loading .spin-ring{width:40px;height:40px;border:3px solid var(--b);border-top-color:var(--a);border-radius:50%;animation:spin .7s linear infinite}
@@ -273,6 +297,149 @@ body.exporting .spin{animation:spin .8s linear infinite}
 </head>
 <body>
 
+  <canvas id="auroraBg" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none"></canvas>
+<script>
+(function(){
+const cv=document.getElementById('auroraBg');
+const cx=cv.getContext('2d',{alpha:false,desynchronized:true});
+let W,H,t=0,stars=[],shoots=[],nebulae=[];
+let raf,lastTime=0;
+const FPS=30,INTERVAL=1000/FPS;
+
+function resize(){
+  W=cv.width=window.innerWidth;
+  H=cv.height=window.innerHeight;
+  nebulae=[
+    {x:W*.2,y:H*.3,r:W*.38,c1:'rgba(80,0,180,.15)',c2:'rgba(0,150,255,.07)'},
+    {x:W*.8,y:H*.6,r:W*.32,c1:'rgba(140,0,255,.12)',c2:'rgba(0,200,200,.06)'},
+    {x:W*.5,y:H*.15,r:W*.28,c1:'rgba(0,229,255,.08)',c2:'transparent'},
+  ];
+  initStars();
+}
+
+function initStars(){
+  // Kurangi jumlah bintang
+  const total=Math.min(180,Math.floor(W*H/8000));
+  stars=[];
+  for(let i=0;i<total;i++){
+    const big=i<total*.1;
+    stars.push({
+      x:Math.random()*W,
+      y:Math.random()*H,
+      r:big?Math.random()*.8+1:Math.random()*.5+.2,
+      op:Math.random()*.7+.2,
+      ts:Math.random()*.03+.008,
+      to:Math.random()*Math.PI*2,
+      big:big,
+      hue:Math.random()<.12?(Math.random()<.5?0:1):2
+    });
+  }
+}
+
+// Cache nebula — gambar ke offscreen canvas, bukan hitung ulang tiap frame
+let nebulaCache=null,nebulaDirty=true;
+function buildNebulaCache(){
+  nebulaCache=document.createElement('canvas');
+  nebulaCache.width=W;nebulaCache.height=H;
+  const nc=nebulaCache.getContext('2d',{alpha:true});
+  nebulae.forEach(n=>{
+    const g=nc.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);
+    g.addColorStop(0,n.c1);
+    if(n.c2!=='transparent')g.addColorStop(.5,n.c2);
+    g.addColorStop(1,'transparent');
+    nc.fillStyle=g;nc.fillRect(0,0,W,H);
+  });
+  nebulaDirty=false;
+}
+
+// Grid cache
+let gridCache=null;
+function buildGridCache(){
+  gridCache=document.createElement('canvas');
+  gridCache.width=W;gridCache.height=H;
+  const gc=gridCache.getContext('2d',{alpha:true});
+  gc.strokeStyle='rgba(0,229,255,.022)';gc.lineWidth=1;
+  for(let x=0;x<W;x+=60){gc.beginPath();gc.moveTo(x,0);gc.lineTo(x,H);gc.stroke();}
+  for(let y=0;y<H;y+=60){gc.beginPath();gc.moveTo(0,y);gc.lineTo(W,y);gc.stroke();}
+}
+
+function spawnShoot(){
+  if(Math.random()<.004&&shoots.length<2){
+    const a=Math.PI/6+Math.random()*Math.PI/8;
+    shoots.push({x:Math.random()*W*.8,y:Math.random()*H*.4,vx:Math.cos(a)*16,vy:Math.sin(a)*16,life:1,len:100+Math.random()*80});
+  }
+}
+
+function draw(now){
+  raf=requestAnimationFrame(draw);
+  const delta=now-lastTime;
+  if(delta<INTERVAL)return;
+  lastTime=now-(delta%INTERVAL);
+  t+=.006;
+
+  // Background
+  cx.fillStyle='#06060c';cx.fillRect(0,0,W,H);
+
+  // Nebula dari cache — gerak offset kecil saja
+  if(nebulaDirty||!nebulaCache)buildNebulaCache();
+  const ox=Math.sin(t*.15)*18,oy=Math.cos(t*.12)*12;
+  cx.drawImage(nebulaCache,ox,oy);
+
+  // Grid dari cache
+  if(!gridCache)buildGridCache();
+  cx.drawImage(gridCache,0,0);
+
+  // Stars
+  stars.forEach(s=>{
+    const tw=.5+.5*Math.sin(t*s.ts*60+s.to);
+    const op=s.op*tw;
+    const col=s.hue===0?`rgba(100,240,255,${op})`:s.hue===1?`rgba(180,120,255,${op})`:`rgba(220,230,255,${op})`;
+    cx.fillStyle=col;
+    cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fill();
+    // Glow hanya untuk bintang besar
+    if(s.big&&tw>.75){
+      cx.strokeStyle=col;cx.lineWidth=.4;cx.globalAlpha=tw*.35;
+      cx.beginPath();cx.moveTo(s.x-s.r*4,s.y);cx.lineTo(s.x+s.r*4,s.y);cx.stroke();
+      cx.beginPath();cx.moveTo(s.x,s.y-s.r*4);cx.lineTo(s.x,s.y+s.r*4);cx.stroke();
+      cx.globalAlpha=1;
+    }
+  });
+
+  // Shooting stars
+  spawnShoot();
+  shoots=shoots.filter(s=>{
+    s.x+=s.vx;s.y+=s.vy;s.life-=.03;
+    if(s.life<=0)return false;
+    const tx=s.x-s.vx*(s.len/16),ty=s.y-s.vy*(s.len/16);
+    const g=cx.createLinearGradient(tx,ty,s.x,s.y);
+    g.addColorStop(0,'transparent');
+    g.addColorStop(.8,`rgba(180,240,255,${s.life*.4})`);
+    g.addColorStop(1,`rgba(255,255,255,${s.life})`);
+    cx.strokeStyle=g;cx.lineWidth=1.2;
+    cx.beginPath();cx.moveTo(tx,ty);cx.lineTo(s.x,s.y);cx.stroke();
+    return true;
+  });
+
+  // Horizon glow — static, no recalc
+  cx.fillStyle='rgba(60,0,140,.05)';cx.fillRect(0,H*.7,W,H*.3);
+}
+
+resize();
+window.addEventListener('resize',()=>{
+  nebulaDirty=true;gridCache=null;
+  resize();
+});
+
+// Pause saat tab tidak aktif
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){cancelAnimationFrame(raf);}
+  else{lastTime=0;raf=requestAnimationFrame(draw);}
+});
+
+raf=requestAnimationFrame(draw);
+})();
+</script>
+
 <!-- Firebase loading screen -->
 <div class="fb-loading" id="fbLoading">
   <div class="spin-ring"></div>
@@ -297,6 +464,11 @@ body.exporting .spin{animation:spin .8s linear infinite}
       <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="lEmail" placeholder="email@kamu.com" autocomplete="email"></div>
       <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="lPass" placeholder="••••••••" autocomplete="current-password"></div>
       <button class="btn-a" id="btnLogin" onclick="doLogin()">LOGIN →</button>
+      <div class="or-divider">OR</div>
+      <button class="btn-discord" onclick="doDiscordLogin()">
+        <svg width="20" height="20" viewBox="0 0 71 55" fill="white"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.5.6a40 40 0 0 0-1.8 3.7 54.2 54.2 0 0 0-16.3 0A38 38 0 0 0 25.6.6 58.5 58.5 0 0 0 11 4.9C1.6 18.8-1 32.4.3 45.8a59 59 0 0 0 18 9.1 44.7 44.7 0 0 0 3.9-6.3 38.4 38.4 0 0 1-6.1-2.9l1.5-1.1a42 42 0 0 0 36 0l1.5 1.1a38.3 38.3 0 0 1-6.1 2.9 44.4 44.4 0 0 0 3.9 6.3 58.8 58.8 0 0 0 18-9.1C72 30.2 68 16.7 60.1 4.9ZM23.7 37.6c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2 6.5 3.2 6.4 7.2c0 4-2.8 7.2-6.4 7.2Zm23.6 0c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2 6.5 3.2 6.4 7.2c0 4-2.8 7.2-6.4 7.2Z"/></svg>
+        LOGIN DENGAN DISCORD
+      </button>
       <div class="anote">Belum punya akun? → klik <b>BUAT AKUN</b></div>
     </div>
     <div class="aform" id="fReg" style="display:none">
@@ -445,6 +617,7 @@ body.exporting .spin{animation:spin .8s linear infinite}
     <div class="atabs2">
       <div class="atab2 on" data-tab="users" onclick="aTab(this,'users')">👥 USERS</div>
       <div class="atab2" data-tab="orders" onclick="aTab(this,'orders')">🛒 ORDERS</div>
+      <div class="atab2" data-tab="announce" onclick="aTab(this,'announce')">📢 ANNOUNCEMENT</div>
       <div class="atab2" data-tab="add" onclick="aTab(this,'add')">➕ TAMBAH</div>
       <div class="atab2" data-tab="logs" onclick="aTab(this,'logs')">📋 LOGS</div>
       <div class="atab2" data-tab="cfg" onclick="aTab(this,'cfg')">⚙️ CONFIG</div>
@@ -453,6 +626,28 @@ body.exporting .spin{animation:spin .8s linear infinite}
       <div style="overflow-x:auto"><table class="atable"><thead><tr><th>USER</th><th>EMAIL</th><th>ROLE</th><th>USAGE HARI INI</th><th>CUSTOM LIMIT</th><th>ACTIONS</th></tr></thead><tbody id="aBody"></tbody></table></div>
     </div>
     <div class="apane" id="ap_orders"><div class="asect">Semua Orders</div><div id="ordersContainer"></div></div>
+    <div class="apane" id="ap_announce">
+      <div class="asect">Pengumuman Global (Live)</div>
+      <div class="announcement-preview" style="margin-bottom:0">
+        <div class="msg" id="announceMsgPreview">Tidak ada pengumuman</div>
+        <div class="clr" id="announceClrPreview" style="background:#00e5ff"></div>
+      </div>
+      <div style="margin:14px 0">
+        <label class="fl">Teks Pengumuman</label>
+        <textarea id="announceText" class="fi" rows="3" placeholder="Tulis pengumuman di sini... Misal: Maintenance malam ini pukul 02.00 WIB"></textarea>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <label class="fl" style="margin:0">Warna (HEX)</label>
+        <input type="color" id="announceColor" value="#00e5ff" style="width:50px;height:32px;border-radius:6px;border:1px solid var(--b);background:var(--s2)">
+        <div class="fl" style="margin:0">contoh: #ff5252 untuk error, #ffd700 untuk VIP</div>
+      </div>
+      <button class="btn-a" id="btnPublishAnnounce" onclick="publishAnnouncement()" style="max-width:180px">PUBLISH / UPDATE</button>
+      <button class="bsm red" id="btnClearAnnounce" onclick="clearAnnouncement()" style="margin-left:10px">HAPUS PENGUMUMAN</button>
+      <div class="asect" style="margin-top:16px">Preview untuk semua user:</div>
+      <div id="globalAnnouncePreview" style="background:rgba(0,229,255,.1);border:1px solid transparent;border-radius:10px;padding:12px;margin-top:8px;font-family:'Outfit',sans-serif;font-size:13px;display:flex;align-items:center;gap:10px">
+        <span>📢</span><span id="globalPreviewText">Pengumuman akan tampil di dashboard</span>
+      </div>
+    </div>
     <div class="apane" id="ap_add">
       <div class="asect">Tambah User Baru</div>
       <div class="arow"><input class="fi" id="nUN" placeholder="Username" maxlength="30"><input class="fi" id="nUE" placeholder="Email" maxlength="80"><input class="fi" type="password" id="nUP" placeholder="Password" maxlength="50"></div>
@@ -478,6 +673,24 @@ body.exporting .spin{animation:spin .8s linear infinite}
     </div>
   </div>
 </div>
+
+<!-- LIVE CHAT MODAL -->
+<div class="modal-bg" id="chatModal">
+  <div class="chat-modal">
+    <div class="chat-header">
+      <h3>💬 Live Chat — Komunitas</h3>
+      <button class="mclose" onclick="closeMod('chatModal')" style="position:relative;top:0;right:0">×</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" class="fi" placeholder="Tulis pesan... (max 200 karakter)" maxlength="200">
+      <button id="chatSendBtn" onclick="sendChatMessage()">Kirim</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT FLOAT BUTTON -->
+<button id="chatFloatBtn" onclick="openChat()">💬</button>
 
 <!-- PROGRESS -->
 <div class="pogov" id="progOv">
@@ -506,13 +719,21 @@ body.exporting .spin{animation:spin .8s linear infinite}
       <div class="bdg" id="fCount">0 FILES</div>
     </div>
   </div>
+  
+  <!-- GLOBAL ANNOUNCEMENT BANNER -->
+  <div id="globalAnnounceBanner" style="display:none;background:rgba(0,0,0,.7);border-left:4px solid;border-radius:8px;padding:10px 15px;margin-bottom:12px;font-family:'Outfit',sans-serif;align-items:center;gap:10px;backdrop-filter:blur(2px)">
+    <span style="font-size:18px">📢</span>
+    <span id="bannerAnnounceText" style="flex:1;font-size:13px"></span>
+    <button onclick="document.getElementById('globalAnnounceBanner').style.display='none'" style="background:none;border:none;color:var(--d);cursor:pointer;font-size:16px">✖</button>
+  </div>
+  
   <div class="ubar">
     <div class="uinfo"><div class="uav" id="uAv">?</div><div><div class="uname" id="uName">—</div><div class="urole" id="uRole">Free User</div></div></div>
     <div class="uact">
       <div class="lbar"><span id="limTxt">0/10</span><div class="ltrack"><div class="lfill" id="limFill" style="width:0%"></div></div><span style="color:var(--d);font-size:9px">TODAY</span></div>
       <button class="bsm gold" id="btnUpg" onclick="openMod('subModal')">⭐ UPGRADE</button>
       <button class="bsm red" id="btnAdm" style="display:none" onclick="openAdmin()">🔴 ADMIN</button>
-      <button class="bsm red" onclick="if(confirm('Yakin mau logout?'))doLogout()">LOGOUT</button>
+      <button class="bsm red" onclick="doLogout()">LOGOUT</button>
     </div>
   </div>
   <div class="limban" id="limBan"><span>🚫 <b>Limit harian habis!</b> Upgrade VIP untuk unlimited.</span><button class="bsm gold" onclick="openMod('subModal')">⭐ VIP</button></div>
@@ -562,7 +783,7 @@ body.exporting .spin{animation:spin .8s linear infinite}
   <div class="footer">RPMxDEV<span class="dot">.</span>AUDIO BYPASS STUDIO · Firebase Realtime · MP3 Encoder by lamejs</div>
 </div>
 
-<!-- Firebase SDK v10 modular (compat mode — works as single HTML) -->
+<!-- Firebase SDK v10 modular (compat mode) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -571,8 +792,7 @@ body.exporting .spin{animation:spin .8s linear infinite}
 
 <script>
 /* ============================================================
-   ████████╗  GANTI KONFIGURASI DI SINI  ████████╗
-   Isi dengan config dari Firebase Console kamu
+   FIREBASE CONFIG
    ============================================================ */
 const FIREBASE_CONFIG = {
   apiKey:            "AIzaSyCHgp9ITxEzXjjMsUh24GyQK6GivCe_Vgw",
@@ -580,12 +800,11 @@ const FIREBASE_CONFIG = {
   projectId:         "website-uplode",
   storageBucket:     "website-uplode.firebasestorage.app",
   messagingSenderId: "1023692632323",
-  appId:             "1:1023692632323:web:240b2ee7788617c200b936",
-  measurementId:     "G-F9Z0KTYWNP"
+  appId:             "1:1023692632323:web:240b2ee7788617c200b936"
 };
 /* ============================================================ */
 
-const GT_K = 'RPMxDEV_gt7'; // gate key di localStorage (bukan data user)
+const GT_K = 'RPMxDEV_gt7';
 
 // Init Firebase
 firebase.initializeApp(FIREBASE_CONFIG);
@@ -593,9 +812,8 @@ const auth    = firebase.auth();
 const db      = firebase.firestore();
 const storage = firebase.storage();
 
-// Firestore cache settings — drastically reduces reads on re-open
 db.settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
-db.enablePersistence().catch(()=>{}); // offline cache — slient fail on multi-tab
+db.enablePersistence().catch(()=>{});
 
 /* ============================================================
    STATE
@@ -603,6 +821,8 @@ db.enablePersistence().catch(()=>{}); // offline cache — slient fail on multi-
 let CU = null;          // current user profile from Firestore
 let _cfg = {};          // global config cache
 let _adminUnsubs = [];  // realtime listener cleanup refs
+let announceUnsub = null; // listener for global announcement
+let chatUnsub = null;      // listener for chat messages
 
 /* ============================================================
    HELPERS
@@ -642,6 +862,8 @@ function userRef(uid){return db.collection('users').doc(uid);}
 function ordersRef(){return db.collection('orders');}
 function logsRef(){return db.collection('logs');}
 function cfgRef(){return db.doc('config/global');}
+function announcementRef(){return db.doc('config/announcement');}
+function chatRef(){return db.collection('chat');}
 
 async function addLog(action, detail, type=''){
   if(!CU)return;
@@ -654,7 +876,126 @@ async function addLog(action, detail, type=''){
 }
 
 /* ============================================================
-   USAGE / LIMITS — stored in user doc, field: usage.YYYY-M-D
+   LIVE CHAT (Real-time)
+   ============================================================ */
+function openChat(){
+  if(!CU){
+    toast('Login dulu','Silakan login untuk menggunakan chat','warn');
+    return;
+  }
+  openMod('chatModal');
+  // Auto-scroll to bottom when new messages arrive is handled in listener
+  if(chatUnsub) chatUnsub();
+  chatUnsub = chatRef().orderBy('ts', 'desc').limit(50).onSnapshot(snapshot => {
+    const messages = [];
+    snapshot.forEach(doc => messages.unshift({id: doc.id, ...doc.data()})); // reverse order
+    const container = document.getElementById('chatMessages');
+    container.innerHTML = messages.map(msg => {
+      const isAdmin = msg.role === 'admin';
+      const avatarChar = msg.username ? msg.username.charAt(0).toUpperCase() : '?';
+      const badge = isAdmin ? '<span class="chat-badge">ADMIN</span>' : '';
+      const time = msg.ts?.toDate ? new Date(msg.ts.toDate()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+      return `
+        <div class="chat-msg">
+          <div class="chat-avatar">${eh(avatarChar)}</div>
+          <div class="chat-bubble">
+            <div><span class="chat-name">${eh(msg.username)}</span>${badge}<span class="chat-time">${time}</span></div>
+            <div class="chat-text">${eh(msg.text)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    // Auto scroll to bottom
+    container.scrollTop = container.scrollHeight;
+  }, err => console.warn(err));
+}
+
+async function sendChatMessage(){
+  if(!CU){
+    toast('Login dulu','Silakan login untuk mengirim pesan','warn');
+    return;
+  }
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  if(text.length > 200){
+    toast('Pesan terlalu panjang','Maksimal 200 karakter','warn');
+    return;
+  }
+  try{
+    await chatRef().add({
+      uid: CU.uid,
+      username: CU.username,
+      role: CU.role,
+      text: text,
+      ts: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    input.value = '';
+    // Scroll otomatis di-handle listener
+  }catch(e){
+    toast('Gagal kirim', e.message, 'error');
+  }
+}
+
+/* ============================================================
+   GLOBAL ANNOUNCEMENT (Real-time for all users)
+   ============================================================ */
+function listenAnnouncement(){
+  if(announceUnsub) announceUnsub();
+  announceUnsub = announcementRef().onSnapshot(doc=>{
+    if(!doc.exists) return;
+    const data = doc.data();
+    const text = data.text || '';
+    const color = data.color || '#00e5ff';
+    const banner = document.getElementById('globalAnnounceBanner');
+    const bannerText = document.getElementById('bannerAnnounceText');
+    if(text && text.trim() !== ''){
+      bannerText.innerHTML = eh(text);
+      banner.style.borderLeftColor = color;
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
+    const previewDiv = document.getElementById('globalAnnouncePreview');
+    if(previewDiv){
+      const previewSpan = document.getElementById('globalPreviewText');
+      if(previewSpan) previewSpan.innerHTML = text ? eh(text) : 'Pengumuman akan tampil di dashboard';
+      if(previewDiv) previewDiv.style.borderColor = text ? color : 'transparent';
+    }
+    const msgPrev = document.getElementById('announceMsgPreview');
+    const clrPrev = document.getElementById('announceClrPreview');
+    if(msgPrev) msgPrev.textContent = text || 'Tidak ada pengumuman';
+    if(clrPrev) clrPrev.style.background = color;
+  }, err=>console.warn(err));
+}
+
+async function publishAnnouncement(){
+  if(!CU || CU.role !== 'admin') { toast('Akses ditolak','Hanya admin','error'); return; }
+  const text = document.getElementById('announceText').value.trim();
+  const color = document.getElementById('announceColor').value;
+  if(!text){
+    toast('Isi pengumuman','Teks tidak boleh kosong','warn');
+    return;
+  }
+  try{
+    await announcementRef().set({ text, color, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    toast('Pengumuman dipublish','Sekarang terlihat oleh semua user','success');
+    await addLog('ANNOUNCE','Publish: '+text.slice(0,50),'admin');
+  }catch(e){ toast('Gagal',e.message,'error'); }
+}
+
+async function clearAnnouncement(){
+  if(!CU || CU.role !== 'admin') { toast('Akses ditolak','Hanya admin','error'); return; }
+  if(!confirm('Hapus pengumuman global?')) return;
+  try{
+    await announcementRef().set({ text: '', color: '#00e5ff', updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    document.getElementById('announceText').value = '';
+    toast('Pengumuman dihapus','','success');
+    await addLog('ANNOUNCE','Clear announcement','admin');
+  }catch(e){ toast('Gagal',e.message,'error'); }
+}
+/* ============================================================
+   USAGE / LIMITS
    ============================================================ */
 function getUsageFromProfile(profile){
   return (profile && profile.usage && profile.usage[todayK()]) || 0;
@@ -678,21 +1019,19 @@ async function incUsage(){
   await userRef(CU.uid).update({
     [key]: firebase.firestore.FieldValue.increment(1)
   });
-  // Local optimistic update — no need to wait for snapshot
   if(!CU.usage) CU.usage={};
   CU.usage[todayK()] = (CU.usage[todayK()]||0)+1;
   updateUBar();
 }
 
 /* ============================================================
-   GLOBAL CONFIG — loaded once, cached
+   GLOBAL CONFIG
    ============================================================ */
 async function loadConfig(){
   try{
     const snap = await cfgRef().get();
     if(snap.exists){_cfg = snap.data();}
     else{
-      // First run — write defaults
       _cfg = {free:10,pro:50,dana:'',gopay:'',bca:'',bri:'',owner:'RPMxPRIME'};
       await cfgRef().set(_cfg);
     }
@@ -709,6 +1048,37 @@ function switchTab(t){
   document.getElementById('fReg').style.display=t==='reg'?'':'none';
 }
 
+async function doDiscordLogin(){
+  try{
+    const provider = new firebase.auth.OAuthProvider('discord.com');
+    provider.addScope('identify');
+    provider.addScope('email');
+    const result = await auth.signInWithPopup(provider);
+    const firebaseUser = result.user;
+    const existing = await userRef(firebaseUser.uid).get();
+    if(!existing.exists){
+      const uname = (firebaseUser.displayName||'user').toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,30)||'user_'+Date.now().toString(36);
+      await userRef(firebaseUser.uid).set({
+        uid: firebaseUser.uid,
+        username: uname,
+        email: firebaseUser.email||'',
+        role: 'free',
+        customLimit: 0,
+        usage: {},
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        gateCompleted: false,
+        loginMethod: 'discord',
+        discordId: result.additionalUserInfo?.profile?.id||''
+      });
+    }
+  }catch(e){
+    const msg = e.code==='auth/popup-closed-by-user'
+      ? '⚠ Popup ditutup sebelum selesai'
+      : '❌ '+e.message;
+    showErr('eLogin', msg);
+  }
+}
+
 async function doLogin(){
   const email = sanitize(document.getElementById('lEmail').value, 100);
   const pass  = document.getElementById('lPass').value;
@@ -716,7 +1086,6 @@ async function doLogin(){
   setBtnLoading('btnLogin',true);
   try{
     await auth.signInWithEmailAndPassword(email, pass);
-    // onAuthStateChanged handles the rest
   }catch(e){
     const msg = e.code==='auth/user-not-found'||e.code==='auth/wrong-password'
       ? '❌ Email atau password salah'
@@ -729,26 +1098,18 @@ async function doLogin(){
 }
 
 async function doRegister(){
-  // Auto-lowercase username — no more "VIPP22" rejection
-  const uname = sanitize(document.getElementById('rUser').value,30).toLowerCase().replace(/\s+/g,'');
-  const email = sanitize(document.getElementById('rEmail').value.trim(), 100);
+  const uname = sanitize(document.getElementById('rUser').value.toLowerCase(), 30);
+  const email = sanitize(document.getElementById('rEmail').value, 100);
   const pass  = document.getElementById('rPass').value;
-
-  // All validation BEFORE setBtnLoading so button never gets stuck
   if(!uname||!email||!pass){showErr('eReg','⚠ Semua field wajib');return;}
   if(uname.length<3){showErr('eReg','⚠ Username min 3 karakter');return;}
-  if(!/^[a-z0-9_]{3,30}$/.test(uname)){showErr('eReg','⚠ Username: huruf, angka, underscore saja (min 3)');return;}
+  if(!/^[a-z0-9_]{3,30}$/.test(uname)){showErr('eReg','⚠ Username: huruf kecil, angka, underscore saja');return;}
   if(pass.length<6){showErr('eReg','⚠ Password min 6 karakter');return;}
-  if(!/\S+@\S+\.\S+/.test(email)){showErr('eReg','⚠ Format email tidak valid');return;}
-
   setBtnLoading('btnReg',true);
   try{
-    // Check username uniqueness
     const existing = await db.collection('users').where('username','==',uname).limit(1).get();
     if(!existing.empty){showErr('eReg','❌ Username sudah dipakai');setBtnLoading('btnReg',false,'BUAT AKUN →');return;}
-    // Create Firebase Auth account
     const cred = await auth.createUserWithEmailAndPassword(email, pass);
-    // Write user profile to Firestore
     await userRef(cred.user.uid).set({
       uid: cred.user.uid,
       username: uname,
@@ -759,40 +1120,28 @@ async function doRegister(){
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       gateCompleted: false
     });
-    // onAuthStateChanged handles navigation
   }catch(e){
-    let msg='❌ '+e.message;
-    if(e.code==='auth/email-already-in-use') msg='❌ Email sudah terdaftar, coba login';
-    else if(e.code==='auth/invalid-email')   msg='❌ Format email tidak valid';
-    else if(e.code==='auth/weak-password')   msg='❌ Password terlalu lemah (min 6 karakter)';
-    else if(e.code==='auth/network-request-failed') msg='❌ Tidak ada koneksi internet';
+    const msg = e.code==='auth/email-already-in-use'
+      ? '❌ Email sudah terdaftar'
+      : '❌ '+e.message;
     showErr('eReg', msg);
     setBtnLoading('btnReg',false,'BUAT AKUN →');
   }
 }
 
 async function doLogout(){
-  // Non-blocking — never await anything before signOut
-  addLog('LOGOUT','Logout','').catch(()=>{});
-  _adminUnsubs.forEach(u=>u());
-  _adminUnsubs=[];
+  await addLog('LOGOUT','Logout','');
+  _adminUnsubs.forEach(u=>u());_adminUnsubs=[];
+  if(announceUnsub) announceUnsub();
+  if(chatUnsub) chatUnsub();
   CU=null;
-  try{ await auth.signOut(); }catch(e){ location.reload(); }
+  await auth.signOut();
 }
 
 /* ============================================================
-   AUTH STATE OBSERVER — single source of truth
-   Fires on: login, logout, page refresh, token refresh
+   AUTH STATE OBSERVER
    ============================================================ */
-// Timeout fallback: if Firebase takes >8s, show auth screen anyway
-const _fbTimeout = setTimeout(()=>{
-  document.getElementById('fbLoading').classList.add('hide');
-  document.getElementById('authOv').classList.remove('hide');
-  toast('Koneksi lambat','Coba refresh halaman','warn');
-}, 8000);
-
 auth.onAuthStateChanged(async(firebaseUser)=>{
-  clearTimeout(_fbTimeout);
   document.getElementById('fbLoading').classList.add('hide');
   if(!firebaseUser){
     document.getElementById('mainApp').style.display='none';
@@ -800,12 +1149,13 @@ auth.onAuthStateChanged(async(firebaseUser)=>{
     document.getElementById('gateOv').classList.add('hide');
     setBtnLoading('btnLogin',false,'LOGIN →');
     setBtnLoading('btnReg',false,'BUAT AKUN →');
+    if(announceUnsub) announceUnsub();
+    if(chatUnsub) chatUnsub();
     return;
   }
   try{
-    // Use cache-first (source:'cache') for instant load, then get fresh data
     const [profSnap] = await Promise.all([
-      userRef(firebaseUser.uid).get({source:'cache'}).catch(()=>userRef(firebaseUser.uid).get()),
+      userRef(firebaseUser.uid).get(),
       loadConfig()
     ]);
     if(!profSnap.exists){
@@ -814,7 +1164,7 @@ auth.onAuthStateChanged(async(firebaseUser)=>{
     }
     CU = profSnap.data();
     CU.uid = firebaseUser.uid;
-    // Realtime listener — role/usage changes sync instantly
+    listenAnnouncement(); // global announcement for all
     userRef(CU.uid).onSnapshot(snap=>{
       if(!snap.exists)return;
       CU = snap.data();CU.uid=firebaseUser.uid;
@@ -828,14 +1178,11 @@ auth.onAuthStateChanged(async(firebaseUser)=>{
 });
 
 /* ============================================================
-   GATE — localStorage for instant response, Firestore fire-and-forget
+   GATE
    ============================================================ */
-function gateKey(){return 'RPMxGate_'+(CU?CU.uid:'anon');}
-function gateCompleted(){return localStorage.getItem(gateKey())==='1'||CU.gateCompleted;}
-
 function afterAuth(){
   document.getElementById('authOv').classList.add('hide');
-  if(gateCompleted()){launchApp();}
+  if(CU.gateCompleted){launchApp();}
   else{document.getElementById('gateOv').classList.remove('hide');}
 }
 (function(){
@@ -843,16 +1190,13 @@ function afterAuth(){
   document.getElementById('gBtnYT').addEventListener('click',()=>{y=true;document.getElementById('gsYT').classList.add('done');chk();});
   document.getElementById('gBtnTT').addEventListener('click',()=>{t=true;document.getElementById('gsTT').classList.add('done');chk();});
   function chk(){if(y&&t){const b=document.getElementById('gCont');b.disabled=false;b.className='gcont open';b.textContent='🚀 LANJUT KE BYPASS';}}
-  document.getElementById('gCont').addEventListener('click',()=>{
+  document.getElementById('gCont').addEventListener('click',async()=>{
     if(!CU)return;
-    // localStorage = instant (no network wait)
-    localStorage.setItem(gateKey(),'1');
+    await userRef(CU.uid).update({gateCompleted:true});
     CU.gateCompleted=true;
-    // Non-blocking Firestore update for cross-device persistence
-    userRef(CU.uid).update({gateCompleted:true}).catch(()=>{});
     const o=document.getElementById('gateOv');
-    o.style.transition='opacity .3s';o.style.opacity='0';
-    setTimeout(()=>{o.classList.add('hide');o.style.opacity='';launchApp();},300);
+    o.style.transition='opacity .35s';o.style.opacity='0';
+    setTimeout(()=>{o.classList.add('hide');o.style.opacity='';launchApp();},350);
   });
 })();
 
@@ -894,7 +1238,6 @@ function updateUBar(){
   if(isVIP){const b=document.createElement('div');b.id='vipBdg';b.className='bdg bdg-gold';b.textContent=CU.role==='admin'?'🔴 ADMIN':'⭐ VIP';document.querySelector('.hdr-right').prepend(b);}
   updExpState();
 }
-
 /* ============================================================
    ADMIN PANEL — all realtime via onSnapshot
    ============================================================ */
@@ -902,57 +1245,47 @@ function openAdmin(){
   if(!CU||CU.role!=='admin'){toast('Access denied','Admin only','error');return;}
   document.getElementById('adminPanel').classList.add('show');
   startAdminListeners();
+  announcementRef().get().then(doc=>{
+    if(doc.exists){
+      document.getElementById('announceText').value = doc.data().text || '';
+      document.getElementById('announceColor').value = doc.data().color || '#00e5ff';
+    }else{
+      document.getElementById('announceText').value = '';
+      document.getElementById('announceColor').value = '#00e5ff';
+    }
+  });
 }
-
 function closeAdmin(){
   document.getElementById('adminPanel').classList.remove('show');
-  // Unsubscribe all admin listeners — saves Firestore read quota
   _adminUnsubs.forEach(u=>u());
   _adminUnsubs=[];
 }
-
 function startAdminListeners(){
-  // Prevent duplicate listeners
   _adminUnsubs.forEach(u=>u());_adminUnsubs=[];
-
-  // USERS — realtime, diff-based
   const unsubUsers = db.collection('users').onSnapshot(snap=>{
-    const users=[];
-    snap.forEach(doc=>users.push({...doc.data(),uid:doc.id}));
+    const users=[];snap.forEach(doc=>users.push({...doc.data(),uid:doc.id}));
     renderUsersFromData(users);
-    // Stats
     document.getElementById('aS1').textContent=users.length;
     document.getElementById('aS2').textContent=users.filter(u=>u.role==='vip').length;
-    document.getElementById('aS3').textContent=users.reduce((s,u)=>{
-      const td=todayK();return s+((u.usage&&u.usage[td])||0);
-    },0);
+    document.getElementById('aS3').textContent=users.reduce((s,u)=>{const td=todayK();return s+((u.usage&&u.usage[td])||0);},0);
   });
-
-  // ORDERS — realtime
   const unsubOrders = db.collection('orders').orderBy('createdAt','desc').onSnapshot(snap=>{
-    const orders=[];
-    snap.forEach(doc=>orders.push({id:doc.id,...doc.data()}));
+    const orders=[];snap.forEach(doc=>orders.push({id:doc.id,...doc.data()}));
     renderOrdersFromData(orders);
     document.getElementById('aS4').textContent=orders.filter(o=>o.status==='pending').length;
   });
-
-  // LOGS — last 50, realtime
   const unsubLogs = db.collection('logs').orderBy('ts','desc').limit(50).onSnapshot(snap=>{
     const logs=[];snap.forEach(doc=>logs.push(doc.data()));
     renderLogsFromData(logs);
   });
-
   _adminUnsubs=[unsubUsers,unsubOrders,unsubLogs];
   loadCfg();
 }
-
 function aTab(el,t){
   document.querySelectorAll('.atab2').forEach(x=>x.classList.remove('on'));el.classList.add('on');
   document.querySelectorAll('.apane').forEach(p=>p.classList.remove('on'));
   const pane=document.getElementById('ap_'+t);if(pane)pane.classList.add('on');
 }
-
-/* PERF: DocumentFragment + delegated events */
 function renderUsersFromData(users){
   const frag=document.createDocumentFragment();
   for(const u of users){
@@ -975,258 +1308,71 @@ function renderUsersFromData(users){
   }
   const tb=document.getElementById('aBody');tb.innerHTML='';tb.appendChild(frag);
 }
-
-// Delegated admin table events
-(function(){
-  document.getElementById('aBody').addEventListener('click',async e=>{
-    const btn=e.target.closest('[data-action]');if(!btn)return;
-    const tr=btn.closest('tr');const uid=tr&&tr.dataset.uid;if(!uid)return;
-    const action=btn.dataset.action;
-    if(action==='del'){if(!confirm('Hapus user ini?'))return;await adminDelUser(uid);}
-    else if(action==='reset'){await adminResetUsage(uid);}
-    else{await adminSetRole(uid,action);}
-  });
-  document.getElementById('aBody').addEventListener('change',async e=>{
-    if(e.target.classList.contains('cl-input')){
-      const uid=e.target.closest('tr')?.dataset.uid;
-      if(uid)await userRef(uid).update({customLimit:parseInt(e.target.value)||0});
-    }
-  });
-})();
-
-async function adminSetRole(uid,role){
-  await userRef(uid).update({role});
-  await addLog('ROLE',`${uid}→${role}`,role==='vip'?'vip':'');
-  toast('Role diupdate','','success');
-  if(CU&&CU.uid===uid){CU.role=role;updateUBar();}
-}
-async function adminResetUsage(uid){
-  await userRef(uid).update({['usage.'+todayK()]:0});
-  await addLog('RESET',uid+' reset','');
-  toast('Limit direset','','success');
-}
-async function adminDelUser(uid){
-  // Cannot delete Firebase Auth user from client SDK securely,
-  // but we can remove profile — they won't be able to log in to the app
-  await userRef(uid).delete();
-  await addLog('DEL',uid+' dihapus','err');
-  toast('User dihapus','','warn');
-}
-
+document.getElementById('aBody').addEventListener('click',async e=>{
+  const btn=e.target.closest('[data-action]');if(!btn)return;
+  const tr=btn.closest('tr');const uid=tr&&tr.dataset.uid;if(!uid)return;
+  const action=btn.dataset.action;
+  if(action==='del'){if(!confirm('Hapus user ini?'))return;await adminDelUser(uid);}
+  else if(action==='reset'){await adminResetUsage(uid);}
+  else{await adminSetRole(uid,action);}
+});
+document.getElementById('aBody').addEventListener('change',async e=>{
+  if(e.target.classList.contains('cl-input')){
+    const uid=e.target.closest('tr')?.dataset.uid;
+    if(uid)await userRef(uid).update({customLimit:parseInt(e.target.value)||0});
+  }
+});
+async function adminSetRole(uid,role){ await userRef(uid).update({role}); await addLog('ROLE',`${uid}→${role}`,role==='vip'?'vip':''); toast('Role diupdate','','success'); if(CU&&CU.uid===uid){CU.role=role;updateUBar();} }
+async function adminResetUsage(uid){ await userRef(uid).update({['usage.'+todayK()]:0}); await addLog('RESET',uid+' reset',''); toast('Limit direset','','success'); }
+async function adminDelUser(uid){ await userRef(uid).delete(); await addLog('DEL',uid+' dihapus','err'); toast('User dihapus','','warn'); }
 function renderOrdersFromData(orders){
   const c=document.getElementById('ordersContainer');
   if(!orders.length){c.innerHTML='<div style="color:var(--d);font-size:11px;font-family:JetBrains Mono,monospace;padding:10px">Belum ada order.</div>';return;}
   c.innerHTML=orders.map(o=>{
-    const ts=o.createdAt?.toDate?.();
-    const d=ts?ts.toLocaleString('id-ID'):'—';
+    const ts=o.createdAt?.toDate?.(); const d=ts?ts.toLocaleString('id-ID'):'—';
     const statusClr=o.status==='pending'?'var(--w)':o.status==='approved'?'var(--ok)':'var(--r)';
-    return `<div class="order-card" data-oid="${eh(o.id)}">
-      <div class="order-card-hdr"><span class="oc-user">👤 ${eh(o.username||o.uid)}</span><span style="color:${statusClr};font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700">${eh(o.status||'').toUpperCase()}</span></div>
-      <div class="oc-pkg">📦 ${eh(o.pkgName)} · ${eh(o.methodLabel)} · Rp${(o.amount||0).toLocaleString('id-ID')}</div>
-      <div class="oc-meta">🕐 ${d} · ID: ${eh(o.id)}${o.note?'<br>📝 '+eh(o.note):''}</div>
-      ${o.proofUrl?`<img class="order-proof-thumb" src="${eh(o.proofUrl)}" data-src="${eh(o.proofUrl)}" alt="proof">`:``}
-      ${o.status==='pending'?`<div style="margin-top:6px;display:flex;gap:4px">
-        <button class="abtn green" data-order-action="approve">✓ APPROVE VIP</button>
-        <button class="abtn red" data-order-action="reject">✗ REJECT</button>
-      </div>`:''}
-    </div>`;
+    return `<div class="order-card" data-oid="${eh(o.id)}"><div class="order-card-hdr"><span class="oc-user">👤 ${eh(o.username||o.uid)}</span><span style="color:${statusClr};font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700">${eh(o.status||'').toUpperCase()}</span></div><div class="oc-pkg">📦 ${eh(o.pkgName)} · ${eh(o.methodLabel)} · Rp${(o.amount||0).toLocaleString('id-ID')}</div><div class="oc-meta">🕐 ${d} · ID: ${eh(o.id)}${o.note?'<br>📝 '+eh(o.note):''}</div>${o.proofUrl?`<img class="order-proof-thumb" src="${eh(o.proofUrl)}" data-src="${eh(o.proofUrl)}" alt="proof">`:``}${o.status==='pending'?`<div style="margin-top:6px;display:flex;gap:4px"><button class="abtn green" data-order-action="approve">✓ APPROVE VIP</button><button class="abtn red" data-order-action="reject">✗ REJECT</button></div>`:''}</div>`;
   }).join('');
 }
 document.getElementById('ordersContainer').addEventListener('click',async e=>{
-  const img=e.target.closest('.order-proof-thumb');
-  if(img){showLightbox(img.dataset.src);return;}
+  const img=e.target.closest('.order-proof-thumb'); if(img){ showLightbox(img.dataset.src); return; }
   const btn=e.target.closest('[data-order-action]');if(!btn)return;
-  const card=btn.closest('[data-oid]');if(!card)return;
-  const oid=card.dataset.oid;
+  const card=btn.closest('[data-oid]');if(!card)return; const oid=card.dataset.oid;
   if(btn.dataset.orderAction==='approve')await approveOrder(oid);
   else if(btn.dataset.orderAction==='reject')await rejectOrder(oid);
 });
-async function approveOrder(oid){
-  const snap=await ordersRef().doc(oid).get();if(!snap.exists)return;
-  const order=snap.data();
-  const batch=db.batch();
-  batch.update(ordersRef().doc(oid),{status:'approved',approvedAt:firebase.firestore.FieldValue.serverTimestamp()});
-  batch.update(userRef(order.uid),{role:'vip'});
-  await batch.commit();
-  await addLog('APPROVE',`Order ${oid} → ${order.username} VIP`,'vip');
-  toast('Approved! ✅',order.username+' sekarang VIP','success');
-}
-async function rejectOrder(oid){
-  if(!confirm('Reject order ini?'))return;
-  await ordersRef().doc(oid).update({status:'rejected'});
-  await addLog('REJECT',`Order ${oid} ditolak`,'err');
-  toast('Order ditolak',oid,'warn');
-}
-
+async function approveOrder(oid){ const snap=await ordersRef().doc(oid).get();if(!snap.exists)return; const order=snap.data(); const batch=db.batch(); batch.update(ordersRef().doc(oid),{status:'approved',approvedAt:firebase.firestore.FieldValue.serverTimestamp()}); batch.update(userRef(order.uid),{role:'vip'}); await batch.commit(); await addLog('APPROVE',`Order ${oid} → ${order.username} VIP`,'vip'); toast('Approved! ✅',order.username+' sekarang VIP','success'); }
+async function rejectOrder(oid){ if(!confirm('Reject order ini?'))return; await ordersRef().doc(oid).update({status:'rejected'}); await addLog('REJECT',`Order ${oid} ditolak`,'err'); toast('Order ditolak',oid,'warn'); }
 function renderLogsFromData(logs){
   const el=document.getElementById('aLog');
   if(!logs.length){el.innerHTML='<span style="color:var(--d)">Belum ada log...</span>';return;}
   const col={vip:'var(--g)',err:'var(--r)',admin:'var(--r)','':'var(--d)'};
-  el.innerHTML=logs.map(l=>{
-    const ts=l.ts?.toDate?.();
-    const t=ts?ts.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—';
-    return `<div style="display:flex;gap:8px">
-      <span style="color:var(--d);flex-shrink:0">${t}</span>
-      <span style="color:var(--a);flex-shrink:0">[${eh(l.a)}]</span>
-      <span style="color:${col[l.t]||'var(--d)'};">${eh(l.u)}: ${eh(l.d)}</span>
-    </div>`;
-  }).join('');
+  el.innerHTML=logs.map(l=>{ const ts=l.ts?.toDate?.(); const t=ts?ts.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—'; return `<div style="display:flex;gap:8px"><span style="color:var(--d);flex-shrink:0">${t}</span><span style="color:var(--a);flex-shrink:0">[${eh(l.a)}]</span><span style="color:${col[l.t]||'var(--d)'};">${eh(l.u)}: ${eh(l.d)}</span></div>`; }).join('');
 }
-
-async function loadCfg(){
-  await loadConfig();
-  document.getElementById('cfFL').value=_cfg.free||10;
-  document.getElementById('cfPL').value=_cfg.pro||50;
-  document.getElementById('cfDANA').value=_cfg.dana||'';
-  document.getElementById('cfGopay').value=_cfg.gopay||'';
-  document.getElementById('cfBCA').value=_cfg.bca||'';
-  document.getElementById('cfBRI').value=_cfg.bri||'';
-  document.getElementById('cfOwner').value=_cfg.owner||'';
-}
-async function saveCfg(){
-  const cfg={
-    free:Math.max(1,parseInt(document.getElementById('cfFL').value)||10),
-    pro:Math.max(1,parseInt(document.getElementById('cfPL').value)||50),
-    dana:sanitize(document.getElementById('cfDANA').value,20),
-    gopay:sanitize(document.getElementById('cfGopay').value,20),
-    bca:sanitize(document.getElementById('cfBCA').value,20),
-    bri:sanitize(document.getElementById('cfBRI').value,20),
-    owner:sanitize(document.getElementById('cfOwner').value,60)
-  };
-  await cfgRef().set(cfg);
-  _cfg=cfg;
-  await addLog('CFG','Config saved','');
-  toast('Config disimpan','','success');
-}
-async function aAddUser(){
-  const uname=sanitize(document.getElementById('nUN').value.toLowerCase(),30);
-  const email=sanitize(document.getElementById('nUE').value,80);
-  const pass=document.getElementById('nUP').value;
-  const role=document.getElementById('nUR').value;
-  const lim=parseInt(document.getElementById('nUL').value)||0;
-  if(!uname||!email||!pass){toast('Error','Semua field wajib','error');return;}
-  if(!/^[a-z0-9_]{3,30}$/.test(uname)){toast('Error','Username tidak valid','error');return;}
-  if(pass.length<6){toast('Error','Password min 6 karakter','error');return;}
-  try{
-    const ex=await db.collection('users').where('username','==',uname).limit(1).get();
-    if(!ex.empty){toast('Error','Username sudah ada','error');return;}
-    const cred=await auth.createUserWithEmailAndPassword(email,pass);
-    await userRef(cred.user.uid).set({uid:cred.user.uid,username:uname,email,role,customLimit:lim,usage:{},createdAt:firebase.firestore.FieldValue.serverTimestamp(),gateCompleted:true});
-    ['nUN','nUE','nUP','nUL'].forEach(id=>document.getElementById(id).value='');
-    await addLog('ADD',`+${uname}(${role})`,'');
-    toast('User ditambah',uname+' ('+role+')','success');
-  }catch(e){toast('Error',e.message,'error');}
-}
-
+async function loadCfg(){ await loadConfig(); document.getElementById('cfFL').value=_cfg.free||10; document.getElementById('cfPL').value=_cfg.pro||50; document.getElementById('cfDANA').value=_cfg.dana||''; document.getElementById('cfGopay').value=_cfg.gopay||''; document.getElementById('cfBCA').value=_cfg.bca||''; document.getElementById('cfBRI').value=_cfg.bri||''; document.getElementById('cfOwner').value=_cfg.owner||''; }
+async function saveCfg(){ const cfg={ free:Math.max(1,parseInt(document.getElementById('cfFL').value)||10), pro:Math.max(1,parseInt(document.getElementById('cfPL').value)||50), dana:sanitize(document.getElementById('cfDANA').value,20), gopay:sanitize(document.getElementById('cfGopay').value,20), bca:sanitize(document.getElementById('cfBCA').value,20), bri:sanitize(document.getElementById('cfBRI').value,20), owner:sanitize(document.getElementById('cfOwner').value,60) }; await cfgRef().set(cfg); _cfg=cfg; await addLog('CFG','Config saved',''); toast('Config disimpan','','success'); }
+async function aAddUser(){ const uname=sanitize(document.getElementById('nUN').value.toLowerCase(),30); const email=sanitize(document.getElementById('nUE').value,80); const pass=document.getElementById('nUP').value; const role=document.getElementById('nUR').value; const lim=parseInt(document.getElementById('nUL').value)||0; if(!uname||!email||!pass){toast('Error','Semua field wajib','error');return;} if(!/^[a-z0-9_]{3,30}$/.test(uname)){toast('Error','Username tidak valid','error');return;} if(pass.length<6){toast('Error','Password min 6 karakter','error');return;} try{ const ex=await db.collection('users').where('username','==',uname).limit(1).get(); if(!ex.empty){toast('Error','Username sudah ada','error');return;} const cred=await auth.createUserWithEmailAndPassword(email,pass); await userRef(cred.user.uid).set({uid:cred.user.uid,username:uname,email,role,customLimit:lim,usage:{},createdAt:firebase.firestore.FieldValue.serverTimestamp(),gateCompleted:true}); ['nUN','nUE','nUP','nUL'].forEach(id=>document.getElementById(id).value=''); await addLog('ADD',`+${uname}(${role})`,''); toast('User ditambah',uname+' ('+role+')','success'); }catch(e){toast('Error',e.message,'error');} }
 /* ============================================================
    BUY MODAL + ORDER SUBMISSION
-   Proof image → Firebase Storage, only URL stored in Firestore
    ============================================================ */
 let buyPkg=null,buyPayMethod=null,proofFile=null,proofDataUrl=null;
 const PKG_INFO={vip_monthly:{name:'VIP Bulanan',price:25000},vip_yearly:{name:'VIP Tahunan',price:180000}};
 const PAY_INFO_MAP={dana:{label:'DANA',field:'dana'},gopay:{label:'GoPay',field:'gopay'},bca:{label:'BCA',field:'bca'},bri:{label:'BRI',field:'bri'}};
-
-function openBuyModal(pkg){
-  buyPkg=null;buyPayMethod=null;proofFile=null;proofDataUrl=null;
-  document.getElementById('proofPreview').style.display='none';
-  document.getElementById('proofArea').classList.remove('has-file');
-  document.getElementById('buyNote').value='';
-  document.querySelectorAll('.buy-pkg').forEach(el=>el.classList.remove('sel'));
-  document.querySelectorAll('.pay-method').forEach(el=>el.classList.remove('sel'));
-  document.getElementById('payInfoBox').style.display='none';
-  document.getElementById('btnNext1').disabled=true;
-  document.getElementById('btnNext2').disabled=true;
-  document.getElementById('btnSubmit').disabled=true;
-  ['bp1','bp2','bp3','bp4'].forEach((id,i)=>document.getElementById(id).classList.toggle('on',i===0));
-  updBuyStepUI(1);openMod('buyModal');if(pkg)selPkg(pkg);
-}
+function openBuyModal(pkg){ buyPkg=null;buyPayMethod=null;proofFile=null;proofDataUrl=null; document.getElementById('proofPreview').style.display='none'; document.getElementById('proofArea').classList.remove('has-file'); document.getElementById('buyNote').value=''; document.querySelectorAll('.buy-pkg').forEach(el=>el.classList.remove('sel')); document.querySelectorAll('.pay-method').forEach(el=>el.classList.remove('sel')); document.getElementById('payInfoBox').style.display='none'; document.getElementById('btnNext1').disabled=true; document.getElementById('btnNext2').disabled=true; document.getElementById('btnSubmit').disabled=true; ['bp1','bp2','bp3','bp4'].forEach((id,i)=>document.getElementById(id).classList.toggle('on',i===0)); updBuyStepUI(1);openMod('buyModal');if(pkg)selPkg(pkg); }
 function selPkg(id){buyPkg=id;document.querySelectorAll('.buy-pkg').forEach(el=>el.classList.toggle('sel',el.id==='pkg_'+id));document.getElementById('btnNext1').disabled=false;}
-function selPay(method){
-  buyPayMethod=method;
-  document.querySelectorAll('.pay-method').forEach(el=>el.classList.toggle('sel',el.id==='pm_'+method));
-  const pi=PAY_INFO_MAP[method];
-  const dest=_cfg[pi.field]||'Belum dikonfigurasi';
-  const pkg=PKG_INFO[buyPkg];
-  const uniqueCents=CU?Array.from(CU.username).reduce((a,c)=>a+c.charCodeAt(0),0)%100:42;
-  const amount=pkg?pkg.price+uniqueCents:0;
-  document.getElementById('piDest').textContent=`${pi.label}: ${dest}`;
-  document.getElementById('piName').textContent=_cfg.owner||'RPMxPRIME';
-  document.getElementById('piAmount').textContent='Rp'+amount.toLocaleString('id-ID');
-  document.getElementById('payInfoBox').style.display='block';
-  document.getElementById('btnNext2').disabled=false;
-}
-function buyStep(n){
-  if(n===2&&!buyPkg)return;if(n===3&&!buyPayMethod)return;
-  ['bp1','bp2','bp3','bp4'].forEach((id,i)=>document.getElementById(id).classList.toggle('on',i===n-1));
-  updBuyStepUI(n);if(n===3)renderOrderSummary();
-}
-function updBuyStepUI(n){
-  [1,2,3].forEach(i=>{const dot=document.getElementById('bsd'+i);dot.className='buy-step-dot '+(i<n?'done':i===n?'active':'idle');});
-  [1,2].forEach(i=>document.getElementById('bsl'+i).classList.toggle('done',i<n));
-}
-function renderOrderSummary(){
-  const pkg=PKG_INFO[buyPkg],pi=PAY_INFO_MAP[buyPayMethod];
-  const uniqueCents=CU?Array.from(CU.username).reduce((a,c)=>a+c.charCodeAt(0),0)%100:42;
-  const amount=pkg?pkg.price+uniqueCents:0;
-  document.getElementById('orderSummary').innerHTML=`
-    <div class="order-row"><span>Paket</span><span style="color:var(--g)">${eh(pkg?pkg.name:'—')}</span></div>
-    <div class="order-row"><span>Metode</span><span>${eh(pi?pi.label:'—')}</span></div>
-    <div class="order-row"><span>Username</span><span style="color:var(--a)">${eh(CU?CU.username:'—')}</span></div>
-    <div class="order-row total"><span>Total Transfer</span><span>Rp${amount.toLocaleString('id-ID')}</span></div>`;
-}
-function handleProof(e){
-  const f=e.target.files[0];if(!f)return;
-  if(f.size>5*1024*1024){toast('File terlalu besar','Maks 5MB','error');return;}
-  if(!f.type.startsWith('image/')){toast('Harus file gambar','JPG/PNG/WEBP','error');return;}
-  proofFile=f;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    proofDataUrl=ev.target.result;
-    const prev=document.getElementById('proofPreview');prev.src=proofDataUrl;prev.style.display='block';
-    document.getElementById('proofArea').classList.add('has-file');
-    document.getElementById('btnSubmit').disabled=false;
-  };
-  reader.readAsDataURL(f);
-}
-async function submitOrder(){
-  if(!buyPkg||!buyPayMethod||!proofFile){toast('Lengkapi semua data','Upload bukti bayar','error');return;}
-  const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='⏳ Uploading...';
-  try{
-    const pkg=PKG_INFO[buyPkg],pi=PAY_INFO_MAP[buyPayMethod];
-    const uniqueCents=CU?Array.from(CU.username).reduce((a,c)=>a+c.charCodeAt(0),0)%100:42;
-    const amount=pkg?pkg.price+uniqueCents:0;
-    const orderId='ORD-'+Date.now().toString(36).toUpperCase();
-    // Upload image to Firebase Storage — not Firestore
-    const storageRef=storage.ref(`proofs/${orderId}_${proofFile.name}`);
-    const uploadTask=await storageRef.put(proofFile);
-    const proofUrl=await uploadTask.ref.getDownloadURL();
-    // Write order to Firestore
-    await ordersRef().doc(orderId).set({
-      id:orderId,uid:CU.uid,username:CU.username,email:CU.email,
-      pkg:buyPkg,pkgName:pkg.name,method:buyPayMethod,methodLabel:pi.label,
-      amount,proofUrl,note:sanitize(document.getElementById('buyNote').value,200),
-      status:'pending',createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    await addLog('ORDER',`${pkg.name} via ${pi.label} · ${orderId}`,'');
-    document.getElementById('finalOrderId').textContent=orderId;
-    ['bp1','bp2','bp3','bp4'].forEach((id,i)=>document.getElementById(id).classList.toggle('on',i===3));
-    toast('Order terkirim! ✅','Tunggu konfirmasi admin','success');
-  }catch(e){
-    toast('Gagal upload',e.message,'error');
-    btn.disabled=false;btn.textContent='KIRIM ORDER →';
-  }
-}
-
+function selPay(method){ buyPayMethod=method; document.querySelectorAll('.pay-method').forEach(el=>el.classList.toggle('sel',el.id==='pm_'+method)); const pi=PAY_INFO_MAP[method]; const dest=_cfg[pi.field]||'Belum dikonfigurasi'; const pkg=PKG_INFO[buyPkg]; const uniqueCents=CU?Array.from(CU.username).reduce((a,c)=>a+c.charCodeAt(0),0)%100:42; const amount=pkg?pkg.price+uniqueCents:0; document.getElementById('piDest').textContent=`${pi.label}: ${dest}`; document.getElementById('piName').textContent=_cfg.owner||'RPMxPRIME'; document.getElementById('piAmount').textContent='Rp'+amount.toLocaleString('id-ID'); document.getElementById('payInfoBox').style.display='block'; document.getElementById('btnNext2').disabled=false; }
+function buyStep(n){ if(n===2&&!buyPkg)return;if(n===3&&!buyPayMethod)return; ['bp1','bp2','bp3','bp4'].forEach((id,i)=>document.getElementById(id).classList.toggle('on',i===n-1)); updBuyStepUI(n);if(n===3)renderOrderSummary();}
+function updBuyStepUI(n){[1,2,3].forEach(i=>{const dot=document.getElementById('bsd'+i);dot.className='buy-step-dot '+(i<n?'done':i===n?'active':'idle');});[1,2].forEach(i=>document.getElementById('bsl'+i).classList.toggle('done',i<n));}
+function renderOrderSummary(){ const pkg=PKG_INFO[buyPkg],pi=PAY_INFO_MAP[buyPayMethod]; const uniqueCents=CU?Array.from(CU.username).reduce((a,c)=>a+c.charCodeAt(0),0)%100:42; const amount=pkg?pkg.price+uniqueCents:0; document.getElementById('orderSummary').innerHTML=`<div class="order-row"><span>Paket</span><span style="color:var(--g)">${eh(pkg?pkg.name:'—')}</span></div><div class="order-row"><span>Metode</span><span>${eh(pi?pi.label:'—')}</span></div><div class="order-row"><span>Username</span><span style="color:var(--a)">${eh(CU?CU.username:'—')}</span></div><div class="order-row total"><span>Total Transfer</span><span>Rp${amount.toLocaleString('id-ID')}</span></div>`; }
+function handleProof(e){ const f=e.target.files[0];if(!f)return; if(f.size>5*1024*1024){toast('File terlalu besar','Maks 5MB','error');return;} if(!f.type.startsWith('image/')){toast('Harus file gambar','JPG/PNG/WEBP','error');return;} proofFile=f; const reader=new FileReader(); reader.onload=ev=>{ proofDataUrl=ev.target.result; const prev=document.getElementById('proofPreview');prev.src=proofDataUrl;prev.style.display='block'; document.getElementById('proofArea').classList.add('has-file'); document.getElementById('btnSubmit').disabled=false; }; reader.readAsDataURL(f); }
+async function submitOrder(){ if(!buyPkg||!buyPayMethod||!proofFile){toast('Lengkapi semua data','Upload bukti bayar','error');return;} const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='⏳ Uploading...'; try{ const pkg=PKG_INFO[buyPkg],pi=PAY_INFO_MAP[buyPayMethod]; const uniqueCents=CU?Array.from(CU.username).reduce((a,c)=>a+c.charCodeAt(0),0)%100:42; const amount=pkg?pkg.price+uniqueCents:0; const orderId='ORD-'+Date.now().toString(36).toUpperCase(); const storageRef=storage.ref(`proofs/${orderId}_${proofFile.name}`); const uploadTask=await storageRef.put(proofFile); const proofUrl=await uploadTask.ref.getDownloadURL(); await ordersRef().doc(orderId).set({ id:orderId,uid:CU.uid,username:CU.username,email:CU.email, pkg:buyPkg,pkgName:pkg.name,method:buyPayMethod,methodLabel:pi.label, amount,proofUrl,note:sanitize(document.getElementById('buyNote').value,200), status:'pending',createdAt:firebase.firestore.FieldValue.serverTimestamp() }); await addLog('ORDER',`${pkg.name} via ${pi.label} · ${orderId}`,''); document.getElementById('finalOrderId').textContent=orderId; ['bp1','bp2','bp3','bp4'].forEach((id,i)=>document.getElementById(id).classList.toggle('on',i===3)); toast('Order terkirim! ✅','Tunggu konfirmasi admin','success'); }catch(e){ toast('Gagal upload',e.message,'error'); btn.disabled=false;btn.textContent='KIRIM ORDER →'; } }
 /* ============================================================
    MODALS
    ============================================================ */
-['subModal','buyModal','adminPanel'].forEach(id=>{
-  document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeMod(id);});
-});
+['subModal','buyModal','adminPanel','chatModal'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeMod(id);}); });
 function showLightbox(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('show');}
-
 /* ============================================================
-   AUDIO ENGINE
+   AUDIO ENGINE (same as original, only minor ref)
    ============================================================ */
 const MAXSZ=100*1024*1024;
 let files=[],ai=0,spd=1,pit=0,vol=1,playing=false,ppos=0,AC=null,SN=null,GN=null,ST=0,PO=0,RAF=null,amode=null,fmt='mp3';
@@ -1236,179 +1382,56 @@ const FMTS=[{id:'mp3',lbl:'MP3',sub:'True MP3·lamejs'},{id:'ogg',lbl:'OGG',sub:
 function getAC(){if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();return AC;}
 function prvR(){return spd*Math.pow(2,pit/12);}
 async function loadFile(f){const ctx=getAC(),buf=await f.arrayBuffer(),ab=await ctx.decodeAudioData(buf.slice(0));return{name:f.name,size:f.size,file:f,ab,dur:ab.duration,broken:false};}
-async function addFiles(list){
-  const arr=Array.from(list).filter(f=>(f.type&&f.type.startsWith('audio/'))||/\.(mp3|wav|ogg|flac|m4a|aac|opus|wma)$/i.test(f.name));
-  for(const f of arr){
-    if(f.size>MAXSZ){toast('Terlalu besar',f.name+' > 100MB','error');continue;}
-    try{const loaded=await loadFile(f);if(loaded.dur>300)toast('Lagu panjang',f.name+' > 5 menit — mungkin lambat','warn');files.push(loaded);}
-    catch(e){toast('Preview error',f.name+' — export tetap bisa','warn');files.push({name:f.name,size:f.size,file:f,ab:null,dur:0,broken:true});}
-  }
-  if(files.length){document.getElementById('hero').style.display='none';document.getElementById('feats').style.display='none';document.getElementById('editor').style.display='block';const dz=document.getElementById('dz');dz.classList.remove('empty');dz.classList.add('filled');dz.innerHTML='<div class="dz-sub">+ Drop more files or click to add</div>';}
-  renderTabs();selFile(ai);updFCount();
-}
+async function addFiles(list){ const arr=Array.from(list).filter(f=>(f.type&&f.type.startsWith('audio/'))||/\.(mp3|wav|ogg|flac|m4a|aac|opus|wma)$/i.test(f.name)); for(const f of arr){ if(f.size>MAXSZ){toast('Terlalu besar',f.name+' > 100MB','error');continue;} try{const loaded=await loadFile(f);if(loaded.dur>300)toast('Lagu panjang',f.name+' > 5 menit — mungkin lambat','warn');files.push(loaded);} catch(e){toast('Preview error',f.name+' — export tetap bisa','warn');files.push({name:f.name,size:f.size,file:f,ab:null,dur:0,broken:true});} } if(files.length){document.getElementById('hero').style.display='none';document.getElementById('feats').style.display='none';document.getElementById('editor').style.display='block';const dz=document.getElementById('dz');dz.classList.remove('empty');dz.classList.add('filled');dz.innerHTML='<div class="dz-sub">+ Drop more files or click to add</div>';} renderTabs();selFile(ai);updFCount();}
 function updFCount(){document.getElementById('fCount').textContent=files.length+' FILE'+(files.length!==1?'S':'');document.getElementById('btnExAll').style.display=files.length>1?'block':'none';updExpBtns();updExpState();}
-function renderTabs(){
-  const frag=document.createDocumentFragment();
-  files.forEach((f,i)=>{const t=document.createElement('div');t.className='ftab'+(i===ai?' on':'');t.style.animationDelay=(i*35)+'ms';t.dataset.idx=i;t.innerHTML=`<span style="color:${f.broken?'var(--w)':(i===ai?'var(--a)':'var(--d)')}">${f.broken?'⚠':'♫'}</span><span class="fn">${eh(f.name)}</span><span class="fd">${f.broken?'(no preview)':fmtT(f.dur)}</span><button class="fx" data-rm="${i}">×</button>`;frag.appendChild(t);});
-  const c=document.getElementById('ftabs');c.innerHTML='';c.appendChild(frag);
-}
+function renderTabs(){ const frag=document.createDocumentFragment(); files.forEach((f,i)=>{const t=document.createElement('div');t.className='ftab'+(i===ai?' on':'');t.style.animationDelay=(i*35)+'ms';t.dataset.idx=i;t.innerHTML=`<span style="color:${f.broken?'var(--w)':(i===ai?'var(--a)':'var(--d)')}">${f.broken?'⚠':'♫'}</span><span class="fn">${eh(f.name)}</span><span class="fd">${f.broken?'(no preview)':fmtT(f.dur)}</span><button class="fx" data-rm="${i}">×</button>`;frag.appendChild(t);}); const c=document.getElementById('ftabs');c.innerHTML='';c.appendChild(frag); }
 document.getElementById('ftabs').addEventListener('click',e=>{const rm=e.target.dataset.rm;if(rm!==undefined){rmFile(parseInt(rm));return;}const tab=e.target.closest('.ftab');if(tab){stopPB();selFile(parseInt(tab.dataset.idx));}});
 function rmFile(i){if(i===ai&&playing)stopPB();files.splice(i,1);if(!files.length){document.getElementById('editor').style.display='none';document.getElementById('hero').style.display='';document.getElementById('feats').style.display='';const dz=document.getElementById('dz');dz.classList.add('empty');dz.classList.remove('filled');dz.innerHTML='<div class="dz-ico">🎵</div><div class="dz-ttl">Drop audio files here</div><div class="dz-sub">MP3, WAV, OGG, FLAC, M4A — hingga 100MB per file</div>';}if(ai>=files.length)ai=Math.max(0,files.length-1);renderTabs();if(files.length)selFile(ai);updFCount();}
 function selFile(i){ai=i;renderTabs();const f=files[i];if(!f)return;document.getElementById('wName').textContent=f.name;ppos=0;PO=0;drawWave();updStats();updExpInfo();}
-
 /* WAVEFORM */
-const wcanv=document.getElementById('wc');
-const wctx=wcanv.getContext('2d',{alpha:false});
-let _waveCache={fileIdx:-1,width:0,peaks:null};
+const wcanv=document.getElementById('wc'); const wctx=wcanv.getContext('2d',{alpha:false}); let _waveCache={fileIdx:-1,width:0,peaks:null};
 function buildPeaks(data,W){const step=Math.ceil(data.length/W);const mn=new Float32Array(W),mx=new Float32Array(W);for(let i=0;i<W;i++){let lo=1,hi=-1;for(let j=0;j<step;j++){const v=data[i*step+j]||0;if(v<lo)lo=v;if(v>hi)hi=v;}mn[i]=lo;mx[i]=hi;}return{mn,mx};}
-function drawWave(){
-  const f=files[ai];const dpr=Math.min(window.devicePixelRatio||1,2);const rect=wcanv.getBoundingClientRect();const W=Math.floor(rect.width),H=Math.floor(rect.height);
-  wcanv.width=W*dpr;wcanv.height=H*dpr;wctx.setTransform(dpr,0,0,dpr,0,0);wctx.fillStyle='#161624';wctx.fillRect(0,0,W,H);
-  if(!f)return;
-  if(f.broken||!f.ab){wctx.fillStyle='#ffab40';wctx.font='600 12px JetBrains Mono,monospace';wctx.textAlign='center';wctx.fillText('⚠ Preview tidak tersedia',W/2,H/2-8);wctx.fillStyle='#55557a';wctx.font='10px JetBrains Mono,monospace';wctx.fillText('Export tetap bisa bekerja',W/2,H/2+12);document.getElementById('wTime').textContent=fmtSz(f.size)+' · export only';return;}
-  if(_waveCache.fileIdx!==ai||_waveCache.width!==W){_waveCache={fileIdx:ai,width:W,peaks:buildPeaks(f.ab.getChannelData(0),W)};}
-  const{mn,mx}=_waveCache.peaks;const playX=Math.floor(ppos*W);
-  wctx.fillStyle='#3a3a52';for(let i=playX;i<W;i++){const top=(1+mn[i])*H/2,bot=(1+mx[i])*H/2,bH=Math.max(bot-top,1);wctx.fillRect(i,top,1,bH);}
-  if(playX>0){wctx.fillStyle='#00e5ff';for(let i=0;i<playX;i++){const top=(1+mn[i])*H/2,bot=(1+mx[i])*H/2,bH=Math.max(bot-top,1);wctx.fillRect(i,top,1,bH);}}
-  if(ppos>0&&ppos<1){const x=playX;wctx.strokeStyle='rgba(255,255,255,.9)';wctx.lineWidth=1.5;wctx.beginPath();wctx.moveTo(x,0);wctx.lineTo(x,H);wctx.stroke();}
-  document.getElementById('wTime').textContent=fmtT(f.dur*ppos)+' / '+fmtT(f.dur)+' · '+fmtSz(f.size);
-}
+function drawWave(){ const f=files[ai];const dpr=Math.min(window.devicePixelRatio||1,2);const rect=wcanv.getBoundingClientRect();const W=Math.floor(rect.width),H=Math.floor(rect.height); wcanv.width=W*dpr;wcanv.height=H*dpr;wctx.setTransform(dpr,0,0,dpr,0,0);wctx.fillStyle='#161624';wctx.fillRect(0,0,W,H); if(!f)return; if(f.broken||!f.ab){wctx.fillStyle='#ffab40';wctx.font='600 12px JetBrains Mono,monospace';wctx.textAlign='center';wctx.fillText('⚠ Preview tidak tersedia',W/2,H/2-8);wctx.fillStyle='#55557a';wctx.font='10px JetBrains Mono,monospace';wctx.fillText('Export tetap bisa bekerja',W/2,H/2+12);document.getElementById('wTime').textContent=fmtSz(f.size)+' · export only';return;} if(_waveCache.fileIdx!==ai||_waveCache.width!==W){_waveCache={fileIdx:ai,width:W,peaks:buildPeaks(f.ab.getChannelData(0),W)};} const{mn,mx}=_waveCache.peaks;const playX=Math.floor(ppos*W); wctx.fillStyle='#3a3a52';for(let i=playX;i<W;i++){const top=(1+mn[i])*H/2,bot=(1+mx[i])*H/2,bH=Math.max(bot-top,1);wctx.fillRect(i,top,1,bH);} if(playX>0){wctx.fillStyle='#00e5ff';for(let i=0;i<playX;i++){const top=(1+mn[i])*H/2,bot=(1+mx[i])*H/2,bH=Math.max(bot-top,1);wctx.fillRect(i,top,1,bH);}} if(ppos>0&&ppos<1){const x=playX;wctx.strokeStyle='rgba(255,255,255,.9)';wctx.lineWidth=1.5;wctx.beginPath();wctx.moveTo(x,0);wctx.lineTo(x,H);wctx.stroke();} document.getElementById('wTime').textContent=fmtT(f.dur*ppos)+' / '+fmtT(f.dur)+' · '+fmtSz(f.size); }
 wcanv.addEventListener('click',e=>{const f=files[ai];if(!f||f.broken||!f.ab)return;const rect=wcanv.getBoundingClientRect();PO=((e.clientX-rect.left)/rect.width)*f.ab.duration;ppos=PO/f.ab.duration;drawWave();if(playing){stopSilent();startPB();}});
 function startPB(){const f=files[ai];if(!f)return;if(f.broken||!f.ab){toast('Preview N/A','Export langsung aja','warn');return;}const ctx=getAC();if(ctx.state==='suspended')ctx.resume();const src=ctx.createBufferSource();src.buffer=f.ab;src.playbackRate.value=prvR();const g=ctx.createGain();g.gain.value=vol;GN=g;src.connect(g);g.connect(ctx.destination);src.start(0,PO||0);ST=ctx.currentTime-(PO||0)/prvR();SN=src;playing=true;document.getElementById('btnPlay').textContent='⏸';const tick=()=>{if(!playing)return;const el=(ctx.currentTime-ST)*prvR(),pos=el/f.ab.duration;if(pos>=1){stopPB();ppos=0;PO=0;drawWave();return;}ppos=pos;drawWave();RAF=requestAnimationFrame(tick);};RAF=requestAnimationFrame(tick);src.onended=()=>{if(SN===src){stopPB();ppos=0;PO=0;drawWave();}};}
 function stopSilent(){if(SN){try{SN.stop();}catch(e){}SN.disconnect();SN=null;}if(RAF)cancelAnimationFrame(RAF);playing=false;}
 function stopPB(){stopSilent();document.getElementById('btnPlay').textContent='▶';}
 function togglePlay(){if(playing){PO=(getAC().currentTime-ST)*SN.playbackRate.value;stopPB();}else startPB();}
 function applyLive(){if(SN){const ctx=getAC(),co=(ctx.currentTime-ST)*SN.playbackRate.value,nr=prvR();SN.playbackRate.value=nr;ST=ctx.currentTime-co/nr;}if(GN)GN.gain.value=vol;updStats();updExpInfo();hlPre();hlAuto();}
-
 /* KNOBS */
 function updKnob(id,pct,c){const r=document.getElementById(id);r.style.background=`conic-gradient(from -135deg,${c} 0deg,${c} ${pct/100*270}deg,#252538 ${pct/100*270}deg,#252538 270deg,transparent 270deg)`;const n=r.querySelector('.kneedle');n.style.transform=`rotate(${-135+pct/100*270}deg)`;n.style.background=c;}
-function syncUI(){
-  const sp=((spd-0.25)/3.75)*100;document.getElementById('slSpd').value=spd;document.getElementById('svSpd').textContent=spd.toFixed(2)+'x';document.getElementById('sfSpd').style.width=sp+'%';document.getElementById('kvSpd').textContent=spd.toFixed(2)+'x';updKnob('kSpd',sp,'#00e5ff');
-  const pp=((pit+12)/24)*100;document.getElementById('slPit').value=pit;document.getElementById('svPit').textContent=pit+' st';document.getElementById('sfPit').style.width=pp+'%';document.getElementById('kvPit').textContent=(pit>0?'+':'')+pit+'st';updKnob('kPit',pp,'#9c6cff');
-  const vp=(vol/2)*100;document.getElementById('slVol').value=vol;document.getElementById('svVol').textContent=Math.round(vol*100)+'%';document.getElementById('sfVol').style.width=vp+'%';document.getElementById('kvVol').textContent=Math.round(vol*100)+'%';updKnob('kVol',vp,'#00e676');
-  applyLive();
-}
-document.getElementById('slSpd').addEventListener('input',e=>{spd=parseFloat(e.target.value);amode=null;syncUI();});
-document.getElementById('slPit').addEventListener('input',e=>{pit=parseInt(e.target.value);amode=null;syncUI();});
-document.getElementById('slVol').addEventListener('input',e=>{vol=parseFloat(e.target.value);syncUI();});
+function syncUI(){ const sp=((spd-0.25)/3.75)*100;document.getElementById('slSpd').value=spd;document.getElementById('svSpd').textContent=spd.toFixed(2)+'x';document.getElementById('sfSpd').style.width=sp+'%';document.getElementById('kvSpd').textContent=spd.toFixed(2)+'x';updKnob('kSpd',sp,'#00e5ff'); const pp=((pit+12)/24)*100;document.getElementById('slPit').value=pit;document.getElementById('svPit').textContent=pit+' st';document.getElementById('sfPit').style.width=pp+'%';document.getElementById('kvPit').textContent=(pit>0?'+':'')+pit+'st';updKnob('kPit',pp,'#9c6cff'); const vp=(vol/2)*100;document.getElementById('slVol').value=vol;document.getElementById('svVol').textContent=Math.round(vol*100)+'%';document.getElementById('sfVol').style.width=vp+'%';document.getElementById('kvVol').textContent=Math.round(vol*100)+'%';updKnob('kVol',vp,'#00e676'); applyLive(); }
+document.getElementById('slSpd').addEventListener('input',e=>{spd=parseFloat(e.target.value);amode=null;syncUI();}); document.getElementById('slPit').addEventListener('input',e=>{pit=parseInt(e.target.value);amode=null;syncUI();}); document.getElementById('slVol').addEventListener('input',e=>{vol=parseFloat(e.target.value);syncUI();});
 function mkKnob(id,param,mn,mx,st){const el=document.getElementById(id);let drag=false,sy=0,sv=0;el.addEventListener('pointerdown',e=>{drag=true;sy=e.clientY;sv=param==='s'?spd:param==='p'?pit:vol;el.setPointerCapture(e.pointerId);});el.addEventListener('pointermove',e=>{if(!drag)return;let nv=sv+((sy-e.clientY)/150)*(mx-mn);nv=Math.round(nv/st)*st;nv=Math.max(mn,Math.min(mx,nv));if(param==='s'){spd=nv;amode=null;}else if(param==='p'){pit=nv;amode=null;}else vol=nv;syncUI();});el.addEventListener('pointerup',()=>drag=false);el.addEventListener('pointercancel',()=>drag=false);}
-mkKnob('kSpd','s',0.25,4,0.05);mkKnob('kPit','p',-12,12,1);mkKnob('kVol','v',0,2,0.05);
-
+mkKnob('kSpd','s',0.25,4,0.05); mkKnob('kPit','p',-12,12,1); mkKnob('kVol','v',0,2,0.05);
 /* AUTO MODES */
 (()=>{const c=document.getElementById('automodes');AMODES.forEach(m=>{const b=document.createElement('button');b.className='abtn2'+(m.f?' afeat':'');b.dataset.id=m.id;b.innerHTML=`${m.lbl}<div class="dtl">${m.desc}</div>`;b.addEventListener('click',()=>{if(amode===m.id){amode=null;spd=1;pit=0;}else{amode=m.id;spd=m.s;pit=m.p;}syncUI();});c.appendChild(b);});})();
 function hlAuto(){document.querySelectorAll('.abtn2').forEach(b=>b.classList.toggle('on',b.dataset.id===amode));const on=amode!==null;document.getElementById('autoInd').style.display=on?'block':'none';const s=document.getElementById('autosec');s.classList.toggle('aglow',on);s.style.borderColor=on?'rgba(255,171,64,.3)':'';s.style.background=on?'rgba(255,171,64,.04)':'';}
-
 /* PRESETS */
 (()=>{PRESETS.forEach(p=>{const b=document.createElement('button');b.className='pbtn';b.dataset.s=p.s;b.dataset.p=p.p;b.innerHTML=`${p.lbl}<div class="pd">${p.s}x/${p.p>0?'+':''}${p.p}st</div>`;b.addEventListener('click',()=>{spd=p.s;pit=p.p;amode=null;syncUI();});document.getElementById('pgrid').appendChild(b);});})();
 function hlPre(){document.querySelectorAll('.pbtn').forEach(b=>b.classList.toggle('on',Math.abs(spd-parseFloat(b.dataset.s))<0.01&&pit===parseInt(b.dataset.p)));}
-
 /* FORMAT */
 (()=>{FMTS.forEach(f=>{const b=document.createElement('button');b.className='fmtbtn'+(f.id===fmt?' on':'');b.dataset.fmt=f.id;b.innerHTML=`${f.lbl}<div class="fs">${f.sub}</div>`;b.addEventListener('click',()=>{fmt=f.id;document.querySelectorAll('.fmtbtn').forEach(x=>x.classList.toggle('on',x.dataset.fmt===f.id));updExpBtns();updExpInfo();});document.getElementById('fmtsel').appendChild(b);});})();
 function updExpBtns(){if(!CU||!canExport())return;const e=fmt.toUpperCase();document.getElementById('btnEx').textContent=`EXPORT → ${e}`;if(files.length>1)document.getElementById('btnExAll').textContent=`EXPORT ALL ${files.length} → ${e}`;}
 function updStats(){const f=files[ai];if(!f)return;document.getElementById('stR').textContent=f.broken?'—':'44100Hz';document.getElementById('stC').textContent=f.broken?'—':'Stereo';document.getElementById('stO').textContent=f.broken?'—':fmtT(f.dur);document.getElementById('stP').textContent=f.broken?'—':fmtT(f.dur/spd);}
 function updExpInfo(){const f=files[ai];if(!f)return;document.getElementById('expinfo').innerHTML=`Output: ${fmt.toUpperCase()} · 44100Hz · Stereo<br>Speed: ${spd.toFixed(2)}× · Pitch: ${pit>0?'+':''}${pit}st · Vol: ${Math.round(vol*100)}%`;}
-
 /* RENDER */
-async function renderAudio(fd){
-  const raw=await fd.file.arrayBuffer();
-  const decodeCtx=new OfflineAudioContext(1,1,44100);
-  const decoded=await decodeCtx.decodeAudioData(raw);
-  const pitchRate=Math.pow(2,pit/12);const SR=22050;
-  const outLen=Math.max(1,Math.ceil(decoded.length*0.5/spd/pitchRate));
-  const nCh=Math.min(decoded.numberOfChannels,2);
-  const offCtx=new OfflineAudioContext(nCh,outLen,SR);
-  const src=offCtx.createBufferSource();
-  let buf=decoded;
-  if(pit!==0){const shiftedSR=Math.round(decoded.sampleRate*pitchRate);const sb=new AudioBuffer({numberOfChannels:nCh,length:decoded.length,sampleRate:shiftedSR});for(let ch=0;ch<nCh;ch++)sb.copyToChannel(decoded.getChannelData(ch),ch);buf=sb;}
-  src.buffer=buf;src.playbackRate.value=spd;
-  const gn=offCtx.createGain();gn.gain.value=Math.min(vol,1.8);src.connect(gn);gn.connect(offCtx.destination);src.start(0);
-  await new Promise(r=>setTimeout(r,0));setProg(40,'Rendering audio...');await new Promise(r=>setTimeout(r,0));
-  const rendered=await offCtx.startRendering();src.buffer=null;return rendered;
-}
+async function renderAudio(fd){ const raw=await fd.file.arrayBuffer(); const decodeCtx=new OfflineAudioContext(1,1,44100); const decoded=await decodeCtx.decodeAudioData(raw); const pitchRate=Math.pow(2,pit/12); const SR=22050; const outLen=Math.max(1,Math.ceil(decoded.length*0.5/spd/pitchRate)); const nCh=Math.min(decoded.numberOfChannels,2); const offCtx=new OfflineAudioContext(nCh,outLen,SR); const src=offCtx.createBufferSource(); let buf=decoded; if(pit!==0){const shiftedSR=Math.round(decoded.sampleRate*pitchRate); const sb=new AudioBuffer({numberOfChannels:nCh,length:decoded.length,sampleRate:shiftedSR}); for(let ch=0;ch<nCh;ch++)sb.copyToChannel(decoded.getChannelData(ch),ch); buf=sb;} src.buffer=buf; src.playbackRate.value=spd; const gn=offCtx.createGain();gn.gain.value=Math.min(vol,1.8); src.connect(gn); gn.connect(offCtx.destination); src.start(0); await new Promise(r=>setTimeout(r,0)); setProg(40,'Rendering audio...'); await new Promise(r=>setTimeout(r,0)); const rendered=await offCtx.startRendering(); src.buffer=null; return rendered; }
 function buf2wav(buffer){const nCh=buffer.numberOfChannels,SR=buffer.sampleRate,len=buffer.length,bps=2,dLen=len*nCh*bps;const wb=new ArrayBuffer(44+dLen),v=new DataView(wb);const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};w(0,'RIFF');v.setUint32(4,36+dLen,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,nCh,true);v.setUint32(24,SR,true);v.setUint32(28,SR*nCh*bps,true);v.setUint16(32,nCh*bps,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,dLen,true);let off=44;for(let i=0;i<len;i++)for(let ch=0;ch<nCh;ch++){const s=Math.max(-1,Math.min(1,buffer.getChannelData(ch)[i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}return wb;}
-async function encodeMp3(rendered,bitrate){
-  bitrate=bitrate||128;if(typeof lamejs==='undefined')return null;
-  const nCh=Math.min(rendered.numberOfChannels,2);const ch0=rendered.getChannelData(0);const ch1=nCh>1?rendered.getChannelData(1):ch0;
-  const toI16=f=>{const a=new Int16Array(f.length);for(let i=0;i<f.length;i++){const s=Math.max(-1,Math.min(1,f[i]));a[i]=s<0?s*0x8000:s*0x7FFF;}return a;};
-  const left=toI16(ch0),right=toI16(ch1);
-  const encoder=new lamejs.Mp3Encoder(nCh===1?1:2,rendered.sampleRate,bitrate);
-  const CHUNK=1152;const mp3Data=[];const total=left.length;
-  for(let i=0;i<total;i+=CHUNK){
-    const l=left.subarray(i,i+CHUNK),r=right.subarray(i,i+CHUNK);
-    const encoded=nCh===1?encoder.encodeBuffer(l):encoder.encodeBuffer(l,r);
-    if(encoded.length>0)mp3Data.push(new Int8Array(encoded));
-    if(i%(CHUNK*100)===0){setProg(65+Math.round((i/total)*30),'Encoding MP3... '+Math.round((i/total)*100)+'%');await new Promise(r=>setTimeout(r,0));}
-  }
-  const end=encoder.flush();if(end.length>0)mp3Data.push(new Int8Array(end));
-  return new Blob(mp3Data,{type:'audio/mp3'});
-}
-async function doExport(fd){
-  showProg('Processing Audio','Speed '+spd+'× · Pitch '+(pit>0?'+':'')+pit+'st');
-  if(playing)stopPB();
-  let rendered;
-  try{setProg(30,'Rendering audio...');rendered=await renderAudio(fd);setProg(65,'Audio rendered...');}
-  catch(e){hideProg();throw new Error('Render gagal: '+(e.message||e));}
-  const base=fd.name.replace(/\.[^.]+$/,'');
-  let blob,outName;
-  if(fmt==='mp3'){
-    if(typeof lamejs!=='undefined'){blob=await encodeMp3(rendered,128);if(!blob){const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs error','Disimpan sebagai WAV','warn');}else outName=base+'_bypass.mp3';}
-    else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs tidak tersedia','Disimpan sebagai WAV','warn');}
-  }else if(fmt==='ogg'&&typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported('audio/ogg;codecs=vorbis')){
-    blob=await new Promise(res=>{const ac2=new AudioContext(),src2=ac2.createBufferSource();src2.buffer=rendered;const dest=ac2.createMediaStreamDestination();src2.connect(dest);const mr=new MediaRecorder(dest.stream,{mimeType:'audio/ogg;codecs=vorbis'});const chunks=[];mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};mr.onstop=()=>{ac2.close();res(new Blob(chunks,{type:'audio/ogg'}));};mr.start();src2.start(0);src2.onended=()=>setTimeout(()=>{try{mr.stop();}catch(e){}},200);setTimeout(()=>{try{mr.stop();}catch(e){}},Math.ceil((rendered.duration+3)*1000));});
-    outName=base+'_bypass.ogg';
-  }else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass.wav';if(fmt==='ogg')toast('OGG tidak didukung','Disimpan sebagai WAV','warn');}
-  rendered=null;
-  setProg(95,'Menyiapkan download...');return{blob,filename:outName};
-}
+async function encodeMp3(rendered,bitrate){ bitrate=bitrate||128; if(typeof lamejs==='undefined')return null; const nCh=Math.min(rendered.numberOfChannels,2); const ch0=rendered.getChannelData(0); const ch1=nCh>1?rendered.getChannelData(1):ch0; const toI16=f=>{const a=new Int16Array(f.length);for(let i=0;i<f.length;i++){const s=Math.max(-1,Math.min(1,f[i]));a[i]=s<0?s*0x8000:s*0x7FFF;}return a;}; const left=toI16(ch0),right=toI16(ch1); const encoder=new lamejs.Mp3Encoder(nCh===1?1:2,rendered.sampleRate,bitrate); const CHUNK=1152; const mp3Data=[]; const total=left.length; for(let i=0;i<total;i+=CHUNK){ const l=left.subarray(i,i+CHUNK),r=right.subarray(i,i+CHUNK); const encoded=nCh===1?encoder.encodeBuffer(l):encoder.encodeBuffer(l,r); if(encoded.length>0)mp3Data.push(new Int8Array(encoded)); if(i%(CHUNK*100)===0){setProg(65+Math.round((i/total)*30),'Encoding MP3... '+Math.round((i/total)*100)+'%');await new Promise(r=>setTimeout(r,0));} } const end=encoder.flush();if(end.length>0)mp3Data.push(new Int8Array(end)); return new Blob(mp3Data,{type:'audio/mp3'}); }
+async function doExport(fd){ showProg('Processing Audio','Speed '+spd.toFixed(2)+'× · Pitch '+(pit>0?'+':'')+pit+'st'); if(playing)stopPB(); let rendered; try{setProg(30,'Rendering audio...');rendered=await renderAudio(fd);setProg(65,'Audio rendered...');} catch(e){hideProg();throw new Error('Render gagal: '+(e.message||e));} const base=fd.name.replace(/\.[^.]+$/,''); let blob,outName; if(fmt==='mp3'){ if(typeof lamejs!=='undefined'){blob=await encodeMp3(rendered,128);if(!blob){const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs error','Disimpan sebagai WAV','warn');}else outName=base+'_bypass.mp3';} else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs tidak tersedia','Disimpan sebagai WAV','warn');} }else if(fmt==='ogg'&&typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported('audio/ogg;codecs=vorbis')){ blob=await new Promise(res=>{const ac2=new AudioContext(),src2=ac2.createBufferSource();src2.buffer=rendered;const dest=ac2.createMediaStreamDestination();src2.connect(dest);const mr=new MediaRecorder(dest.stream,{mimeType:'audio/ogg;codecs=vorbis'});const chunks=[];mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};mr.onstop=()=>{ac2.close();res(new Blob(chunks,{type:'audio/ogg'}));};mr.start();src2.start(0);src2.onended=()=>setTimeout(()=>{try{mr.stop();}catch(e){}},200);setTimeout(()=>{try{mr.stop();}catch(e){}},Math.ceil((rendered.duration+3)*1000));}); outName=base+'_bypass.ogg'; }else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass.wav';if(fmt==='ogg')toast('OGG tidak didukung','Disimpan sebagai WAV','warn');} rendered=null; setProg(95,'Menyiapkan download...');return{blob,filename:outName}; }
 function triggerDL(blob,filename){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},2000);}
-
-document.getElementById('btnEx').addEventListener('click',async()=>{
-  if(!CU)return;if(!canExport()){toast('Limit habis','Upgrade VIP','warn');openMod('subModal');return;}
-  const f=files[ai];if(!f)return;
-  const btn=document.getElementById('btnEx');btn.disabled=true;
-  try{
-    const res=await doExport(f);setProg(100,'Download dimulai! 🎉');triggerDL(res.blob,res.filename);setTimeout(hideProg,700);
-    await incUsage();
-    await addLog('EXPORT',`${f.name}→${fmt.toUpperCase()}(${spd}×,${pit>0?'+':''}${pit}st)`,'');
-    toast('Export berhasil! 🎉',res.filename,'success');
-  }catch(e){hideProg();toast('Export gagal',e.message||'Error','error');}
-  btn.disabled=false;updExpState();updExpBtns();
-});
-document.getElementById('btnExAll').addEventListener('click',async()=>{
-  if(!CU)return;let ok=0,fail=0;
-  for(let i=0;i<files.length;i++){
-    if(!canExport()){toast('Limit habis','Sisa tidak di-export','warn');break;}
-    try{const res=await doExport(files[i]);triggerDL(res.blob,res.filename);await incUsage();await addLog('EXP_BULK',files[i].name+' OK','');ok++;await new Promise(r=>setTimeout(r,600));}
-    catch(e){fail++;toast('Gagal: '+files[i].name,e.message,'error');}
-  }
-  setProg(100,`Selesai: ${ok} berhasil, ${fail} gagal`);setTimeout(hideProg,900);
-  if(ok>0)toast('Bulk export selesai',ok+' file','success');
-  updExpState();updExpBtns();
-});
-
+document.getElementById('btnEx').addEventListener('click',async()=>{ if(!CU)return; if(!canExport()){toast('Limit habis','Upgrade VIP','warn');openMod('subModal');return;} const f=files[ai];if(!f)return; const btn=document.getElementById('btnEx');btn.disabled=true; try{ const res=await doExport(f);setProg(100,'Download dimulai! 🎉');triggerDL(res.blob,res.filename);setTimeout(hideProg,700); await incUsage(); await addLog('EXPORT',`${f.name}→${fmt.toUpperCase()}(${spd}×,${pit>0?'+':''}${pit}st)`,''); toast('Export berhasil! 🎉',res.filename,'success'); }catch(e){hideProg();toast('Export gagal',e.message||'Error','error');} btn.disabled=false;updExpState();updExpBtns(); });
+document.getElementById('btnExAll').addEventListener('click',async()=>{ if(!CU)return; let ok=0,fail=0; for(let i=0;i<files.length;i++){ if(!canExport()){toast('Limit habis','Sisa tidak di-export','warn');break;} try{const res=await doExport(files[i]);triggerDL(res.blob,res.filename);await incUsage();await addLog('EXP_BULK',files[i].name+' OK','');ok++;await new Promise(r=>setTimeout(r,600));} catch(e){fail++;toast('Gagal: '+files[i].name,e.message,'error');} } setProg(100,`Selesai: ${ok} berhasil, ${fail} gagal`);setTimeout(hideProg,900); if(ok>0)toast('Bulk export selesai',ok+' file','success'); updExpState();updExpBtns(); });
 /* DROPZONE */
-const dzEl=document.getElementById('dz'),fiEl=document.getElementById('fInput');
-dzEl.addEventListener('dragover',e=>{e.preventDefault();dzEl.classList.add('drag');});
-dzEl.addEventListener('dragleave',()=>dzEl.classList.remove('drag'));
-dzEl.addEventListener('drop',e=>{e.preventDefault();dzEl.classList.remove('drag');addFiles(e.dataTransfer.files);});
-dzEl.addEventListener('click',()=>fiEl.click());
-fiEl.addEventListener('change',e=>{addFiles(e.target.files);e.target.value='';});
-
+const dzEl=document.getElementById('dz'),fiEl=document.getElementById('fInput'); dzEl.addEventListener('dragover',e=>{e.preventDefault();dzEl.classList.add('drag');}); dzEl.addEventListener('dragleave',()=>dzEl.classList.remove('drag')); dzEl.addEventListener('drop',e=>{e.preventDefault();dzEl.classList.remove('drag');addFiles(e.dataTransfer.files);}); dzEl.addEventListener('click',()=>fiEl.click()); fiEl.addEventListener('change',e=>{addFiles(e.target.files);e.target.value='';});
 /* TRANSPORT */
-document.getElementById('btnPlay').addEventListener('click',togglePlay);
-document.getElementById('btnRew').addEventListener('click',()=>{if(playing)stopPB();PO=0;ppos=0;drawWave();});
-document.getElementById('btnStop').addEventListener('click',()=>{stopPB();PO=0;ppos=0;drawWave();});
-
-/* RESIZE */
-let _rt;
-window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(()=>{_waveCache.width=0;if(files.length)drawWave();},150);});
-
-/* KEYBOARD */
-document.getElementById('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-document.getElementById('lEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-document.getElementById('rPass').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
-
+document.getElementById('btnPlay').addEventListener('click',togglePlay); document.getElementById('btnRew').addEventListener('click',()=>{if(playing)stopPB();PO=0;ppos=0;drawWave();}); document.getElementById('btnStop').addEventListener('click',()=>{stopPB();PO=0;ppos=0;drawWave();});
+let _rt; window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(()=>{_waveCache.width=0;if(files.length)drawWave();},150);});
+document.getElementById('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}); document.getElementById('lEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}); document.getElementById('rPass').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
 function updExpState(){if(!CU)return;const ok=canExport();document.getElementById('btnEx').disabled=!ok;document.getElementById('btnExAll').disabled=!ok;if(!ok)document.getElementById('btnEx').textContent='🚫 LIMIT HABIS — UPGRADE VIP';else updExpBtns();}
+// Enter to send chat
+document.getElementById('chatInput')?.addEventListener('keypress', e => { if(e.key === 'Enter') sendChatMessage(); });
 </script>
 </body>
 </html>
