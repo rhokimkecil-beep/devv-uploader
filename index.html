@@ -295,6 +295,24 @@ body.exporting .spin{animation:spin .8s linear infinite}
 .del-msg-btn{position:absolute;left:0;top:0;opacity:0;transition:opacity .15s;background:rgba(255,82,82,.15);border:1px solid rgba(255,82,82,.3);border-radius:6px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--r);line-height:1.6;font-family:'JetBrains Mono',monospace}.del-msg-btn:hover{background:rgba(255,82,82,.3)}.chat-msg:hover .del-msg-btn{opacity:1}
 .chat-img-preview-wrap{position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:var(--s);border:1px solid var(--b);border-radius:10px;padding:10px;animation:slideUp .15s ease-out;z-index:300}.chat-img-preview-wrap img{max-height:160px;border-radius:7px;display:block;margin-bottom:8px;max-width:100%}.chat-img-preview-wrap .pv-actions{display:flex;gap:6px}.chat-img-btn{padding:5px 12px;border-radius:7px;border:none;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;cursor:pointer}.chat-img-btn.send{background:linear-gradient(135deg,var(--a),var(--a2));color:#fff}.chat-img-btn.cancel{background:var(--s2);border:1px solid var(--b);color:var(--d)}.chat-img-btn.cancel:hover{border-color:var(--r);color:var(--r)}.chat-msg-img{max-width:220px;max-height:180px;border-radius:8px;display:block;margin-top:5px;cursor:pointer;border:1px solid var(--b);transition:opacity .15s}.chat-msg-img:hover{opacity:.85}.img-upload-btn{width:36px;height:36px;border-radius:8px;background:var(--s2);border:1px solid var(--b);color:var(--d);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s;align-self:center}.img-upload-btn:hover{border-color:var(--a);color:var(--a)}
 
+.rating-modal{max-width:420px;width:100%;background:var(--s);border:1px solid var(--b);border-radius:16px;padding:26px;animation:slideUp .25s ease-out;position:relative;text-align:center}
+.stars-wrap{display:flex;justify-content:center;gap:8px;margin:16px 0}
+.star-btn{font-size:36px;cursor:pointer;transition:transform .1s;background:none;border:none;filter:grayscale(1);opacity:.4}
+.star-btn:hover,.star-btn.on{filter:grayscale(0);opacity:1;transform:scale(1.15)}
+.rating-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.rstat{background:var(--s2);border:1px solid var(--b);border-radius:9px;padding:10px;text-align:center}
+.rstat-l{font-size:8px;letter-spacing:2px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
+.rstat-v{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--a)}
+.rating-bar-wrap{margin-bottom:12px}
+.rating-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:11px;font-family:'JetBrains Mono',monospace}
+.rating-bar-row .rl{width:20px;text-align:right;color:var(--d)}
+.rating-bar-track{flex:1;height:6px;background:var(--b);border-radius:3px;overflow:hidden}
+.rating-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--g),#ff9500);transition:width .4s}
+.rating-bar-row .rr{width:24px;color:var(--d);font-size:10px}
+.footer-rating-btn{cursor:pointer;color:var(--a);font-family:'JetBrains Mono',monospace;font-size:10px;margin-left:8px}
+.footer-rating-btn:hover{text-decoration:underline}
+.avg-stars{font-size:22px;letter-spacing:2px;margin-bottom:4px}
+
 @keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
 @keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -748,6 +766,40 @@ raf=requestAnimationFrame(draw);
   </div>
 </div>
 
+<!-- RATING MODAL -->
+<div class="modal-bg" id="ratingModal">
+  <div class="rating-modal">
+    <button class="mclose" onclick="closeMod('ratingModal')">×</button>
+    <div style="font-size:28px;margin-bottom:6px">⭐</div>
+    <h2 style="font-size:17px;font-weight:800;margin-bottom:4px">Kasih Rating Website</h2>
+    <div style="font-size:11px;color:var(--d);margin-bottom:4px">Bantu kami berkembang dengan feedback kamu!</div>
+    <div class="stars-wrap" id="starsWrap">
+      <button class="star-btn" data-v="1">⭐</button>
+      <button class="star-btn" data-v="2">⭐</button>
+      <button class="star-btn" data-v="3">⭐</button>
+      <button class="star-btn" data-v="4">⭐</button>
+      <button class="star-btn" data-v="5">⭐</button>
+    </div>
+    <div id="starLabel" style="font-size:12px;color:var(--d);margin-bottom:12px;font-family:'JetBrains Mono',monospace;min-height:18px"></div>
+    <div class="fg" style="margin-bottom:12px;text-align:left">
+      <label class="fl">Komentar (opsional)</label>
+      <textarea class="fi" id="ratingComment" rows="3" placeholder="Cerita pengalaman kamu..." maxlength="300" style="resize:none"></textarea>
+    </div>
+    <div class="aerr" id="eRating"></div>
+    <button class="btn-a" id="btnSubmitRating" onclick="submitRating()" disabled>KIRIM RATING →</button>
+    <div style="margin-top:20px;border-top:1px solid var(--b);padding-top:16px">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-bottom:12px">RATING DARI SEMUA USER</div>
+      <div class="rating-stats">
+        <div class="rstat"><div class="rstat-l">RATA-RATA</div><div class="rstat-v" id="rAvg">—</div></div>
+        <div class="rstat"><div class="rstat-l">TOTAL</div><div class="rstat-v" id="rTotal">—</div></div>
+        <div class="rstat"><div class="rstat-l">TERBANYAK</div><div class="rstat-v" id="rTop">—</div></div>
+      </div>
+      <div class="avg-stars" id="avgStars">—</div>
+      <div class="rating-bar-wrap" id="ratingBars"></div>
+    </div>
+  </div>
+</div>
+
 <!-- CHAT FLOAT BUTTON -->
 <button id="chatFloatBtn" onclick="openChat()">💬</button>
 
@@ -840,7 +892,7 @@ raf=requestAnimationFrame(draw);
       <div class="statcard"><div class="stlbl">PROCESSED</div><div class="stval" id="stP">—</div></div>
     </div>
   </div>
-  <div class="footer">RPMxDEV<span class="dot">.</span>AUDIO BYPASS STUDIO · Firebase Realtime · MP3 Encoder by lamejs</div>
+  <div class="footer">RPMxDEV<span class="dot">.</span>AUDIO BYPASS STUDIO · Firebase Realtime · MP3 Encoder by lamejs <span class="footer-rating-btn" onclick="openRatingModal()">⭐ Kasih Rating</span></div>
 </div>
 
 <!-- Firebase SDK v10 modular (compat mode) -->
@@ -1157,6 +1209,120 @@ async function deleteChatMsg(msgId){
     await chatRef().doc(msgId).delete();
     toast('Pesan dihapus','','success');
   }catch(e){toast('Gagal hapus',e.message,'error');}
+}
+
+/* ============================================================
+   RATING SYSTEM
+   ============================================================ */
+let selectedRating=0;
+const STAR_LABELS={1:'😡 Sangat Buruk',2:'😞 Kurang',3:'😐 Cukup',4:'😊 Bagus',5:'🤩 Luar Biasa!'};
+
+function openRatingModal(){
+  if(!CU){toast('Login dulu','','warn');return;}
+  selectedRating=0;
+  document.getElementById('btnSubmitRating').disabled=true;
+  document.getElementById('starLabel').textContent='';
+  document.getElementById('ratingComment').value='';
+  document.querySelectorAll('.star-btn').forEach(b=>b.classList.remove('on'));
+  loadRatingStats();
+  checkUserRated();
+  openMod('ratingModal');
+}
+
+async function checkUserRated(){
+  if(!CU)return;
+  try{
+    const snap=await db.collection('ratings').doc(CU.uid).get();
+    if(snap.exists){
+      const d=snap.data();
+      selectedRating=d.rating||0;
+      document.getElementById('ratingComment').value=d.comment||'';
+      document.getElementById('starLabel').textContent=STAR_LABELS[selectedRating]||'';
+      document.getElementById('btnSubmitRating').disabled=false;
+      highlightStars(selectedRating);
+      document.getElementById('btnSubmitRating').textContent='UPDATE RATING →';
+    }else{
+      document.getElementById('btnSubmitRating').textContent='KIRIM RATING →';
+    }
+  }catch(e){}
+}
+
+function highlightStars(val){
+  document.querySelectorAll('.star-btn').forEach(b=>{
+    b.classList.toggle('on',parseInt(b.dataset.v)<=val);
+  });
+}
+
+document.getElementById('starsWrap').addEventListener('click',e=>{
+  const btn=e.target.closest('.star-btn');
+  if(!btn)return;
+  selectedRating=parseInt(btn.dataset.v);
+  highlightStars(selectedRating);
+  document.getElementById('starLabel').textContent=STAR_LABELS[selectedRating]||'';
+  document.getElementById('btnSubmitRating').disabled=false;
+});
+
+document.getElementById('starsWrap').addEventListener('mouseover',e=>{
+  const btn=e.target.closest('.star-btn');
+  if(!btn)return;
+  highlightStars(parseInt(btn.dataset.v));
+});
+
+document.getElementById('starsWrap').addEventListener('mouseleave',()=>{
+  highlightStars(selectedRating);
+});
+
+async function submitRating(){
+  if(!CU||!selectedRating)return;
+  const comment=sanitize(document.getElementById('ratingComment').value,300);
+  const btn=document.getElementById('btnSubmitRating');
+  btn.disabled=true;btn.textContent='⏳ Menyimpan...';
+  try{
+    await db.collection('ratings').doc(CU.uid).set({
+      uid:CU.uid,username:CU.username,rating:selectedRating,
+      comment:comment,ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('Rating terkirim! ⭐','Makasih feedback kamu','success');
+    await addLog('RATING',`${CU.username} kasih ${selectedRating}★`,'');
+    loadRatingStats();
+    btn.textContent='UPDATE RATING →';
+  }catch(e){
+    showErr('eRating','❌ '+e.message);
+  }
+  btn.disabled=false;
+}
+
+async function loadRatingStats(){
+  try{
+    const snap=await db.collection('ratings').get();
+    if(snap.empty){
+      document.getElementById('rAvg').textContent='—';
+      document.getElementById('rTotal').textContent='0';
+      document.getElementById('rTop').textContent='—';
+      document.getElementById('avgStars').textContent='—';
+      document.getElementById('ratingBars').innerHTML='';
+      return;
+    }
+    const counts={1:0,2:0,3:0,4:0,5:0};
+    let total=0,sum=0;
+    snap.forEach(doc=>{
+      const r=doc.data().rating||0;
+      if(r>=1&&r<=5){counts[r]++;total++;sum+=r;}
+    });
+    const avg=total>0?(sum/total).toFixed(1):'—';
+    const topStar=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];
+    document.getElementById('rAvg').textContent=avg+'★';
+    document.getElementById('rTotal').textContent=total;
+    document.getElementById('rTop').textContent=topStar+'★';
+    const fullStars=Math.round(avg);
+    document.getElementById('avgStars').textContent='⭐'.repeat(Math.max(0,fullStars))+'✩'.repeat(Math.max(0,5-fullStars));
+    document.getElementById('ratingBars').innerHTML=[5,4,3,2,1].map(s=>`
+      <div class="rating-bar-row">
+        <span class="rl">${s}★</span>
+        <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${total?Math.round((counts[s]/total)*100):0}%"></div></div>
+        <span class="rr">${counts[s]}</span>
+      </div>`).join('');
+  }catch(e){console.warn(e);}
 }
 
 /* IMAGE CHAT */
@@ -1803,6 +1969,7 @@ async function encodeMp3(rendered,bitrate){ bitrate=bitrate||128; if(typeof lame
 async function doExport(fd){ showProg('Processing Audio','Speed '+spd.toFixed(2)+'× · Pitch '+(pit>0?'+':'')+pit+'st'); if(playing)stopPB(); let rendered; try{setProg(30,'Rendering audio...');rendered=await renderAudio(fd);setProg(65,'Audio rendered...');} catch(e){hideProg();throw new Error('Render gagal: '+(e.message||e));} const base=fd.name.replace(/\.[^.]+$/,''); let blob,outName; if(fmt==='mp3'){ if(typeof lamejs!=='undefined'){blob=await encodeMp3(rendered,128);if(!blob){const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs error','Disimpan sebagai WAV','warn');}else outName=base+'_bypass.mp3';} else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs tidak tersedia','Disimpan sebagai WAV','warn');} }else if(fmt==='ogg'&&typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported('audio/ogg;codecs=vorbis')){ blob=await new Promise(res=>{const ac2=new AudioContext(),src2=ac2.createBufferSource();src2.buffer=rendered;const dest=ac2.createMediaStreamDestination();src2.connect(dest);const mr=new MediaRecorder(dest.stream,{mimeType:'audio/ogg;codecs=vorbis'});const chunks=[];mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};mr.onstop=()=>{ac2.close();res(new Blob(chunks,{type:'audio/ogg'}));};mr.start();src2.start(0);src2.onended=()=>setTimeout(()=>{try{mr.stop();}catch(e){}},200);setTimeout(()=>{try{mr.stop();}catch(e){}},Math.ceil((rendered.duration+3)*1000));}); outName=base+'_bypass.ogg'; }else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass.wav';if(fmt==='ogg')toast('OGG tidak didukung','Disimpan sebagai WAV','warn');} rendered=null; setProg(95,'Menyiapkan download...');return{blob,filename:outName}; }
 function triggerDL(blob,filename){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},2000);}
 document.getElementById('btnEx').addEventListener('click',async()=>{ if(!CU)return; if(!canExport()){toast('Limit habis','Upgrade VIP','warn');openMod('subModal');return;} const f=files[ai];if(!f)return; const btn=document.getElementById('btnEx');btn.disabled=true; try{ const res=await doExport(f);setProg(100,'Download dimulai! 🎉');triggerDL(res.blob,res.filename);setTimeout(hideProg,700); await incUsage(); await addLog('EXPORT',`${f.name}→${fmt.toUpperCase()}(${spd}×,${pit>0?'+':''}${pit}st)`,''); toast('Export berhasil! 🎉',res.filename,'success'); }catch(e){hideProg();toast('Export gagal',e.message||'Error','error');} btn.disabled=false;updExpState();updExpBtns(); });
+if(getUsageFromProfile(CU)===1) setTimeout(()=>openRatingModal(),2000);
 document.getElementById('btnExAll').addEventListener('click',async()=>{ if(!CU)return; let ok=0,fail=0; for(let i=0;i<files.length;i++){ if(!canExport()){toast('Limit habis','Sisa tidak di-export','warn');break;} try{const res=await doExport(files[i]);triggerDL(res.blob,res.filename);await incUsage();await addLog('EXP_BULK',files[i].name+' OK','');ok++;await new Promise(r=>setTimeout(r,600));} catch(e){fail++;toast('Gagal: '+files[i].name,e.message,'error');} } setProg(100,`Selesai: ${ok} berhasil, ${fail} gagal`);setTimeout(hideProg,900); if(ok>0)toast('Bulk export selesai',ok+' file','success'); updExpState();updExpBtns(); });
 /* DROPZONE */
 const dzEl=document.getElementById('dz'),fiEl=document.getElementById('fInput'); dzEl.addEventListener('dragover',e=>{e.preventDefault();dzEl.classList.add('drag');}); dzEl.addEventListener('dragleave',()=>dzEl.classList.remove('drag')); dzEl.addEventListener('drop',e=>{e.preventDefault();dzEl.classList.remove('drag');addFiles(e.dataTransfer.files);}); dzEl.addEventListener('click',()=>fiEl.click()); fiEl.addEventListener('change',e=>{addFiles(e.target.files);e.target.value='';});
