@@ -1050,7 +1050,7 @@ function switchTab(t){
 
 async function doDiscordLogin(){
   try{
-    const provider = new firebase.auth.OAuthProvider('discord.com');
+    const provider = new firebase.auth.OAuthProvider('oidc.discord');
     provider.addScope('identify');
     provider.addScope('email');
     const result = await auth.signInWithPopup(provider);
@@ -1067,8 +1067,7 @@ async function doDiscordLogin(){
         usage: {},
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         gateCompleted: false,
-        loginMethod: 'discord',
-        discordId: result.additionalUserInfo?.profile?.id||''
+        loginMethod: 'discord'
       });
     }
   }catch(e){
