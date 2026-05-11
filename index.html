@@ -1224,6 +1224,10 @@ function listenAnnouncement(){
       bannerText.innerHTML = eh(text);
       banner.style.borderLeftColor = color;
       banner.style.display = 'flex';
+      if(doc.metadata && !doc.metadata.hasPendingWrites){
+        playDingDong();
+        setTimeout(()=>speakAnnouncement(text),2000);
+      }
     } else {
       banner.style.display = 'none';
     }
