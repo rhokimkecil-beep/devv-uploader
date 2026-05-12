@@ -285,6 +285,21 @@ body.exporting .spin{animation:spin .8s linear infinite}
 .pedit input{width:100%;background:transparent;border:none;color:var(--t);font-size:13px;font-family:'Outfit',sans-serif;outline:none}
 .pedit-label{font-size:9px;color:var(--d);font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;margin-bottom:4px}
 
+.cut-panel{background:var(--s);border-radius:13px;padding:13px 16px;border:1px solid var(--b);margin-bottom:12px}
+.cut-range{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.cut-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--a);min-width:45px}
+.cut-bar{position:relative;height:6px;background:var(--b);border-radius:3px;flex:1;cursor:pointer;min-width:120px}
+.cut-fill{position:absolute;top:0;height:100%;background:linear-gradient(90deg,var(--a),var(--a2));border-radius:3px;pointer-events:none}
+.cut-handle{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:var(--a);transform:translate(-50%,-50%);cursor:ew-resize;box-shadow:0 0 6px var(--a);z-index:2}
+.cut-handle.end{background:var(--a2);box-shadow:0 0 6px var(--a2)}
+.cut-actions{display:flex;gap:7px;flex-wrap:wrap}
+.cut-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--b);background:var(--s2);color:var(--t);cursor:pointer;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:600;transition:border-color .15s,background .15s}
+.cut-btn:hover{border-color:var(--a)}.cut-btn.active{border-color:var(--a);background:rgba(0,229,255,.1);color:var(--a)}
+.cut-btn.apply{background:linear-gradient(135deg,var(--a),var(--a2));border:none;color:#fff}
+.cut-btn.apply:hover{opacity:.9}.cut-btn.reset{border-color:rgba(255,82,82,.4);color:var(--r)}
+.cut-btn.reset:hover{background:rgba(255,82,82,.08)}
+.cut-info{font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-top:8px}
+
 /* Firebase loading overlay */
 .fb-loading{position:fixed;inset:0;z-index:99999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
 .fb-loading .spin-ring{width:40px;height:40px;border:3px solid var(--b);border-top-color:var(--a);border-radius:50%;animation:spin .7s linear infinite}
@@ -313,6 +328,9 @@ body.exporting .spin{animation:spin .8s linear infinite}
 .footer-rating-btn:hover{text-decoration:underline}
 .avg-stars{font-size:22px;letter-spacing:2px;margin-bottom:4px}
 
+.footer-gradient-text{background:linear-gradient(90deg,#00e5ff,#9c6cff,#00e676,#ffd700,#00e5ff);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientMove 4s linear infinite}
+@keyframes gradientMove{0%{background-position:0% center}100%{background-position:300% center}}
+
 @keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
 @keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -336,73 +354,176 @@ body.exporting .spin{animation:spin .8s linear infinite}
 <script>
 (function(){
 const cv=document.getElementById('auroraBg');
-const cx=cv.getContext('2d',{alpha:false,desynchronized:true});
-let W,H,t=0,stars=[],shoots=[],nebulae=[];
-let raf,lastTime=0;
+const cx=cv.getContext('2d',{alpha:false});
+let W,H,t=0,raf,lastTime=0;
 const FPS=30,INTERVAL=1000/FPS;
 
-function resize(){
-  W=cv.width=window.innerWidth;
-  H=cv.height=window.innerHeight;
-  nebulae=[
-    {x:W*.2,y:H*.3,r:W*.38,c1:'rgba(80,0,180,.15)',c2:'rgba(0,150,255,.07)'},
-    {x:W*.8,y:H*.6,r:W*.32,c1:'rgba(140,0,255,.12)',c2:'rgba(0,200,200,.06)'},
-    {x:W*.5,y:H*.15,r:W*.28,c1:'rgba(0,229,255,.08)',c2:'transparent'},
-  ];
-  initStars();
-}
+// Waves config
+const WAVES=[
+  {speed:0.0008,amp:0.06,freq:1.2,phase:0,   color:'rgba(0,100,180,0.18)'},
+  {speed:0.0012,amp:0.05,freq:1.8,phase:1.5, color:'rgba(0,150,220,0.15)'},
+  {speed:0.0006,amp:0.07,freq:0.9,phase:3.0, color:'rgba(0,80,160,0.20)'},
+  {speed:0.0010,amp:0.04,freq:2.4,phase:0.8, color:'rgba(0,180,255,0.10)'},
+  {speed:0.0014,amp:0.03,freq:3.0,phase:2.2, color:'rgba(0,229,255,0.08)'},
+];
 
-function initStars(){
-  // Kurangi jumlah bintang
-  const total=Math.min(180,Math.floor(W*H/8000));
-  stars=[];
-  for(let i=0;i<total;i++){
-    const big=i<total*.1;
-    stars.push({
+// Bubbles/particles
+let bubbles=[];
+function initBubbles(){
+  bubbles=[];
+  const count=Math.min(40,Math.floor(W*H/18000));
+  for(let i=0;i<count;i++){
+    bubbles.push({
       x:Math.random()*W,
-      y:Math.random()*H,
-      r:big?Math.random()*.8+1:Math.random()*.5+.2,
-      op:Math.random()*.7+.2,
-      ts:Math.random()*.03+.008,
-      to:Math.random()*Math.PI*2,
-      big:big,
-      hue:Math.random()<.12?(Math.random()<.5?0:1):2
+      y:Math.random()*H+H*0.3,
+      r:Math.random()*3+1,
+      speed:Math.random()*0.4+0.15,
+      drift:Math.random()*0.3-0.15,
+      op:Math.random()*0.4+0.1,
+      wobble:Math.random()*Math.PI*2,
+      wobbleSpeed:Math.random()*0.02+0.005
     });
   }
 }
 
-// Cache nebula — gambar ke offscreen canvas, bukan hitung ulang tiap frame
-let nebulaCache=null,nebulaDirty=true;
-function buildNebulaCache(){
-  nebulaCache=document.createElement('canvas');
-  nebulaCache.width=W;nebulaCache.height=H;
-  const nc=nebulaCache.getContext('2d',{alpha:true});
-  nebulae.forEach(n=>{
-    const g=nc.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);
-    g.addColorStop(0,n.c1);
-    if(n.c2!=='transparent')g.addColorStop(.5,n.c2);
-    g.addColorStop(1,'transparent');
-    nc.fillStyle=g;nc.fillRect(0,0,W,H);
-  });
-  nebulaDirty=false;
+// Light rays
+let rays=[];
+function initRays(){
+  rays=[];
+  for(let i=0;i<6;i++){
+    rays.push({
+      x:W*(0.1+i*0.16+Math.random()*0.08),
+      width:W*(0.04+Math.random()*0.06),
+      op:Math.random()*0.04+0.01,
+      speed:Math.random()*0.0003+0.0001,
+      phase:Math.random()*Math.PI*2
+    });
+  }
 }
 
-// Grid cache
+function resize(){
+  W=cv.width=window.innerWidth;
+  H=cv.height=window.innerHeight;
+  initBubbles();
+  initRays();
+}
+
+function drawBackground(){
+  // Deep ocean gradient
+  const grad=cx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'#020818');
+  grad.addColorStop(0.3,'#031428');
+  grad.addColorStop(0.6,'#041c3a');
+  grad.addColorStop(1,'#020c20');
+  cx.fillStyle=grad;
+  cx.fillRect(0,0,W,H);
+}
+
+function drawRays(){
+  rays.forEach(r=>{
+    const op=r.op*(0.7+0.3*Math.sin(t*r.speed*1000+r.phase));
+    const grad=cx.createLinearGradient(r.x,0,r.x,H*0.8);
+    grad.addColorStop(0,`rgba(0,180,255,${op})`);
+    grad.addColorStop(1,'rgba(0,100,200,0)');
+    cx.fillStyle=grad;
+    cx.beginPath();
+    cx.moveTo(r.x-r.width/2,0);
+    cx.lineTo(r.x+r.width/2,0);
+    cx.lineTo(r.x+r.width*0.3,H*0.8);
+    cx.lineTo(r.x-r.width*0.3,H*0.8);
+    cx.closePath();
+    cx.fill();
+  });
+}
+
+function drawWave(wave,idx){
+  const baseY=H*(0.45+idx*0.08);
+  cx.beginPath();
+  cx.moveTo(0,H);
+  for(let x=0;x<=W;x+=4){
+    const nx=x/W;
+    const y=baseY
+      +Math.sin(nx*Math.PI*2*wave.freq+wave.phase+t*wave.speed*1000)*H*wave.amp
+      +Math.sin(nx*Math.PI*4*wave.freq+wave.phase*1.3+t*wave.speed*800)*H*wave.amp*0.3;
+    if(x===0)cx.moveTo(x,y);
+    else cx.lineTo(x,y);
+  }
+  cx.lineTo(W,H);
+  cx.lineTo(0,H);
+  cx.closePath();
+  cx.fillStyle=wave.color;
+  cx.fill();
+}
+
+function drawBubbles(){
+  bubbles.forEach(b=>{
+    b.y-=b.speed;
+    b.x+=Math.sin(b.wobble)*b.drift;
+    b.wobble+=b.wobbleSpeed;
+    if(b.y<-b.r*2){
+      b.y=H+b.r;
+      b.x=Math.random()*W;
+    }
+    const depthOp=Math.max(0,Math.min(1,(H-b.y)/H));
+    cx.beginPath();
+    cx.arc(b.x,b.y,b.r,0,Math.PI*2);
+    cx.strokeStyle=`rgba(100,220,255,${b.op*depthOp})`;
+    cx.lineWidth=0.7;
+    cx.stroke();
+    // Highlight
+    cx.beginPath();
+    cx.arc(b.x-b.r*0.3,b.y-b.r*0.3,b.r*0.3,0,Math.PI*2);
+    cx.fillStyle=`rgba(200,240,255,${b.op*0.5*depthOp})`;
+    cx.fill();
+  });
+}
+
+function drawCaustics(){
+  // Simulated caustic light patterns on the surface
+  const surfaceY=H*0.42;
+  for(let i=0;i<12;i++){
+    const x=W*(i/12)+Math.sin(t*0.0005+i)*W*0.04;
+    const w=W*(0.02+0.015*Math.sin(t*0.0008+i*0.7));
+    const op=0.03+0.02*Math.sin(t*0.0006+i*1.3);
+    const grad=cx.createRadialGradient(x,surfaceY,0,x,surfaceY,w*3);
+    grad.addColorStop(0,`rgba(100,220,255,${op})`);
+    grad.addColorStop(1,'rgba(0,100,200,0)');
+    cx.fillStyle=grad;
+    cx.beginPath();
+    cx.ellipse(x,surfaceY+Math.sin(t*0.0004+i)*H*0.02,w,w*2.5,0,0,Math.PI*2);
+    cx.fill();
+  }
+}
+
+function drawSurface(){
+  // Surface shimmer at top
+  const grad=cx.createLinearGradient(0,0,0,H*0.15);
+  grad.addColorStop(0,'rgba(0,150,255,0.12)');
+  grad.addColorStop(1,'rgba(0,100,200,0)');
+  cx.fillStyle=grad;
+  cx.fillRect(0,0,W,H*0.15);
+
+  // Surface ripple line
+  cx.beginPath();
+  for(let x=0;x<=W;x+=3){
+    const y=H*0.12+Math.sin(x*0.015+t*0.0008)*6+Math.sin(x*0.03+t*0.0012)*3;
+    if(x===0)cx.moveTo(x,y);
+    else cx.lineTo(x,y);
+  }
+  cx.strokeStyle='rgba(100,220,255,0.15)';
+  cx.lineWidth=1.5;
+  cx.stroke();
+}
+
+// Offscreen grid cache
 let gridCache=null;
-function buildGridCache(){
+function buildGrid(){
   gridCache=document.createElement('canvas');
   gridCache.width=W;gridCache.height=H;
-  const gc=gridCache.getContext('2d',{alpha:true});
-  gc.strokeStyle='rgba(0,229,255,.022)';gc.lineWidth=1;
+  const gc=gridCache.getContext('2d');
+  gc.strokeStyle='rgba(0,150,255,0.04)';gc.lineWidth=1;
   for(let x=0;x<W;x+=60){gc.beginPath();gc.moveTo(x,0);gc.lineTo(x,H);gc.stroke();}
   for(let y=0;y<H;y+=60){gc.beginPath();gc.moveTo(0,y);gc.lineTo(W,y);gc.stroke();}
-}
-
-function spawnShoot(){
-  if(Math.random()<.004&&shoots.length<2){
-    const a=Math.PI/6+Math.random()*Math.PI/8;
-    shoots.push({x:Math.random()*W*.8,y:Math.random()*H*.4,vx:Math.cos(a)*16,vy:Math.sin(a)*16,life:1,len:100+Math.random()*80});
-  }
 }
 
 function draw(now){
@@ -410,67 +531,26 @@ function draw(now){
   const delta=now-lastTime;
   if(delta<INTERVAL)return;
   lastTime=now-(delta%INTERVAL);
-  t+=.006;
+  t+=0.016;
 
-  // Background
-  cx.fillStyle='#06060c';cx.fillRect(0,0,W,H);
+  drawBackground();
+  drawRays();
+  drawCaustics();
 
-  // Nebula dari cache — gerak offset kecil saja
-  if(nebulaDirty||!nebulaCache)buildNebulaCache();
-  const ox=Math.sin(t*.15)*18,oy=Math.cos(t*.12)*12;
-  cx.drawImage(nebulaCache,ox,oy);
-
-  // Grid dari cache
-  if(!gridCache)buildGridCache();
+  if(!gridCache)buildGrid();
   cx.drawImage(gridCache,0,0);
 
-  // Stars
-  stars.forEach(s=>{
-    const tw=.5+.5*Math.sin(t*s.ts*60+s.to);
-    const op=s.op*tw;
-    const col=s.hue===0?`rgba(100,240,255,${op})`:s.hue===1?`rgba(180,120,255,${op})`:`rgba(220,230,255,${op})`;
-    cx.fillStyle=col;
-    cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fill();
-    // Glow hanya untuk bintang besar
-    if(s.big&&tw>.75){
-      cx.strokeStyle=col;cx.lineWidth=.4;cx.globalAlpha=tw*.35;
-      cx.beginPath();cx.moveTo(s.x-s.r*4,s.y);cx.lineTo(s.x+s.r*4,s.y);cx.stroke();
-      cx.beginPath();cx.moveTo(s.x,s.y-s.r*4);cx.lineTo(s.x,s.y+s.r*4);cx.stroke();
-      cx.globalAlpha=1;
-    }
-  });
-
-  // Shooting stars
-  spawnShoot();
-  shoots=shoots.filter(s=>{
-    s.x+=s.vx;s.y+=s.vy;s.life-=.03;
-    if(s.life<=0)return false;
-    const tx=s.x-s.vx*(s.len/16),ty=s.y-s.vy*(s.len/16);
-    const g=cx.createLinearGradient(tx,ty,s.x,s.y);
-    g.addColorStop(0,'transparent');
-    g.addColorStop(.8,`rgba(180,240,255,${s.life*.4})`);
-    g.addColorStop(1,`rgba(255,255,255,${s.life})`);
-    cx.strokeStyle=g;cx.lineWidth=1.2;
-    cx.beginPath();cx.moveTo(tx,ty);cx.lineTo(s.x,s.y);cx.stroke();
-    return true;
-  });
-
-  // Horizon glow — static, no recalc
-  cx.fillStyle='rgba(60,0,140,.05)';cx.fillRect(0,H*.7,W,H*.3);
+  WAVES.forEach((w,i)=>drawWave(w,i));
+  drawSurface();
+  drawBubbles();
 }
 
 resize();
-window.addEventListener('resize',()=>{
-  nebulaDirty=true;gridCache=null;
-  resize();
-});
-
-// Pause saat tab tidak aktif
+window.addEventListener('resize',()=>{gridCache=null;resize();});
 document.addEventListener('visibilitychange',()=>{
-  if(document.hidden){cancelAnimationFrame(raf);}
+  if(document.hidden)cancelAnimationFrame(raf);
   else{lastTime=0;raf=requestAnimationFrame(draw);}
 });
-
 raf=requestAnimationFrame(draw);
 })();
 </script>
@@ -726,6 +806,7 @@ raf=requestAnimationFrame(draw);
       <div class="prow"><span class="plabel">EXPORT HARI INI</span><span class="pval" id="pUsage">—</span></div>
       <div class="prow"><span class="plabel">MEMBER SEJAK</span><span class="pval" id="pJoined">—</span></div>
       <div class="prow"><span class="plabel">LOGIN METHOD</span><span class="pval" id="pMethod">—</span></div>
+      <div class="prow" id="pVipExpiry" style="display:none"><span class="plabel">VIP SAMPAI</span><span class="pval" id="pVipExpiryVal">—</span></div>
     </div>
     <div class="pedit">
       <div class="pedit-label">GANTI USERNAME</div>
@@ -861,6 +942,25 @@ raf=requestAnimationFrame(draw);
   </div>
   <div class="ftabs" id="ftabs"></div>
   <div id="editor" style="display:none">
+    <!-- CUT AUDIO PANEL -->
+<div class="cut-panel" id="cutPanel" style="display:none">
+  <div class="plbl">✂️ CUT AUDIO</div>
+  <div class="cut-range">
+    <span class="cut-val" id="cutStartVal">0:00</span>
+    <div class="cut-bar" id="cutBar">
+      <div class="cut-fill" id="cutFill"></div>
+      <div class="cut-handle" id="cutHandleStart" title="Geser start"></div>
+      <div class="cut-handle end" id="cutHandleEnd" title="Geser end"></div>
+    </div>
+    <span class="cut-val" id="cutEndVal">0:00</span>
+  </div>
+  <div class="cut-actions">
+    <button class="cut-btn" onclick="previewCut()">▶ PREVIEW CUT</button>
+    <button class="cut-btn apply" onclick="applyCut()">✂️ APPLY CUT</button>
+    <button class="cut-btn reset" onclick="resetCut()">↺ RESET</button>
+  </div>
+  <div class="cut-info" id="cutInfo">Geser handle untuk pilih bagian yang mau dipertahankan</div>
+</div>
     <div class="autosec" id="autosec"><div><div class="autolbl">⚡ AUTO BYPASS</div><div class="autodesc">Otomatis adjust untuk lolos filter copyright Roblox</div></div><div class="automodes" id="automodes"></div></div>
     <div class="wpanel">
       <div class="winfo"><div>WAVEFORM — <span id="wName" style="color:var(--t)"></span></div><div id="wTime">0:00 / 0:00</div></div>
@@ -882,7 +982,7 @@ raf=requestAnimationFrame(draw);
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="panel" style="flex:1"><div class="plbl">🎯 Presets</div><div class="pgrid" id="pgrid"></div></div>
-        <div class="panel"><div class="plbl">💾 Export</div><div class="fmtsel" id="fmtsel"></div><button class="bexport" id="btnEx">EXPORT → MP3</button><button class="bexall" id="btnExAll" style="display:none">EXPORT ALL → MP3</button><div class="expinfo" id="expinfo">Output: MP3 · 44100Hz · Stereo</div></div>
+        <div class="panel"><div class="plbl">💾 Export</div><button class="cut-btn" id="btnToggleCut" onclick="toggleCutPanel()" style="width:100%;margin-bottom:9px">✂️ CUT AUDIO</button><div class="fmtsel" id="fmtsel"></div><button class="bexport" id="btnEx">EXPORT → MP3</button><button class="bexall" id="btnExAll" style="display:none">EXPORT ALL → MP3</button><div class="expinfo" id="expinfo">Output: MP3 · 44100Hz · Stereo</div></div>
       </div>
     </div>
     <div class="statsrow">
@@ -892,7 +992,9 @@ raf=requestAnimationFrame(draw);
       <div class="statcard"><div class="stlbl">PROCESSED</div><div class="stval" id="stP">—</div></div>
     </div>
   </div>
-  <div class="footer">RPMxDEV<span class="dot">.</span>AUDIO BYPASS STUDIO · Firebase Realtime · MP3 Encoder by lamejs <span class="footer-rating-btn" onclick="openRatingModal()">⭐ Kasih Rating</span></div>
+  <div class="footer">
+  <span class="footer-gradient-text">RPMxDEV.AUDIO BYPASS STUDIO · Firebase Realtime · MP3 Encoder by RPMxPRIME</span>
+  <span class="footer-rating-btn" onclick="openRatingModal()">⭐ Kasih Rating</span>
 </div>
 
 <!-- Firebase SDK v10 modular (compat mode) -->
@@ -997,22 +1099,42 @@ window._onlineUsers=[];
 function startPresence(){
   if(!CU)return;
   presenceRef=db.collection('presence').doc(CU.uid);
-  const pdata={uid:CU.uid,username:CU.username,role:CU.role,ts:firebase.firestore.FieldValue.serverTimestamp()};
-  presenceRef.set(pdata);
-  presenceRef._iv=setInterval(()=>{if(presenceRef)presenceRef.set(pdata);},4*60*1000);
+  const updatePresence=()=>{
+    if(presenceRef)presenceRef.set({
+      uid:CU.uid,
+      username:CU.username,
+      role:CU.role,
+      ts:firebase.firestore.FieldValue.serverTimestamp(),
+      online:true
+    },{merge:true});
+  };
+  updatePresence();
+  presenceRef._iv=setInterval(updatePresence,2*60*1000);
   window.addEventListener('beforeunload',stopPresence);
   if(presenceUnsub)presenceUnsub();
   presenceUnsub=db.collection('presence').onSnapshot(snap=>{
-    const cut=Date.now()-10*60*1000;
+    const cut=Date.now()-5*60*1000;
     let count=0,users=[];
-    snap.forEach(doc=>{const d=doc.data();const t=d.ts?.toMillis?.()||0;if(t>cut){count++;users.push(d.username);}});
-    document.getElementById('onlineCount').textContent=count;
+    snap.forEach(doc=>{
+      const d=doc.data();
+      const t=d.ts?.toMillis?.()||d.ts?.seconds*1000||0;
+      if(t>cut&&d.online===true){
+        count++;
+        users.push(d.username);
+      }
+    });
+    const el=document.getElementById('onlineCount');
+    if(el)el.textContent=count;
     window._onlineUsers=users;
   });
 }
 
 function stopPresence(){
-  if(presenceRef){presenceRef.delete().catch(()=>{});clearInterval(presenceRef._iv);presenceRef=null;}
+  if(presenceRef){
+    presenceRef.set({online:false},{merge:true}).catch(()=>{});
+    clearInterval(presenceRef._iv);
+    presenceRef=null;
+  }
 }
 
 function openChat(){
@@ -1428,24 +1550,6 @@ function playDingDong(){
   });
 }
 
-function playDingDong(){
-  const AC=new(window.AudioContext||window.webkitAudioContext)();
-  const notes=[523,659,784,659,784,880];
-  const times=[0,0.3,0.6,1.0,1.3,1.6];
-  notes.forEach((freq,i)=>{
-    const osc=AC.createOscillator();
-    const gain=AC.createGain();
-    osc.connect(gain);gain.connect(AC.destination);
-    osc.frequency.value=freq;
-    osc.type='sine';
-    const t=AC.currentTime+times[i];
-    gain.gain.setValueAtTime(0,t);
-    gain.gain.linearRampToValueAtTime(0.4,t+0.05);
-    gain.gain.exponentialRampToValueAtTime(0.001,t+0.5);
-    osc.start(t);osc.stop(t+0.5);
-  });
-}
-
 function speakAnnouncement(text){
   if(!text||!window.speechSynthesis)return;
   window.speechSynthesis.cancel();
@@ -1559,6 +1663,19 @@ function openProfile(){
   openMod('profileModal');
 }
 
+const vipExp=CU.vipExpiry?.toDate?.();
+const vipRow=document.getElementById('pVipExpiry');
+if(vipRow){
+  if(vipExp&&CU.role==='vip'){
+    const diffDays=Math.ceil((vipExp-new Date())/(1000*60*60*24));
+    vipRow.style.display='flex';
+    document.getElementById('pVipExpiryVal').textContent=vipExp.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})+` (${diffDays} hari lagi)`;
+    document.getElementById('pVipExpiryVal').style.color=diffDays<=3?'var(--r)':diffDays<=7?'var(--w)':'var(--ok)';
+  }else{
+    vipRow.style.display='none';
+  }
+}
+
 async function saveUsername(){
   const newName=sanitize(document.getElementById('pNewUsername').value.toLowerCase(),30);
   if(!newName){showErr('eProfile','⚠ Username tidak boleh kosong');return;}
@@ -1575,6 +1692,148 @@ async function saveUsername(){
     toast('Username diupdate! ✅','','success');
     await addLog('PROFILE','Ganti username → '+newName,'');
   }catch(e){showErr('eProfile','❌ '+e.message);}
+}
+
+/* ============================================================
+   CUT AUDIO ENGINE
+   ============================================================ */
+let cutStart=0,cutEnd=1,cutActive=false,cutDragging=null;
+
+function toggleCutPanel(){
+  const panel=document.getElementById('cutPanel');
+  const btn=document.getElementById('btnToggleCut');
+  const f=files[ai];
+  if(!f||f.broken||!f.ab){toast('Load file dulu','','warn');return;}
+  cutActive=!cutActive;
+  panel.style.display=cutActive?'block':'none';
+  btn.classList.toggle('active',cutActive);
+  if(cutActive){
+    cutStart=0;cutEnd=1;
+    updateCutUI();
+  }
+}
+
+function updateCutUI(){
+  const f=files[ai];
+  if(!f||!f.ab)return;
+  const dur=f.ab.duration;
+  const bar=document.getElementById('cutBar');
+  const W=bar.offsetWidth;
+  document.getElementById('cutHandleStart').style.left=(cutStart*100)+'%';
+  document.getElementById('cutHandleEnd').style.left=(cutEnd*100)+'%';
+  document.getElementById('cutFill').style.left=(cutStart*100)+'%';
+  document.getElementById('cutFill').style.width=((cutEnd-cutStart)*100)+'%';
+  document.getElementById('cutStartVal').textContent=fmtT(cutStart*dur);
+  document.getElementById('cutEndVal').textContent=fmtT(cutEnd*dur);
+  const cutDur=((cutEnd-cutStart)*dur).toFixed(1);
+  document.getElementById('cutInfo').textContent=`Durasi terpilih: ${cutDur}s · dari ${fmtT(cutStart*dur)} sampai ${fmtT(cutEnd*dur)}`;
+}
+
+// Drag handles
+(function(){
+  function onDown(e,handle){
+    cutDragging=handle;
+    e.preventDefault();
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    const hs=document.getElementById('cutHandleStart');
+    const he=document.getElementById('cutHandleEnd');
+    if(hs)hs.addEventListener('pointerdown',e=>onDown(e,'start'));
+    if(he)he.addEventListener('pointerdown',e=>onDown(e,'end'));
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!cutDragging)return;
+    const bar=document.getElementById('cutBar');
+    if(!bar)return;
+    const rect=bar.getBoundingClientRect();
+    let pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+    if(cutDragging==='start'){
+      cutStart=Math.min(pct,cutEnd-0.01);
+    }else{
+      cutEnd=Math.max(pct,cutStart+0.01);
+    }
+    updateCutUI();
+  });
+  document.addEventListener('pointerup',()=>{cutDragging=null;});
+})();
+
+function previewCut(){
+  const f=files[ai];
+  if(!f||!f.ab){toast('Load file dulu','','warn');return;}
+  if(playing)stopPB();
+  const ctx=getAC();
+  if(ctx.state==='suspended')ctx.resume();
+  const dur=f.ab.duration;
+  const startSec=cutStart*dur;
+  const endSec=cutEnd*dur;
+  const src=ctx.createBufferSource();
+  src.buffer=f.ab;
+  src.playbackRate.value=prvR();
+  const g=ctx.createGain();
+  g.gain.value=vol;
+  src.connect(g);g.connect(ctx.destination);
+  src.start(0,startSec,endSec-startSec);
+  ST=ctx.currentTime-startSec/prvR();
+  SN=src;GN=g;playing=true;
+  ppos=cutStart;
+  document.getElementById('btnPlay').textContent='⏸';
+  const tick=()=>{
+    if(!playing)return;
+    const el=(ctx.currentTime-ST)*prvR();
+    const pos=el/dur;
+    if(pos>=cutEnd){stopPB();ppos=cutStart;drawWave();return;}
+    ppos=pos;drawWave();
+    RAF=requestAnimationFrame(tick);
+  };
+  RAF=requestAnimationFrame(tick);
+  src.onended=()=>{if(SN===src){stopPB();ppos=cutStart;drawWave();}};
+  toast('Preview cut','Memutar bagian yang dipilih','success');
+}
+
+async function applyCut(){
+  const f=files[ai];
+  if(!f||!f.ab){toast('Load file dulu','','warn');return;}
+  if(cutStart===0&&cutEnd===1){toast('Belum ada cut','Geser handle dulu','warn');return;}
+  if(playing)stopPB();
+  const dur=f.ab.duration;
+  const startSample=Math.floor(cutStart*f.ab.length);
+  const endSample=Math.floor(cutEnd*f.ab.length);
+  const newLen=endSample-startSample;
+  const nCh=f.ab.numberOfChannels;
+  const SR=f.ab.sampleRate;
+  // Buat AudioBuffer baru
+  const ctx=getAC();
+  const newBuf=ctx.createBuffer(nCh,newLen,SR);
+  for(let ch=0;ch<nCh;ch++){
+    const oldData=f.ab.getChannelData(ch);
+    const newData=newBuf.getChannelData(ch);
+    for(let i=0;i<newLen;i++){
+      newData[i]=oldData[startSample+i];
+    }
+  }
+  // Update file
+  files[ai].ab=newBuf;
+  files[ai].dur=newBuf.duration;
+  files[ai].name=files[ai].name.replace(/(\.[^.]+)$/,'_cut$1');
+  // Reset cut
+  cutStart=0;cutEnd=1;
+  cutActive=false;
+  document.getElementById('cutPanel').style.display='none';
+  document.getElementById('btnToggleCut').classList.remove('active');
+  // Refresh UI
+  _waveCache.fileIdx=-1;
+  ppos=0;PO=0;
+  renderTabs();
+  selFile(ai);
+  updFCount();
+  toast('Cut berhasil! ✂️','File sudah dipotong — siap export','success');
+  await addLog('CUT',`${f.name} cut ${fmtT(cutStart*dur)}→${fmtT(cutEnd*dur)}`,'');
+}
+
+function resetCut(){
+  cutStart=0;cutEnd=1;
+  updateCutUI();
+  toast('Reset','Handle kembali ke awal & akhir','success');
 }
 
 async function doResetPassword(){
@@ -1755,6 +2014,7 @@ function launchApp(){
   document.getElementById('mainApp').style.display='';
   updateUBar();syncUI();
   initMentionInput();
+  setTimeout(checkVipExpiry,2000);
 }
 
 function updateUBar(){
@@ -1888,8 +2148,64 @@ document.getElementById('ordersContainer').addEventListener('click',async e=>{
   if(btn.dataset.orderAction==='approve')await approveOrder(oid);
   else if(btn.dataset.orderAction==='reject')await rejectOrder(oid);
 });
-async function approveOrder(oid){ const snap=await ordersRef().doc(oid).get();if(!snap.exists)return; const order=snap.data(); const batch=db.batch(); batch.update(ordersRef().doc(oid),{status:'approved',approvedAt:firebase.firestore.FieldValue.serverTimestamp()}); batch.update(userRef(order.uid),{role:'vip'}); await batch.commit(); await addLog('APPROVE',`Order ${oid} → ${order.username} VIP`,'vip'); toast('Approved! ✅',order.username+' sekarang VIP','success'); }
+async function approveOrder(oid){
+  const snap=await ordersRef().doc(oid).get();
+  if(!snap.exists)return;
+  const order=snap.data();
+  const pkg=order.pkg||'vip_monthly';
+  const months=pkg==='vip_yearly'?12:1;
+  const expiry=new Date();
+  expiry.setMonth(expiry.getMonth()+months);
+  const batch=db.batch();
+  batch.update(ordersRef().doc(oid),{status:'approved',approvedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  batch.update(userRef(order.uid),{
+    role:'vip',
+    vipExpiry:firebase.firestore.Timestamp.fromDate(expiry),
+    vipPkg:pkg
+  });
+  await batch.commit();
+  await addLog('APPROVE',`Order ${oid} → ${order.username} VIP s/d ${expiry.toLocaleDateString('id-ID')}`,'vip');
+  toast('Approved! ✅',order.username+' VIP s/d '+expiry.toLocaleDateString('id-ID'),'success');
+}
+
+async function checkVipExpiry(){
+  if(!CU||CU.role!=='vip')return;
+  const expiry=CU.vipExpiry?.toDate?.();
+  if(!expiry)return;
+  const now=new Date();
+  const diffDays=Math.ceil((expiry-now)/(1000*60*60*24));
+  if(now>expiry){
+    await userRef(CU.uid).update({role:'free',vipExpiry:null});
+    CU.role='free';
+    updateUBar();
+    toast('⚠️ VIP Expired','Langganan VIP kamu sudah habis. Silakan perpanjang!','warn');
+    showVipExpiredNotif();
+    await addLog('VIP_EXPIRED',CU.username+' VIP expired','');
+  }else if(diffDays<=3){
+    toast('⏰ VIP Hampir Habis',`VIP kamu habis dalam ${diffDays} hari! Segera perpanjang.`,'warn');
+  }
+}
+
+function showVipExpiredNotif(){
+  const el=document.getElementById('vipExpiredNotif');
+  if(el)el.remove();
+  const div=document.createElement('div');
+  div.id='vipExpiredNotif';
+  div.style.cssText='position:fixed;inset:0;z-index:9998;background:rgba(6,6,12,.93);display:grid;place-items:center;padding:20px';
+  div.innerHTML=`
+    <div style="background:var(--s);border:1px solid rgba(255,171,64,.4);border-radius:16px;padding:28px;max-width:380px;width:100%;text-align:center;animation:slideUp .25s ease-out">
+      <div style="font-size:48px;margin-bottom:12px">⏰</div>
+      <h2 style="font-size:18px;font-weight:800;margin-bottom:8px;color:var(--w)">VIP Kamu Sudah Habis!</h2>
+      <p style="font-size:12px;color:var(--d);margin-bottom:20px;line-height:1.7">Langganan VIP kamu telah berakhir.<br>Perpanjang sekarang untuk tetap nikmati <b style="color:var(--g)">UNLIMITED export</b> & semua fitur premium!</p>
+      <button onclick="document.getElementById('vipExpiredNotif').remove();openMod('subModal')" style="width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--g),#ff9500);color:#000;font-weight:800;font-size:13px;cursor:pointer;font-family:'JetBrains Mono',monospace;margin-bottom:8px">⭐ PERPANJANG VIP →</button>
+      <button onclick="document.getElementById('vipExpiredNotif').remove()" style="width:100%;padding:9px;border-radius:8px;border:1px solid var(--b);background:transparent;color:var(--d);cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace">Nanti saja</button>
+      <div style="margin-top:12px;font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace">Punya pertanyaan? Join Discord kami</div>
+    </div>`;
+  document.body.appendChild(div);
+}
+
 async function rejectOrder(oid){ if(!confirm('Reject order ini?'))return; await ordersRef().doc(oid).update({status:'rejected'}); await addLog('REJECT',`Order ${oid} ditolak`,'err'); toast('Order ditolak',oid,'warn'); }
+
 function renderLogsFromData(logs){
   const el=document.getElementById('aLog');
   if(!logs.length){el.innerHTML='<span style="color:var(--d)">Belum ada log...</span>';return;}
@@ -1916,7 +2232,7 @@ async function submitOrder(){ if(!buyPkg||!buyPayMethod||!proofFile){toast('Leng
 /* ============================================================
    MODALS
    ============================================================ */
-['subModal','buyModal','adminPanel','chatModal','profileModal'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeMod(id);}); });
+['subModal','buyModal','adminPanel','chatModal','profileModal','ratingModal'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeMod(id);}); });
 function showLightbox(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('show');}
 /* ============================================================
    AUDIO ENGINE (same as original, only minor ref)
@@ -1968,8 +2284,8 @@ function buf2wav(buffer){const nCh=buffer.numberOfChannels,SR=buffer.sampleRate,
 async function encodeMp3(rendered,bitrate){ bitrate=bitrate||128; if(typeof lamejs==='undefined')return null; const nCh=Math.min(rendered.numberOfChannels,2); const ch0=rendered.getChannelData(0); const ch1=nCh>1?rendered.getChannelData(1):ch0; const toI16=f=>{const a=new Int16Array(f.length);for(let i=0;i<f.length;i++){const s=Math.max(-1,Math.min(1,f[i]));a[i]=s<0?s*0x8000:s*0x7FFF;}return a;}; const left=toI16(ch0),right=toI16(ch1); const encoder=new lamejs.Mp3Encoder(nCh===1?1:2,rendered.sampleRate,bitrate); const CHUNK=1152; const mp3Data=[]; const total=left.length; for(let i=0;i<total;i+=CHUNK){ const l=left.subarray(i,i+CHUNK),r=right.subarray(i,i+CHUNK); const encoded=nCh===1?encoder.encodeBuffer(l):encoder.encodeBuffer(l,r); if(encoded.length>0)mp3Data.push(new Int8Array(encoded)); if(i%(CHUNK*100)===0){setProg(65+Math.round((i/total)*30),'Encoding MP3... '+Math.round((i/total)*100)+'%');await new Promise(r=>setTimeout(r,0));} } const end=encoder.flush();if(end.length>0)mp3Data.push(new Int8Array(end)); return new Blob(mp3Data,{type:'audio/mp3'}); }
 async function doExport(fd){ showProg('Processing Audio','Speed '+spd.toFixed(2)+'× · Pitch '+(pit>0?'+':'')+pit+'st'); if(playing)stopPB(); let rendered; try{setProg(30,'Rendering audio...');rendered=await renderAudio(fd);setProg(65,'Audio rendered...');} catch(e){hideProg();throw new Error('Render gagal: '+(e.message||e));} const base=fd.name.replace(/\.[^.]+$/,''); let blob,outName; if(fmt==='mp3'){ if(typeof lamejs!=='undefined'){blob=await encodeMp3(rendered,128);if(!blob){const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs error','Disimpan sebagai WAV','warn');}else outName=base+'_bypass.mp3';} else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs tidak tersedia','Disimpan sebagai WAV','warn');} }else if(fmt==='ogg'&&typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported('audio/ogg;codecs=vorbis')){ blob=await new Promise(res=>{const ac2=new AudioContext(),src2=ac2.createBufferSource();src2.buffer=rendered;const dest=ac2.createMediaStreamDestination();src2.connect(dest);const mr=new MediaRecorder(dest.stream,{mimeType:'audio/ogg;codecs=vorbis'});const chunks=[];mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};mr.onstop=()=>{ac2.close();res(new Blob(chunks,{type:'audio/ogg'}));};mr.start();src2.start(0);src2.onended=()=>setTimeout(()=>{try{mr.stop();}catch(e){}},200);setTimeout(()=>{try{mr.stop();}catch(e){}},Math.ceil((rendered.duration+3)*1000));}); outName=base+'_bypass.ogg'; }else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass.wav';if(fmt==='ogg')toast('OGG tidak didukung','Disimpan sebagai WAV','warn');} rendered=null; setProg(95,'Menyiapkan download...');return{blob,filename:outName}; }
 function triggerDL(blob,filename){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},2000);}
+function openImage(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('show');}
 document.getElementById('btnEx').addEventListener('click',async()=>{ if(!CU)return; if(!canExport()){toast('Limit habis','Upgrade VIP','warn');openMod('subModal');return;} const f=files[ai];if(!f)return; const btn=document.getElementById('btnEx');btn.disabled=true; try{ const res=await doExport(f);setProg(100,'Download dimulai! 🎉');triggerDL(res.blob,res.filename);setTimeout(hideProg,700); await incUsage(); await addLog('EXPORT',`${f.name}→${fmt.toUpperCase()}(${spd}×,${pit>0?'+':''}${pit}st)`,''); toast('Export berhasil! 🎉',res.filename,'success'); }catch(e){hideProg();toast('Export gagal',e.message||'Error','error');} btn.disabled=false;updExpState();updExpBtns(); });
-if(getUsageFromProfile(CU)===1) setTimeout(()=>openRatingModal(),2000);
 document.getElementById('btnExAll').addEventListener('click',async()=>{ if(!CU)return; let ok=0,fail=0; for(let i=0;i<files.length;i++){ if(!canExport()){toast('Limit habis','Sisa tidak di-export','warn');break;} try{const res=await doExport(files[i]);triggerDL(res.blob,res.filename);await incUsage();await addLog('EXP_BULK',files[i].name+' OK','');ok++;await new Promise(r=>setTimeout(r,600));} catch(e){fail++;toast('Gagal: '+files[i].name,e.message,'error');} } setProg(100,`Selesai: ${ok} berhasil, ${fail} gagal`);setTimeout(hideProg,900); if(ok>0)toast('Bulk export selesai',ok+' file','success'); updExpState();updExpBtns(); });
 /* DROPZONE */
 const dzEl=document.getElementById('dz'),fiEl=document.getElementById('fInput'); dzEl.addEventListener('dragover',e=>{e.preventDefault();dzEl.classList.add('drag');}); dzEl.addEventListener('dragleave',()=>dzEl.classList.remove('drag')); dzEl.addEventListener('drop',e=>{e.preventDefault();dzEl.classList.remove('drag');addFiles(e.dataTransfer.files);}); dzEl.addEventListener('click',()=>fiEl.click()); fiEl.addEventListener('change',e=>{addFiles(e.target.files);e.target.value='';});
