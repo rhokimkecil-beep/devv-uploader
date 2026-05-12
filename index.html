@@ -1003,7 +1003,6 @@ raf=requestAnimationFrame(draw);
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js" defer></script>
-
 <script>
 /* ============================================================
    FIREBASE CONFIG
@@ -1025,9 +1024,6 @@ firebase.initializeApp(FIREBASE_CONFIG);
 const auth    = firebase.auth();
 const db      = firebase.firestore();
 const storage = firebase.storage();
-
-db.settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
-db.enablePersistence().catch(()=>{});
 
 /* ============================================================
    STATE
@@ -1660,20 +1656,19 @@ function openProfile(){
   const joined=CU.createdAt?.toDate?.();
   document.getElementById('pJoined').textContent=joined?joined.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}):'—';
   document.getElementById('pNewUsername').value='';
-  openMod('profileModal');
-}
-
-const vipExp=CU.vipExpiry?.toDate?.();
-const vipRow=document.getElementById('pVipExpiry');
-if(vipRow){
-  if(vipExp&&CU.role==='vip'){
-    const diffDays=Math.ceil((vipExp-new Date())/(1000*60*60*24));
-    vipRow.style.display='flex';
-    document.getElementById('pVipExpiryVal').textContent=vipExp.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})+` (${diffDays} hari lagi)`;
-    document.getElementById('pVipExpiryVal').style.color=diffDays<=3?'var(--r)':diffDays<=7?'var(--w)':'var(--ok)';
-  }else{
-    vipRow.style.display='none';
+  const vipExp=CU.vipExpiry?.toDate?.();
+  const vipRow=document.getElementById('pVipExpiry');
+  if(vipRow){
+    if(vipExp&&CU.role==='vip'){
+      const diffDays=Math.ceil((vipExp-new Date())/(1000*60*60*24));
+      vipRow.style.display='flex';
+      document.getElementById('pVipExpiryVal').textContent=vipExp.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})+` (${diffDays} hari lagi)`;
+      document.getElementById('pVipExpiryVal').style.color=diffDays<=3?'var(--r)':diffDays<=7?'var(--w)':'var(--ok)';
+    }else{
+      vipRow.style.display='none';
+    }
   }
+  openMod('profileModal');
 }
 
 async function saveUsername(){
@@ -1959,17 +1954,15 @@ auth.onAuthStateChanged(async(firebaseUser)=>{
     return;
   }
   try{
-    const [profSnap] = await Promise.all([
-      userRef(firebaseUser.uid).get(),
-      loadConfig()
-    ]);
+    loadConfig();
+    const profSnap = await userRef(firebaseUser.uid).get();
     if(!profSnap.exists){
       toast('Error','Profil tidak ditemukan. Coba daftar ulang.','error');
       await auth.signOut();return;
     }
     CU = profSnap.data();
     CU.uid = firebaseUser.uid;
-    listenAnnouncement(); // global announcement for all
+    listenAnnouncement();
     userRef(CU.uid).onSnapshot(snap=>{
       if(!snap.exists)return;
       CU = snap.data();CU.uid=firebaseUser.uid;
