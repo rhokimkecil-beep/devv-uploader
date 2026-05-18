@@ -329,6 +329,194 @@ body.exporting .spin{animation:spin .8s linear infinite}
 .avg-stars{font-size:22px;letter-spacing:2px;margin-bottom:4px}
 
 .footer-gradient-text{background:linear-gradient(90deg,#00e5ff,#9c6cff,#00e676,#ffd700,#00e5ff);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientMove 4s linear infinite}
+
+/* ============================================================
+   RAINBOW GRADIENT TEXT — ANIMATED
+   ============================================================ */
+@keyframes rainbowMove {
+  0%   { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+
+.aform h2, .aform .asub, .aform .anote, .aform .fl,
+.or-divider, .forgot-link, .logo-txt, .atab,
+.gate-title, .gate-sub, .gnote, .gstep-title, .gstep-desc,
+.hdr-logo-txt, .hdr-logo-sub,
+.bdg, .bdg-ok, .bdg-gold, .bdg-red,
+.uname, .urole, #uName, #uRole, #limTxt,
+.bsm, .lbar,
+.hero h1, .hero p, .hacc,
+.istrip,
+.feat-ttl, .feat-desc,
+.dz-ttl, .dz-sub,
+.footer, .footer-gradient-text, .footer-rating-btn,
+#srvBadge, #autoInd, #fCount {
+  background: linear-gradient(90deg,
+    #00e5ff 0%,
+    #9c6cff 25%,
+    #00e676 50%,
+    #ffd700 75%,
+    #00e5ff 100%
+  ) !important;
+  background-size: 400% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  animation: rainbowMove 3s linear infinite !important;
+  display: inline-block;
+}
+
+/* ============================================================
+   RAINBOW GRADIENT TEXT — ANIMATED
+   ============================================================ */
+@keyframes rainbowMove {
+  0%   { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+
+.aform h2, .aform .asub, .aform .anote, .aform .fl,
+.or-divider, .forgot-link, .logo-txt, .atab,
+.gate-title, .gate-sub, .gnote, .gstep-title, .gstep-desc,
+.hdr-logo-txt, .hdr-logo-sub,
+.bdg, .bdg-ok, .bdg-gold, .bdg-red,
+.uname, .urole, #uName, #uRole, #limTxt,
+.bsm, .lbar,
+.hero h1, .hero p, .hacc,
+.istrip,
+.feat-ttl, .feat-desc,
+.dz-ttl, .dz-sub,
+.footer, .footer-gradient-text, .footer-rating-btn,
+#srvBadge, #autoInd, #fCount {
+  background: linear-gradient(90deg,
+    #00e5ff 0%,
+    #9c6cff 25%,
+    #00e676 50%,
+    #ffd700 75%,
+    #00e5ff 100%
+  ) !important;
+  background-size: 400% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  animation: rainbowMove 3s linear infinite !important;
+  display: inline-block;
+}
+
+/* ... css kamu yang lain ... */
+
+/* FIX — hero text layout */
+.hero h1 {
+  display: block !important;
+  font-size: 28px !important;
+  margin-bottom: 6px !important;
+}
+
+.hero p {
+  display: block !important;
+  font-size: 13px !important;
+  max-width: 500px !important;
+  margin: 0 auto !important;
+  -webkit-text-fill-color: transparent !important;
+  background: linear-gradient(90deg,
+    #00e5ff 0%, #9c6cff 25%, #00e676 50%, #ffd700 75%, #00e5ff 100%
+  ) !important;
+  background-size: 400% 100% !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  animation: rainbowMove 3s linear infinite !important;
+}
+
+.dz-ttl, .dz-sub, .feat-ttl, .feat-desc,
+.istrip, .footer, .hdr-logo-txt, .hdr-logo-sub {
+  display: block !important;
+}
+
+.custom-preset-panel{background:var(--s);border-radius:13px;padding:13px 16px;border:1px solid var(--b);margin-bottom:12px}
+.preset-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:32px}
+.preset-item{display:flex;align-items:center;gap:0;border-radius:7px;overflow:hidden;border:1px solid var(--b);background:var(--s2)}
+.preset-item-btn{padding:6px 10px;background:none;border:none;color:var(--t);cursor:pointer;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:600;transition:background .15s}
+.preset-item-btn:hover{background:rgba(0,229,255,.1);color:var(--a)}
+.preset-item-del{padding:6px 8px;background:none;border:none;border-left:1px solid var(--b);color:var(--d);cursor:pointer;font-size:11px;transition:background .15s,color .15s}
+.preset-item-del:hover{background:rgba(255,82,82,.1);color:var(--r)}
+.preset-empty{font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace;padding:4px 0}
+.preset-save-row{display:flex;gap:7px;align-items:center}
+.preset-name-input{flex:1;padding:7px 10px;border-radius:7px;border:1px solid var(--b);background:var(--s2);color:var(--t);font-size:11px;font-family:'JetBrains Mono',monospace}
+.preset-name-input:focus{outline:none;border-color:var(--a)}
+.preset-save-btn{padding:7px 14px;border-radius:7px;border:none;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;cursor:pointer;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;white-space:nowrap;transition:opacity .15s}
+.preset-save-btn:hover{opacity:.85}
+.preset-info{font-size:9px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-top:6px}
+
+/* LEADERBOARD */
+.lb-modal{max-width:480px;width:100%;background:var(--s);border:1px solid var(--b);border-radius:16px;padding:26px;animation:slideUp .25s ease-out;position:relative;max-height:85vh;overflow-y:auto}
+.lb-header{text-align:center;margin-bottom:18px}
+.lb-title{font-size:17px;font-weight:800;margin-bottom:4px}
+.lb-sub{font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace}
+.lb-tabs{display:flex;gap:5px;margin-bottom:14px}
+.lb-tab{flex:1;padding:7px;border-radius:7px;border:1px solid var(--b);background:var(--s2);color:var(--d);cursor:pointer;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:700;text-align:center;transition:border-color .15s,background .15s,color .15s}
+.lb-tab.on{border-color:var(--g);background:rgba(255,215,0,.08);color:var(--g)}
+.lb-list{display:flex;flex-direction:column;gap:6px}
+.lb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--s2);border:1px solid var(--b);transition:border-color .15s}
+.lb-item.me{border-color:rgba(0,229,255,.4);background:rgba(0,229,255,.05)}
+.lb-item.top1{border-color:rgba(255,215,0,.5);background:rgba(255,215,0,.06)}
+.lb-item.top2{border-color:rgba(192,192,192,.4);background:rgba(192,192,192,.04)}
+.lb-item.top3{border-color:rgba(205,127,50,.4);background:rgba(205,127,50,.04)}
+.lb-rank{font-size:18px;width:28px;text-align:center;flex-shrink:0;font-family:'JetBrains Mono',monospace;font-weight:800}
+.lb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--a2));display:grid;place-items:center;font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.lb-info{flex:1;min-width:0}
+.lb-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-role{font-size:9px;color:var(--d);font-family:'JetBrains Mono',monospace}
+.lb-count{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:800;color:var(--g);flex-shrink:0;text-align:right}
+.lb-count span{font-size:9px;color:var(--d);font-weight:400;display:block}
+.lb-empty{text-align:center;padding:24px;font-size:11px;color:var(--d);font-family:'JetBrains Mono',monospace}
+.lb-loading{text-align:center;padding:20px;font-size:11px;color:var(--d);font-family:'JetBrains Mono',monospace}
+.lb-my-rank{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.2);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+
+/* STATUS ONLINE */
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
+.status-dot.online{background:var(--ok);box-shadow:0 0 6px var(--ok);animation:rtpulse 1.8s ease-in-out infinite}
+.status-dot.away{background:var(--w)}
+.status-dot.offline{background:var(--d)}
+.uav-wrap{position:relative;display:inline-block}
+.uav-status{position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;border:2px solid var(--s);background:var(--d)}
+.uav-status.online{background:var(--ok);box-shadow:0 0 4px var(--ok)}
+.uav-status.away{background:var(--w)}
+.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 7px;border-radius:20px;border:1px solid var(--b);background:var(--s2)}
+.status-badge.online{color:var(--ok);border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.07)}
+.status-badge.away{color:var(--w);border-color:rgba(255,171,64,.3);background:rgba(255,171,64,.07)}
+.status-badge.offline{color:var(--d)}
+.last-seen{font-size:9px;color:var(--d);font-family:'JetBrains Mono',monospace}
+
+/* PROFILE PICTURE */
+.pav-big-wrap{position:relative;width:72px;margin:0 auto 12px;cursor:pointer}
+.pav-big-wrap:hover .pav-edit-overlay{opacity:1}
+.pav-edit-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:18px}
+.uav-img{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.pav-big-img{width:72px;height:72px;border-radius:50%;object-fit:cover}
+.pp-upload-input{display:none}
+.pp-progress{height:3px;background:var(--b);border-radius:2px;margin-top:8px;overflow:hidden;display:none}
+.pp-progress-fill{height:100%;background:linear-gradient(90deg,var(--a),var(--a2));border-radius:2px;transition:width .2s;width:0%}
+
+/* KODE PROMO */
+.promo-wrap{background:var(--s);border-radius:13px;padding:13px 16px;border:1px solid var(--b);margin-bottom:12px}
+.promo-row{display:flex;gap:7px;align-items:center}
+.promo-input{flex:1;padding:9px 12px;border-radius:8px;border:1px solid var(--b);background:var(--s2);color:var(--t);font-size:13px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase}
+.promo-input:focus{outline:none;border-color:var(--a)}
+.promo-btn{padding:9px 16px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;white-space:nowrap;transition:opacity .15s}
+.promo-btn:hover{opacity:.85}.promo-btn:disabled{opacity:.4;cursor:not-allowed}
+.promo-info{font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-top:6px}
+.promo-active{background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.3);border-radius:8px;padding:8px 12px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ok);display:none;align-items:center;justify-content:space-between;gap:8px}
+.promo-active.show{display:flex}
+
+/* ADMIN PROMO */
+.promo-card{background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:10px 12px;margin-bottom:7px;font-family:'JetBrains Mono',monospace;font-size:10px}
+.promo-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.promo-code{font-size:14px;font-weight:800;color:var(--a);letter-spacing:2px}
+.promo-meta{color:var(--d);font-size:9px;line-height:1.8}
+.promo-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;font-weight:700}
+.promo-badge.active{background:rgba(0,230,118,.15);color:var(--ok);border:1px solid rgba(0,230,118,.3)}
+.promo-badge.expired{background:rgba(255,82,82,.15);color:var(--r);border:1px solid rgba(255,82,82,.3)}
+.promo-badge.used{background:rgba(255,171,64,.15);color:var(--w);border:1px solid rgba(255,171,64,.3)}
+
 @keyframes gradientMove{0%{background-position:0% center}100%{background-position:300% center}}
 
 @keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
@@ -573,13 +761,12 @@ raf=requestAnimationFrame(draw);
       <div class="atab on" id="tLogin" onclick="switchTab('login')">LOGIN</div>
       <div class="atab" id="tReg" onclick="switchTab('reg')">BUAT AKUN</div>
     </div>
-    <div class="aform" id="fLogin">
-      <h2>Selamat Datang 👋</h2>
+    <h2>Selamat Datang 👋</h2>
       <div class="asub">Login untuk akses RPMxPRIME BYPASS</div>
       <div class="aerr" id="eLogin"></div>
       <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="lEmail" placeholder="email@kamu.com" autocomplete="email"></div>
       <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="lPass" placeholder="••••••••" autocomplete="current-password"></div>
-<span class="forgot-link" onclick="doResetPassword()">Lupa password?</span>
+      <span class="forgot-link" onclick="doResetPassword()">Lupa password?</span>
       <button class="btn-a" id="btnLogin" onclick="doLogin()">LOGIN →</button>
       <div class="or-divider">OR</div>
       <button class="btn-discord" onclick="doDiscordLogin()">
@@ -738,6 +925,7 @@ raf=requestAnimationFrame(draw);
       <div class="atab2" data-tab="add" onclick="aTab(this,'add')">➕ TAMBAH</div>
       <div class="atab2" data-tab="logs" onclick="aTab(this,'logs')">📋 LOGS</div>
       <div class="atab2" data-tab="cfg" onclick="aTab(this,'cfg')">⚙️ CONFIG</div>
+      <div class="atab2" data-tab="promo" onclick="aTab(this,'promo')">🎟️ PROMO</div>
     </div>
     <div class="apane on" id="ap_users">
       <div style="overflow-x:auto"><table class="atable"><thead><tr><th>USER</th><th>EMAIL</th><th>ROLE</th><th>USAGE HARI INI</th><th>CUSTOM LIMIT</th><th>ACTIONS</th></tr></thead><tbody id="aBody"></tbody></table></div>
@@ -775,6 +963,23 @@ raf=requestAnimationFrame(draw);
       </div>
     </div>
     <div class="apane" id="ap_logs"><div class="asect">Activity Log (realtime)</div><div class="alog" id="aLog"><span style="color:var(--d)">Memuat log...</span></div></div>
+    <div class="apane" id="ap_promo">
+  <div class="asect">Buat Kode Promo Baru</div>
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:420px;margin-bottom:16px">
+    <div class="arow">
+      <input class="fi" id="promoCode" placeholder="Kode (contoh: BYPASS50)" maxlength="20" style="text-transform:uppercase;letter-spacing:2px;font-family:'JetBrains Mono',monospace">
+      <input class="fi" type="number" id="promoBonus" placeholder="Bonus export" min="1" max="9999" style="max-width:130px">
+    </div>
+    <div class="arow">
+      <input class="fi" type="number" id="promoMaxUse" placeholder="Maks pemakaian (0=unlimited)" min="0">
+      <input class="fi" type="datetime-local" id="promoExpiry">
+    </div>
+    <input class="fi" id="promoDesc" placeholder="Deskripsi (opsional)" maxlength="60">
+    <button class="btn-a" style="max-width:160px;padding:9px;font-size:10px" onclick="createPromoCode()">➕ BUAT KODE</button>
+  </div>
+  <div class="asect">Semua Kode Promo</div>
+  <div id="promoList"><span style="color:var(--d);font-size:11px;font-family:'JetBrains Mono',monospace">Memuat...</span></div>
+</div>
     <div class="apane" id="ap_cfg">
       <div class="asect">Global Config</div>
       <div style="display:flex;flex-direction:column;gap:9px;max-width:380px">
@@ -795,7 +1000,13 @@ raf=requestAnimationFrame(draw);
 <div class="modal-bg" id="profileModal">
   <div class="profile-modal">
     <button class="mclose" onclick="closeMod('profileModal')">×</button>
-    <div class="pav-big" id="pAvBig">?</div>
+    <div class="pav-big-wrap" onclick="document.getElementById('ppUploadInput').click()">
+  <div class="pav-big" id="pAvBig">?</div>
+  <img id="pAvBigImg" class="pav-big-img" src="" style="display:none" alt="avatar">
+  <div class="pav-edit-overlay">📷</div>
+</div>
+<input type="file" id="ppUploadInput" class="pp-upload-input" accept="image/*" onchange="handleProfilePicUpload(event)">
+<div class="pp-progress" id="ppProgress"><div class="pp-progress-fill" id="ppProgressFill"></div></div>
     <div style="text-align:center;margin-bottom:16px">
       <div style="font-size:16px;font-weight:700" id="pNameBig">—</div>
       <div style="font-size:11px;color:var(--d);font-family:'JetBrains Mono',monospace" id="pRoleBig">—</div>
@@ -805,6 +1016,8 @@ raf=requestAnimationFrame(draw);
       <div class="prow"><span class="plabel">ROLE</span><span class="pval" id="pRoleVal">—</span></div>
       <div class="prow"><span class="plabel">EXPORT HARI INI</span><span class="pval" id="pUsage">—</span></div>
       <div class="prow"><span class="plabel">MEMBER SEJAK</span><span class="pval" id="pJoined">—</span></div>
+      <div class="prow"><span class="plabel">STATUS</span><span class="pval" id="pStatus">—</span></div>
+<div class="prow"><span class="plabel">TERAKHIR AKTIF</span><span class="pval" id="pLastSeen">—</span></div>
       <div class="prow"><span class="plabel">LOGIN METHOD</span><span class="pval" id="pMethod">—</span></div>
       <div class="prow" id="pVipExpiry" style="display:none"><span class="plabel">VIP SAMPAI</span><span class="pval" id="pVipExpiryVal">—</span></div>
     </div>
@@ -814,6 +1027,7 @@ raf=requestAnimationFrame(draw);
     </div>
     <div class="aerr" id="eProfile" style="margin-top:8px"></div>
     <button class="btn-a" style="margin-top:10px" onclick="saveUsername()">SIMPAN PERUBAHAN →</button>
+    <button id="btnRemovePhoto" onclick="removeProfilePic()" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,82,82,.4);background:transparent;color:var(--r);cursor:pointer;font-size:10px;font-family:'JetBrains Mono',monospace;margin-top:5px">🗑 HAPUS FOTO PROFIL</button>
   </div>
 </div>
 
@@ -881,6 +1095,32 @@ raf=requestAnimationFrame(draw);
   </div>
 </div>
 
+<!-- LEADERBOARD MODAL -->
+<div class="modal-bg" id="lbModal">
+  <div class="lb-modal">
+    <button class="mclose" onclick="closeMod('lbModal')">×</button>
+    <div class="lb-header">
+      <div style="font-size:32px;margin-bottom:6px">🏆</div>
+      <div class="lb-title">Leaderboard Export</div>
+      <div class="lb-sub">Siapa yang paling produktif?</div>
+    </div>
+    <div id="lbMyRank" class="lb-my-rank" style="display:none">
+      <span>Rank kamu</span>
+      <span id="lbMyRankVal" style="color:var(--a);font-weight:700">#—</span>
+      <span id="lbMyCount" style="color:var(--g)">0 export</span>
+    </div>
+    <div class="lb-tabs">
+  <div class="lb-tab on" onclick="lbTab(this,'today')">📅 Hari Ini</div>
+  <div class="lb-tab" onclick="lbTab(this,'month')">📆 Bulan Ini</div>
+  <div class="lb-tab" onclick="lbTab(this,'alltime')">👑 All Time</div>
+  <div class="lb-tab" onclick="lbTab(this,'online')">🟢 Online</div>
+</div>
+    <div class="lb-list" id="lbList">
+      <div class="lb-loading">⏳ Memuat data...</div>
+    </div>
+  </div>
+</div>
+
 <!-- CHAT FLOAT BUTTON -->
 <button id="chatFloatBtn" onclick="openChat()">💬</button>
 
@@ -920,15 +1160,38 @@ raf=requestAnimationFrame(draw);
   </div>
   
   <div class="ubar">
-    <div class="uinfo"><div class="uav" id="uAv">?</div><div><div class="uname" id="uName">—</div><div class="urole" id="uRole">Free User</div></div></div>
+    <div class="uinfo">
+      <div class="uav-wrap">
+        <div class="uav-wrap">
+  <img id="uAvImg" class="uav-img" src="" style="display:none" alt="avatar">
+  <div class="uav" id="uAv">?</div>
+  <div class="uav-status online" id="uAvStatus"></div>
+</div>
+        <div class="uav-status online" id="uAvStatus"></div>
+      </div>
+      <div><div class="uname" id="uName">—</div><div class="urole" id="uRole">Free User</div></div>
+    </div>
     <div class="uact">
       <div class="lbar"><span id="limTxt">0/10</span><div class="ltrack"><div class="lfill" id="limFill" style="width:0%"></div></div><span style="color:var(--d);font-size:9px">TODAY</span></div>
       <button class="bsm" onclick="openProfile()">👤 PROFIL</button>
+      <button class="bsm" onclick="openLeaderboard()" style="border-color:rgba(255,215,0,.4);color:var(--g)">🏆 TOP</button>
       <button class="bsm gold" id="btnUpg" onclick="openMod('subModal')">⭐ UPGRADE</button>
       <button class="bsm red" id="btnAdm" style="display:none" onclick="openAdmin()">🔴 ADMIN</button>
       <button class="bsm red" onclick="doLogout()">LOGOUT</button>
     </div>
   </div>
+  <div class="promo-wrap" id="promoWrap" style="display:none">
+  <div class="plbl">🎟️ KODE PROMO</div>
+  <div class="promo-row">
+    <input class="promo-input" id="promoInputField" placeholder="MASUKKAN KODE..." maxlength="20">
+    <button class="promo-btn" id="promoRedeemBtn" onclick="redeemPromo()">REDEEM →</button>
+  </div>
+  <div class="promo-info" id="promoInfoTxt">Punya kode promo? Masukkan untuk dapat bonus export!</div>
+  <div class="promo-active" id="promoActiveBadge">
+    <span id="promoActiveTxt">—</span>
+    <span id="promoActiveExp" style="color:var(--d)">—</span>
+  </div>
+</div>
   <div class="limban" id="limBan"><span>🚫 <b>Limit harian habis!</b> Upgrade VIP untuk unlimited.</span><button class="bsm gold" onclick="openMod('subModal')">⭐ VIP</button></div>
   <div class="hero" id="hero"><h1>Process Audio for <span class="hacc">Roblox</span></h1><p>Pitch & speed independen. Langsung download. Export MP3 asli — bukan WAV palsu!</p></div>
   <div class="istrip">⚡ <b>Bypass Audio — Selalu Online!</b> Export MP3 nyata via lamejs encoder. 100% privat.</div>
@@ -1136,7 +1399,7 @@ function stopPresence(){
 function openChat(){
   if(!CU){toast('Login dulu','Silakan login untuk menggunakan chat','warn');return;}
   openMod('chatModal');
-  startPresence();
+  startPresenceWithStatus();
   if(chatUnsub)chatUnsub();
   chatUnsub=chatRef().orderBy('ts','desc').limit(60).onSnapshot(snapshot=>{
     const msgs=[];
@@ -1668,6 +1931,7 @@ function openProfile(){
       vipRow.style.display='none';
     }
   }
+  updateProfileStatus();
   openMod('profileModal');
 }
 
@@ -1886,11 +2150,17 @@ async function doLogin(){
   try{
     await auth.signInWithEmailAndPassword(email, pass);
   }catch(e){
-    const msg = e.code==='auth/user-not-found'||e.code==='auth/wrong-password'
-      ? '❌ Email atau password salah'
-      : e.code==='auth/too-many-requests'
-      ? '⚠ Terlalu banyak percobaan. Tunggu sebentar.'
-      : '❌ '+e.message;
+    const msg = 
+      e.code==='auth/user-not-found' ||
+      e.code==='auth/wrong-password' ||
+      e.code==='auth/invalid-credential' ||
+      e.code==='auth/invalid-email'
+        ? '❌ Email atau password salah'
+        : e.code==='auth/too-many-requests'
+        ? '⚠ Terlalu banyak percobaan. Tunggu sebentar atau reset password.'
+        : e.code==='auth/user-disabled'
+        ? '🚫 Akun kamu dinonaktifkan. Hubungi admin.'
+        : '❌ '+e.message;
     showErr('eLogin', msg);
     setBtnLoading('btnLogin',false,'LOGIN →');
   }
@@ -2007,6 +2277,8 @@ function launchApp(){
   document.getElementById('mainApp').style.display='';
   updateUBar();syncUI();
   initMentionInput();
+  showPromoSection();
+  initCustomPresets();
   setTimeout(checkVipExpiry,2000);
 }
 
@@ -2016,6 +2288,7 @@ function updateUBar(){
   const lim=getLimitFromProfile(CU,_cfg);
   const isVIP=CU.role==='vip'||CU.role==='admin';
   document.getElementById('uAv').textContent=CU.username.charAt(0).toUpperCase();
+  if(CU.photoURL) updateAvatarUI(CU.photoURL);
   document.getElementById('uName').textContent=CU.username;
   const rl={admin:'🔴 Administrator',vip:'⭐ VIP Member',pro:'💎 Pro User',free:'Free User'};
   const rc={admin:'var(--r)',vip:'var(--g)',pro:'var(--a2)',free:''};
@@ -2085,6 +2358,7 @@ function aTab(el,t){
   document.querySelectorAll('.atab2').forEach(x=>x.classList.remove('on'));el.classList.add('on');
   document.querySelectorAll('.apane').forEach(p=>p.classList.remove('on'));
   const pane=document.getElementById('ap_'+t);if(pane)pane.classList.add('on');
+  if(t==='promo') loadPromoList();
 }
 function renderUsersFromData(users){
   const frag=document.createDocumentFragment();
@@ -2225,8 +2499,123 @@ async function submitOrder(){ if(!buyPkg||!buyPayMethod||!proofFile){toast('Leng
 /* ============================================================
    MODALS
    ============================================================ */
-['subModal','buyModal','adminPanel','chatModal','profileModal','ratingModal'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeMod(id);}); });
+['subModal','buyModal','adminPanel','chatModal','profileModal','ratingModal','lbModal'].forEach
 function showLightbox(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('show');}
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
+let lbPeriod = 'today';
+
+async function openLeaderboard(){
+  if(!CU){ toast('Login dulu','','warn'); return; }
+  openMod('lbModal');
+  loadLeaderboard(lbPeriod);
+}
+
+function lbTab(el, period){
+  document.querySelectorAll('.lb-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  lbPeriod = period;
+  loadLeaderboard(period);
+}
+
+async function loadLeaderboard(period){
+  const list = document.getElementById('lbList');
+  list.innerHTML = '<div class="lb-loading">⏳ Memuat data...</div>';
+  try{
+    const snap = await db.collection('users').get();
+    const users = [];
+    const now = new Date();
+    const monthKey = `${now.getFullYear()}-${now.getMonth()+1}`;
+    const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+    snap.forEach(doc=>{
+      const u = doc.data();
+      let count = 0;
+      if(period === 'today'){
+        count = (u.usage && u.usage[todayKey]) || 0;
+      } else if(period === 'month'){
+        if(u.usage){
+          Object.entries(u.usage).forEach(([k,v])=>{
+            if(k.startsWith(monthKey)) count += v;
+          });
+        }
+      } else {
+        if(u.usage){
+          Object.values(u.usage).forEach(v=>count+=v);
+        }
+      }
+      if(count > 0) users.push({...u, uid: doc.id, count});
+    });
+    // Tab online — tampilkan siapa yang sedang online
+if(period === 'online'){
+  const presSnap = await db.collection('presence').get();
+  const cut = Date.now() - 5*60*1000;
+  const onlineUsers = [];
+  presSnap.forEach(doc=>{
+    const d = doc.data();
+    const t = d.ts?.toMillis?.() || d.ts?.seconds*1000 || 0;
+    if(t > cut && d.online === true){
+      onlineUsers.push(d);
+    }
+  });
+  document.getElementById('lbMyRank').style.display = 'none';
+  if(!onlineUsers.length){
+    list.innerHTML='<div class="lb-empty">😴 Tidak ada yang online sekarang</div>';
+    return;
+  }
+  list.innerHTML = onlineUsers.map((u,i)=>{
+    const isMe = u.uid === CU.uid;
+    const roleLabel = u.role==='admin'?'🔴 Admin':u.role==='vip'?'⭐ VIP':u.role==='pro'?'💎 Pro':'Free';
+    const ts = u.ts?.toMillis?.() || u.ts?.seconds*1000 || 0;
+    const lastSeen = getLastSeenText(ts);
+    return `<div class="lb-item ${isMe?'me':''}">
+      <div class="lb-rank" style="font-size:13px">🟢</div>
+      <div class="lb-av">${(u.username||'?').charAt(0).toUpperCase()}</div>
+      <div class="lb-info">
+        <div class="lb-name">${eh(u.username||'—')}${isMe?' <span style="color:var(--a);font-size:9px">(kamu)</span>':''}</div>
+        <div class="lb-role">${roleLabel} · ${lastSeen}</div>
+      </div>
+      <div class="lb-count" style="color:var(--ok);font-size:11px">Online</div>
+    </div>`;
+  }).join('');
+  return;
+}
+    users.sort((a,b)=>b.count-a.count);
+    const top = users.slice(0,20);
+    const myIdx = users.findIndex(u=>u.uid===CU.uid);
+    const myRankEl = document.getElementById('lbMyRank');
+    const myRankVal = document.getElementById('lbMyRankVal');
+    const myCountEl = document.getElementById('lbMyCount');
+    if(myIdx>=0){
+      myRankEl.style.display='flex';
+      myRankVal.textContent = '#'+(myIdx+1);
+      myCountEl.textContent = users[myIdx].count+' export';
+    } else {
+      myRankEl.style.display='none';
+    }
+    if(!top.length){
+      list.innerHTML='<div class="lb-empty">😴 Belum ada data untuk periode ini</div>';
+      return;
+    }
+    const medals=['🥇','🥈','🥉'];
+    list.innerHTML = top.map((u,i)=>{
+      const isMe = u.uid === CU.uid;
+      const rankClass = i===0?'top1':i===1?'top2':i===2?'top3':'';
+      const roleLabel = u.role==='admin'?'🔴 Admin':u.role==='vip'?'⭐ VIP':u.role==='pro'?'💎 Pro':'Free';
+      return `<div class="lb-item ${rankClass} ${isMe?'me':''}">
+        <div class="lb-rank">${i<3?medals[i]:'#'+(i+1)}</div>
+        <div class="lb-av">${(u.username||'?').charAt(0).toUpperCase()}</div>
+        <div class="lb-info">
+          <div class="lb-name">${eh(u.username||'—')}${isMe?' <span style="color:var(--a);font-size:9px">(kamu)</span>':''}</div>
+          <div class="lb-role">${roleLabel}</div>
+        </div>
+        <div class="lb-count">${u.count}<span>export</span></div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    list.innerHTML='<div class="lb-empty">❌ Gagal memuat: '+eh(e.message)+'</div>';
+  }
+}
 /* ============================================================
    AUDIO ENGINE (same as original, only minor ref)
    ============================================================ */
@@ -2282,11 +2671,529 @@ document.getElementById('btnEx').addEventListener('click',async()=>{ if(!CU)retu
 document.getElementById('btnExAll').addEventListener('click',async()=>{ if(!CU)return; let ok=0,fail=0; for(let i=0;i<files.length;i++){ if(!canExport()){toast('Limit habis','Sisa tidak di-export','warn');break;} try{const res=await doExport(files[i]);triggerDL(res.blob,res.filename);await incUsage();await addLog('EXP_BULK',files[i].name+' OK','');ok++;await new Promise(r=>setTimeout(r,600));} catch(e){fail++;toast('Gagal: '+files[i].name,e.message,'error');} } setProg(100,`Selesai: ${ok} berhasil, ${fail} gagal`);setTimeout(hideProg,900); if(ok>0)toast('Bulk export selesai',ok+' file','success'); updExpState();updExpBtns(); });
 /* DROPZONE */
 const dzEl=document.getElementById('dz'),fiEl=document.getElementById('fInput'); dzEl.addEventListener('dragover',e=>{e.preventDefault();dzEl.classList.add('drag');}); dzEl.addEventListener('dragleave',()=>dzEl.classList.remove('drag')); dzEl.addEventListener('drop',e=>{e.preventDefault();dzEl.classList.remove('drag');addFiles(e.dataTransfer.files);}); dzEl.addEventListener('click',()=>fiEl.click()); fiEl.addEventListener('change',e=>{addFiles(e.target.files);e.target.value='';});
+
+/* ============================================================
+   PROFILE PICTURE
+   ============================================================ */
+async function handleProfilePicUpload(e){
+  const f = e.target.files[0];
+  e.target.value = '';
+  if(!f) return;
+  if(!f.type.startsWith('image/')){toast('Harus file gambar','JPG/PNG/WEBP','warn');return;}
+  if(f.size > 3*1024*1024){toast('Terlalu besar','Maks 3MB','error');return;}
+
+  const progress = document.getElementById('ppProgress');
+  const fill = document.getElementById('ppProgressFill');
+  progress.style.display = 'block';
+  fill.style.width = '0%';
+
+  try{
+    // Compress & resize dulu
+    const compressed = await compressImage(f, 200, 200);
+    fill.style.width = '30%';
+
+    // Upload ke Firebase Storage
+    const ext = f.name.split('.').pop();
+    const path = `avatars/${CU.uid}.${ext}`;
+    const ref = storage.ref(path);
+    const task = ref.put(compressed);
+
+    task.on('state_changed', snap=>{
+      const pct = (snap.bytesTransferred/snap.totalBytes)*60;
+      fill.style.width = (30+pct)+'%';
+    });
+
+    await task;
+    fill.style.width = '95%';
+
+    const url = await ref.getDownloadURL();
+
+    // Simpan ke Firestore
+    await userRef(CU.uid).update({photoURL: url});
+    CU.photoURL = url;
+
+    fill.style.width = '100%';
+    setTimeout(()=>progress.style.display='none', 800);
+
+    // Update semua avatar di UI
+    updateAvatarUI(url);
+    openProfile();
+    toast('Foto profil diupdate! 📸','','success');
+    await addLog('PHOTO','Update profile picture','');
+  }catch(err){
+    progress.style.display = 'none';
+    toast('Gagal upload',err.message,'error');
+  }
+}
+
+function compressImage(file, maxW, maxH){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = ()=>{
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      if(w > maxW){ h = Math.round(h*maxW/w); w = maxW; }
+      if(h > maxH){ w = Math.round(w*maxH/h); h = maxH; }
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(blob=>resolve(blob), 'image/jpeg', 0.85);
+    };
+    img.src = url;
+  });
+}
+
+function updateAvatarUI(photoURL){
+  if(!photoURL) return;
+
+  // Avatar kecil di navbar
+  const uAvImg = document.getElementById('uAvImg');
+  const uAv = document.getElementById('uAv');
+  if(uAvImg && uAv){
+    uAvImg.src = photoURL;
+    uAvImg.style.display = 'block';
+    uAv.style.display = 'none';
+  }
+
+  // Avatar besar di profile modal
+  const pAvBigImg = document.getElementById('pAvBigImg');
+  const pAvBig = document.getElementById('pAvBig');
+  if(pAvBigImg && pAvBig){
+    pAvBigImg.src = photoURL;
+    pAvBigImg.style.display = 'block';
+    pAvBig.style.display = 'none';
+  }
+}
+
+async function removeProfilePic(){
+  if(!CU) return;
+  if(!confirm('Hapus foto profil?')) return;
+  try{
+    // Hapus dari storage
+    try{
+      const oldRef = storage.ref(`avatars/${CU.uid}.jpg`);
+      await oldRef.delete();
+    }catch(e){}
+    try{
+      const oldRef = storage.ref(`avatars/${CU.uid}.png`);
+      await oldRef.delete();
+    }catch(e){}
+
+    await userRef(CU.uid).update({photoURL: ''});
+    CU.photoURL = '';
+
+    // Reset avatar UI
+    const uAvImg = document.getElementById('uAvImg');
+    const uAv = document.getElementById('uAv');
+    if(uAvImg && uAv){ uAvImg.style.display='none'; uAv.style.display=''; }
+
+    const pAvBigImg = document.getElementById('pAvBigImg');
+    const pAvBig = document.getElementById('pAvBig');
+    if(pAvBigImg && pAvBig){ pAvBigImg.style.display='none'; pAvBig.style.display=''; }
+
+    openProfile();
+    toast('Foto profil dihapus','','warn');
+  }catch(e){ toast('Gagal hapus',e.message,'error'); }
+}
+
+/* ============================================================
+   KODE PROMO SYSTEM
+   ============================================================ */
+function promoRef(){ return db.collection('promoCodes'); }
+
+// Tampilkan section promo di dashboard
+function showPromoSection(){
+  const wrap = document.getElementById('promoWrap');
+  if(wrap) wrap.style.display = 'block';
+  checkActivePromo();
+}
+
+// Cek apakah user punya promo aktif
+async function checkActivePromo(){
+  if(!CU) return;
+  try{
+    const snap = await userRef(CU.uid).collection('activePromos')
+      .where('expiresAt','>',firebase.firestore.Timestamp.now())
+      .limit(1).get();
+    if(!snap.empty){
+      const p = snap.docs[0].data();
+      const badge = document.getElementById('promoActiveBadge');
+      const txt = document.getElementById('promoActiveTxt');
+      const exp = document.getElementById('promoActiveExp');
+      if(badge && txt && exp){
+        txt.textContent = '✅ Promo aktif: +'+p.bonus+' export/hari ('+p.code+')';
+        const expDate = p.expiresAt?.toDate?.();
+        exp.textContent = expDate ? 'Hingga '+expDate.toLocaleDateString('id-ID') : '';
+        badge.classList.add('show');
+      }
+    }
+  }catch(e){}
+}
+
+// Redeem kode promo
+async function redeemPromo(){
+  if(!CU){ toast('Login dulu','','warn'); return; }
+  const input = document.getElementById('promoInputField');
+  const code = input.value.trim().toUpperCase();
+  if(!code){ toast('Isi kode promo dulu!','','warn'); return; }
+
+  const btn = document.getElementById('promoRedeemBtn');
+  const info = document.getElementById('promoInfoTxt');
+  btn.disabled = true;
+  info.textContent = '⏳ Mengecek kode...';
+
+  try{
+    // Cari kode
+    const snap = await promoRef().where('code','==',code).limit(1).get();
+    if(snap.empty){
+      info.textContent = '❌ Kode tidak ditemukan!';
+      btn.disabled = false;
+      return;
+    }
+
+    const promoDoc = snap.docs[0];
+    const promo = promoDoc.data();
+
+    // Cek expired
+    const now = new Date();
+    if(promo.expiresAt && promo.expiresAt.toDate() < now){
+      info.textContent = '❌ Kode sudah expired!';
+      btn.disabled = false;
+      return;
+    }
+
+    // Cek max usage
+    if(promo.maxUse > 0 && promo.usedCount >= promo.maxUse){
+      info.textContent = '❌ Kode sudah habis dipakai!';
+      btn.disabled = false;
+      return;
+    }
+
+    // Cek sudah pernah pakai
+    const usedSnap = await userRef(CU.uid).collection('activePromos')
+      .where('code','==',code).limit(1).get();
+    if(!usedSnap.empty){
+      info.textContent = '⚠ Kode sudah pernah kamu pakai!';
+      btn.disabled = false;
+      return;
+    }
+
+    // Hitung expiry promo untuk user
+    const promoExpiry = promo.expiresAt?.toDate() || new Date(Date.now() + 30*24*60*60*1000);
+
+    // Simpan ke user
+    await userRef(CU.uid).collection('activePromos').add({
+      code: code,
+      bonus: promo.bonus,
+      expiresAt: firebase.firestore.Timestamp.fromDate(promoExpiry),
+      redeemedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Update promo usedCount
+    await promoRef().doc(promoDoc.id).update({
+      usedCount: firebase.firestore.FieldValue.increment(1)
+    });
+
+    // Update custom limit user
+    const newLimit = (CU.customLimit || 0) + promo.bonus;
+    await userRef(CU.uid).update({ customLimit: newLimit });
+    CU.customLimit = newLimit;
+    updateUBar();
+
+    input.value = '';
+    info.textContent = '✅ Kode berhasil dipakai!';
+    toast('Promo aktif! 🎟️', '+'+promo.bonus+' export bonus!', 'success');
+    await addLog('PROMO', CU.username+' redeem '+code+' +'+promo.bonus, '');
+    checkActivePromo();
+
+  }catch(e){
+    info.textContent = '❌ Error: '+e.message;
+  }
+  btn.disabled = false;
+}
+
+/* ADMIN — buat kode promo */
+async function createPromoCode(){
+  if(!CU||CU.role!=='admin'){ toast('Admin only','','error'); return; }
+  const code = sanitize(document.getElementById('promoCode').value.toUpperCase(), 20).replace(/\s/g,'');
+  const bonus = parseInt(document.getElementById('promoBonus').value) || 0;
+  const maxUse = parseInt(document.getElementById('promoMaxUse').value) || 0;
+  const expiryVal = document.getElementById('promoExpiry').value;
+  const desc = sanitize(document.getElementById('promoDesc').value, 60);
+
+  if(!code){ toast('Isi kode dulu','','warn'); return; }
+  if(bonus < 1){ toast('Bonus minimal 1','','warn'); return; }
+  if(!expiryVal){ toast('Isi tanggal expired dulu','','warn'); return; }
+
+  const expiryDate = new Date(expiryVal);
+  if(expiryDate < new Date()){ toast('Tanggal sudah lewat!','','warn'); return; }
+
+  try{
+    // Cek kode sudah ada
+    const ex = await promoRef().where('code','==',code).limit(1).get();
+    if(!ex.empty){ toast('Kode sudah ada!','Gunakan kode lain','warn'); return; }
+
+    await promoRef().add({
+      code,
+      bonus,
+      maxUse,
+      usedCount: 0,
+      desc,
+      expiresAt: firebase.firestore.Timestamp.fromDate(expiryDate),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdBy: CU.username
+    });
+
+    ['promoCode','promoBonus','promoMaxUse','promoDesc'].forEach(id=>{
+      document.getElementById(id).value='';
+    });
+    document.getElementById('promoExpiry').value='';
+
+    toast('Kode promo dibuat! 🎟️', code+' +'+bonus+' export', 'success');
+    await addLog('PROMO_CREATE', 'Buat kode '+code+' +'+bonus, 'admin');
+    loadPromoList();
+  }catch(e){ toast('Gagal',e.message,'error'); }
+}
+
+/* ADMIN — load list promo */
+async function loadPromoList(){
+  const container = document.getElementById('promoList');
+  if(!container) return;
+  container.innerHTML = '<span style="color:var(--d);font-size:11px;font-family:JetBrains Mono,monospace">Memuat...</span>';
+  try{
+    const snap = await promoRef().orderBy('createdAt','desc').get();
+    if(snap.empty){
+      container.innerHTML = '<span style="color:var(--d);font-size:11px;font-family:JetBrains Mono,monospace">Belum ada kode promo</span>';
+      return;
+    }
+    const now = new Date();
+    container.innerHTML = snap.docs.map(doc=>{
+      const p = doc.data();
+      const exp = p.expiresAt?.toDate?.();
+      const isExpired = exp && exp < now;
+      const isFull = p.maxUse > 0 && p.usedCount >= p.maxUse;
+      const status = isExpired?'expired':isFull?'used':'active';
+      const statusLabel = isExpired?'EXPIRED':isFull?'HABIS':'AKTIF';
+      return `<div class="promo-card">
+        <div class="promo-card-hdr">
+          <span class="promo-code">${eh(p.code)}</span>
+          <span class="promo-badge ${status}">${statusLabel}</span>
+        </div>
+        <div class="promo-meta">
+          +${p.bonus} export bonus · Dipakai: ${p.usedCount||0}/${p.maxUse||'∞'}<br>
+          Expired: ${exp?exp.toLocaleString('id-ID'):'—'}<br>
+          ${p.desc?'📝 '+eh(p.desc)+'<br>':''}
+          Dibuat oleh: ${eh(p.createdBy||'—')}
+        </div>
+        <div style="margin-top:6px;display:flex;gap:4px">
+          <button class="abtn red" onclick="deletePromoCode('${doc.id}','${eh(p.code)}')">🗑 HAPUS</button>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    container.innerHTML = '<span style="color:var(--r);font-size:11px;font-family:JetBrains Mono,monospace">Error: '+eh(e.message)+'</span>';
+  }
+}
+
+async function deletePromoCode(id, code){
+  if(!confirm('Hapus kode '+code+'?')) return;
+  try{
+    await promoRef().doc(id).delete();
+    toast('Kode dihapus','','warn');
+    await addLog('PROMO_DEL','Hapus kode '+code,'admin');
+    loadPromoList();
+  }catch(e){ toast('Gagal',e.message,'error'); }
+}
+
 /* TRANSPORT */
 document.getElementById('btnPlay').addEventListener('click',togglePlay); document.getElementById('btnRew').addEventListener('click',()=>{if(playing)stopPB();PO=0;ppos=0;drawWave();}); document.getElementById('btnStop').addEventListener('click',()=>{stopPB();PO=0;ppos=0;drawWave();});
 let _rt; window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(()=>{_waveCache.width=0;if(files.length)drawWave();},150);});
 document.getElementById('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}); document.getElementById('lEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}); document.getElementById('rPass').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
 function updExpState(){if(!CU)return;const ok=canExport();document.getElementById('btnEx').disabled=!ok;document.getElementById('btnExAll').disabled=!ok;if(!ok)document.getElementById('btnEx').textContent='🚫 LIMIT HABIS — UPGRADE VIP';else updExpBtns();}
+
+/* ============================================================
+   STATUS ONLINE — terakhir aktif
+   ============================================================ */
+function getLastSeenText(tsMillis){
+  if(!tsMillis) return 'Tidak diketahui';
+  const diff = Date.now() - tsMillis;
+  const secs = Math.floor(diff/1000);
+  const mins = Math.floor(secs/60);
+  const hours = Math.floor(mins/60);
+  const days = Math.floor(hours/24);
+  if(secs < 60) return 'Baru saja';
+  if(mins < 60) return mins+' menit lalu';
+  if(hours < 24) return hours+' jam lalu';
+  return days+' hari lalu';
+}
+
+function getStatusFromTs(tsMillis){
+  if(!tsMillis) return 'offline';
+  const diff = Date.now() - tsMillis;
+  if(diff < 3*60*1000) return 'online';
+  if(diff < 10*60*1000) return 'away';
+  return 'offline';
+}
+
+function updateMyStatusDot(){
+  const dot = document.getElementById('uAvStatus');
+  if(!dot) return;
+  dot.className = 'uav-status online';
+}
+
+function updateProfileStatus(){
+  const pStatus = document.getElementById('pStatus');
+  const pLastSeen = document.getElementById('pLastSeen');
+  if(!pStatus||!pLastSeen||!CU) return;
+  pStatus.innerHTML = `<span class="status-badge online">🟢 Online sekarang</span>`;
+  pLastSeen.textContent = 'Aktif sekarang';
+}
+
+function startPresenceWithStatus(){
+  if(!CU) return;
+  presenceRef = db.collection('presence').doc(CU.uid);
+  const updatePresence = ()=>{
+    if(presenceRef) presenceRef.set({
+      uid: CU.uid,
+      username: CU.username,
+      role: CU.role,
+      ts: firebase.firestore.FieldValue.serverTimestamp(),
+      lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+      online: true
+    },{merge:true});
+  };
+  updatePresence();
+  presenceRef._iv = setInterval(updatePresence, 2*60*1000);
+  window.addEventListener('beforeunload', ()=>{
+    if(presenceRef) presenceRef.set({
+      online: false,
+      lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true}).catch(()=>{});
+  });
+  if(presenceUnsub) presenceUnsub();
+  presenceUnsub = db.collection('presence').onSnapshot(snap=>{
+    const cut = Date.now() - 5*60*1000;
+    let count = 0, users = [];
+    snap.forEach(doc=>{
+      const d = doc.data();
+      const t = d.ts?.toMillis?.() || d.ts?.seconds*1000 || 0;
+      if(t > cut && d.online === true){ count++; users.push(d.username); }
+    });
+    const el = document.getElementById('onlineCount');
+    if(el) el.textContent = count;
+    window._onlineUsers = users;
+    window._presenceData = {};
+    snap.forEach(doc=>{
+      const d = doc.data();
+      window._presenceData[d.username] = d;
+    });
+  });
+  updateMyStatusDot();
+}
+
+/* CUSTOM PRESET INIT */
+function initCustomPresets(){
+  const pgrid = document.getElementById('pgrid');
+  if(!pgrid) return;
+  const panel = pgrid.closest('.panel');
+  if(!panel) return;
+  if(document.getElementById('customPresetPanel')) return;
+  const div = document.createElement('div');
+  div.className = 'custom-preset-panel';
+  div.id = 'customPresetPanel';
+  div.innerHTML = `
+    <div class="plbl">⭐ PRESET KAMU</div>
+    <div class="preset-list" id="customPresetList">
+      <span class="preset-empty">Belum ada preset tersimpan</span>
+    </div>
+    <div class="preset-save-row">
+      <input class="preset-name-input" id="presetNameInput" placeholder="Nama preset..." maxlength="20">
+      <button class="preset-save-btn" onclick="saveCustomPreset()">💾 SIMPAN</button>
+    </div>
+    <div class="preset-info" id="presetInfo">Preset disimpan otomatis ke akun kamu</div>
+  `;
+  panel.parentNode.insertBefore(div, panel.nextSibling);
+  loadCustomPresets();
+}
+
+async function loadCustomPresets(){
+  if(!CU) return;
+  try{
+    const snap = await db.collection('users').doc(CU.uid)
+      .collection('presets').orderBy('createdAt','desc').limit(20).get();
+    const list = [];
+    snap.forEach(doc => list.push({id: doc.id, ...doc.data()}));
+    renderCustomPresets(list);
+  }catch(e){ console.warn('Load presets error:', e); }
+}
+
+function renderCustomPresets(list){
+  const container = document.getElementById('customPresetList');
+  if(!container) return;
+  if(!list.length){
+    container.innerHTML = '<span class="preset-empty">Belum ada preset tersimpan</span>';
+    return;
+  }
+  container.innerHTML = list.map(p => `
+    <div class="preset-item" data-id="${eh(p.id)}">
+      <button class="preset-item-btn" onclick="applyCustomPreset(${p.speed},${p.pitch},'${eh(p.name)}')">
+        ${eh(p.name)}<br>
+        <span style="font-size:8px;color:var(--d)">${p.speed}x / ${p.pitch>0?'+':''}${p.pitch}st</span>
+      </button>
+      <button class="preset-item-del" onclick="deleteCustomPreset('${eh(p.id)}')" title="Hapus">×</button>
+    </div>
+  `).join('');
+}
+
+async function saveCustomPreset(){
+  if(!CU){ toast('Login dulu','','warn'); return; }
+  const nameInput = document.getElementById('presetNameInput');
+  const name = sanitize(nameInput.value, 20).trim();
+  if(!name){ toast('Isi nama preset dulu!','','warn'); return; }
+  const info = document.getElementById('presetInfo');
+  info.textContent = '⏳ Menyimpan...';
+  try{
+    const existing = await db.collection('users').doc(CU.uid).collection('presets').get();
+    if(existing.size >= 20){
+      toast('Maksimal 20 preset','Hapus yang lama dulu','warn');
+      info.textContent = 'Preset disimpan otomatis ke akun kamu';
+      return;
+    }
+    await db.collection('users').doc(CU.uid).collection('presets').add({
+      name: name, speed: spd, pitch: pit,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    nameInput.value = '';
+    info.textContent = '✅ Preset tersimpan!';
+    setTimeout(()=>info.textContent='Preset disimpan otomatis ke akun kamu', 2000);
+    toast('Preset disimpan! ⭐', name+' · '+spd+'x / '+(pit>0?'+':'')+pit+'st', 'success');
+    await addLog('PRESET', 'Simpan: '+name+' ('+spd+'x,'+pit+'st)', '');
+    loadCustomPresets();
+  }catch(e){
+    toast('Gagal simpan', e.message, 'error');
+    info.textContent = 'Preset disimpan otomatis ke akun kamu';
+  }
+}
+
+function applyCustomPreset(speed, pitch, name){
+  spd = parseFloat(speed);
+  pit = parseInt(pitch);
+  amode = null;
+  syncUI();
+  toast('Preset dipakai! 🎯', name+' · '+spd+'x / '+(pit>0?'+':'')+pit+'st', 'success');
+}
+
+async function deleteCustomPreset(id){
+  if(!CU) return;
+  if(!confirm('Hapus preset ini?')) return;
+  try{
+    await db.collection('users').doc(CU.uid).collection('presets').doc(id).delete();
+    toast('Preset dihapus','','warn');
+    loadCustomPresets();
+  }catch(e){ toast('Gagal hapus', e.message, 'error'); }
+}
 </script>
 </body>
 </html>
