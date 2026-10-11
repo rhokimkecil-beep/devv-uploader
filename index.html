@@ -2112,13 +2112,6 @@ async function loadConfig(){
 /* ============================================================
    FIREBASE AUTH
    ============================================================ */
-function switchTab(t){
-  document.getElementById('tLogin').classList.toggle('on',t==='login');
-  document.getElementById('tReg').classList.toggle('on',t==='reg');
-  document.getElementById('fLogin').style.display=t==='login'?'':'none';
-  document.getElementById('fReg').style.display=t==='reg'?'':'none';
-}
-
 function openProfile(){
   if(!CU)return;
   const rl={admin:'🔴 Administrator',vip:'⭐ VIP Member',pro:'💎 Pro User',free:'Free User'};
@@ -2310,23 +2303,6 @@ function resetCut(){
   toast('Reset','Handle kembali ke awal & akhir','success');
 }
 
-async function doResetPassword(){
-  const email = sanitize(document.getElementById('lEmail').value, 100);
-  if(!email){
-    showErr('eLogin','⚠ Isi email dulu sebelum reset password');
-    return;
-  }
-  try{
-    await auth.sendPasswordResetEmail(email);
-    toast('Email terkirim! 📧','Cek inbox kamu untuk reset password','success');
-  }catch(e){
-    const msg = e.code==='auth/user-not-found'
-      ? '❌ Email tidak terdaftar'
-      : '❌ '+e.message;
-    showErr('eLogin', msg);
-  }
-}
-
 async function doDiscordLogin(){
     const _dcBtn = document.getElementById('btnLogin');
   const _dcBtnOrigHTML = _dcBtn ? _dcBtn.innerHTML : '';
@@ -2363,58 +2339,6 @@ async function doDiscordLogin(){
     if(_dcErr){ _dcErr.style.display='block'; _dcErr.textContent = e.code==='auth/popup-closed-by-user' ? '⚠ Popup ditutup — coba lagi' : e.code==='auth/popup-blocked' ? '⚠ Izinkan popup di browser kamu' : '❌ '+e.message; }
     showErr('eLogin', msg);
   }
-}
-
-async function doLogin(){
-  const email = sanitize(document.getElementById('lEmail').value, 100);
-  const pass  = document.getElementById('lPass').value;
-  if(!email||!pass){showErr('eLogin','⚠ Email & password wajib');return;}
-  try{
-    await auth.signInWithEmailAndPassword(email, pass);
-  }catch(e){
-    const msg = 
-      e.code==='auth/user-not-found' ||
-      e.code==='auth/wrong-password' ||
-      e.code==='auth/invalid-credential' ||
-      e.code==='auth/invalid-email'
-        ? '❌ Email atau password salah'
-        : e.code==='auth/too-many-requests'
-        ? '⚠ Terlalu banyak percobaan. Tunggu sebentar atau reset password.'
-        : e.code==='auth/user-disabled'
-        ? '🚫 Akun kamu dinonaktifkan. Hubungi admin.'
-        : '❌ '+e.message;
-    showErr('eLogin', msg);
-    }
-}
-
-async function doRegister(){
-  const uname = sanitize(document.getElementById('rUser').value.toLowerCase(), 30);
-  const email = sanitize(document.getElementById('rEmail').value, 100);
-  const pass  = document.getElementById('rPass').value;
-  if(!uname||!email||!pass){showErr('eReg','⚠ Semua field wajib');return;}
-  if(uname.length<3){showErr('eReg','⚠ Username min 3 karakter');return;}
-  if(!/^[a-z0-9_]{3,30}$/.test(uname)){showErr('eReg','⚠ Username: huruf kecil, angka, underscore saja');return;}
-  if(pass.length<6){showErr('eReg','⚠ Password min 6 karakter');return;}
-  try{
-    const existing = await db.collection('users').where('username','==',uname).limit(1).get();
-    if(!existing.empty){showErr('eReg','❌ Username sudah dipakai');return;}
-    const cred = await auth.createUserWithEmailAndPassword(email, pass);
-    await userRef(cred.user.uid).set({
-      uid: cred.user.uid,
-      username: uname,
-      email: email,
-      role: 'free',
-      customLimit: 0,
-      usage: {},
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      gateCompleted: false
-    });
-  }catch(e){
-    const msg = e.code==='auth/email-already-in-use'
-      ? '❌ Email sudah terdaftar'
-      : '❌ '+e.message;
-    showErr('eReg', msg);
-    }
 }
 
 async function doLogout(){
@@ -2865,49 +2789,100 @@ wcanv.addEventListener('click',e=>{const f=files[ai];if(!f||f.broken||!f.ab)retu
 function startPB(){
   const f=files[ai];if(!f)return;
   if(f.broken||!f.ab){toast('Preview N/A','Export langsung aja','warn');return;}
-  const ctx=getAC();if(ctx.state==='suspended')ctx.resume();
-  const src=ctx.createBufferSource();src.buffer=f.ab;src.playbackRate.value=prvR();
+
+  // Resume atau buat AudioContext baru
+  const ctx=getAC();
+  if(ctx.state==='suspended'){ctx.resume();}
+  if(ctx.state==='closed'){AC=null;const ctx2=getAC();}
+
+  const src=ctx.createBufferSource();
+  src.buffer=f.ab;
+  src.playbackRate.value=prvR();
 
   // Gain node
-  const g=ctx.createGain();g.gain.value=vol;GN=g;
+  const g=ctx.createGain();
+  g.gain.value=vol;
+  GN=g;
 
-  // Analyser for visualizer
-  if(!_vizAnalyserRef){
+  // Buat analyser baru setiap kali play (hindari stale node dari session lama)
+  try{
     _vizAnalyserRef=ctx.createAnalyser();
     _vizAnalyserRef.fftSize=512;
     _vizAnalyserRef.smoothingTimeConstant=0.8;
+  }catch(e){_vizAnalyserRef=null;}
+
+  // Build audio chain: src → [EQ filters] → gain → [analyser] → destination
+  let lastNode=src;
+
+  // EQ: hanya sambungkan jika enabled DAN filter ada DAN dari context yang sama
+  if(_eqEnabled && eqFilters.length>0){
+    try{
+      // Cek apakah filter dari context yang sama
+      if(eqFilters[0].context===ctx){
+        for(let i=0;i<eqFilters.length;i++){
+          lastNode.connect(eqFilters[i]);
+          lastNode=eqFilters[i];
+        }
+      } else {
+        // Filter dari context berbeda → reinit EQ
+        eqFilters=[];
+        initEQ(ctx,null);
+        if(eqFilters.length>0){
+          for(let i=0;i<eqFilters.length;i++){
+            lastNode.connect(eqFilters[i]);
+            lastNode=eqFilters[i];
+          }
+        }
+      }
+    }catch(eqErr){
+      console.warn('[EQ] connect error, bypassing EQ:',eqErr.message);
+      lastNode=src;
+    }
   }
 
-  // Build chain: src → EQ filters → gain → analyser → destination
-  let lastNode=src;
-  if(_eqEnabled && eqFilters.length>0){
-    // reconnect EQ filters to current context if needed
-    try{
-      for(let i=0;i<eqFilters.length;i++){
-        lastNode.connect(eqFilters[i]);
-        lastNode=eqFilters[i];
-      }
-    }catch(e){lastNode=src;}
-  }
   lastNode.connect(g);
-  g.connect(_vizAnalyserRef);
-  _vizAnalyserRef.connect(ctx.destination);
+
+  // Analyser → destination
+  if(_vizAnalyserRef){
+    try{
+      g.connect(_vizAnalyserRef);
+      _vizAnalyserRef.connect(ctx.destination);
+    }catch(e){
+      _vizAnalyserRef=null;
+      g.connect(ctx.destination);
+    }
+  } else {
+    g.connect(ctx.destination);
+  }
 
   src.start(0,PO||0);
-  ST=ctx.currentTime-(PO||0)/prvR();SN=src;playing=true;
+  ST=ctx.currentTime-(PO||0)/prvR();
+  SN=src;
+  playing=true;
   document.getElementById('btnPlay').textContent='⏸';
 
-  // Start visualizer if panel visible
-  const vp=document.getElementById('vizPanel');
-  if(vp&&vp.style.display!=='none')startVisualizer(_vizAnalyserRef);
+  // Start visualizer jika panel terbuka
+  try{
+    const vp=document.getElementById('vizPanel');
+    if(vp&&vp.style.display!=='none'&&_vizAnalyserRef){
+      startVisualizer(_vizAnalyserRef);
+    }
+  }catch(e){}
 
-  const tick=()=>{if(!playing)return;const el=(ctx.currentTime-ST)*prvR(),pos=el/f.ab.duration;if(pos>=1){stopPB();ppos=0;PO=0;drawWave();return;}ppos=pos;drawWave();RAF=requestAnimationFrame(tick);};
+  const tick=()=>{
+    if(!playing)return;
+    const el=(ctx.currentTime-ST)*prvR();
+    const pos=el/f.ab.duration;
+    if(pos>=1){stopPB();ppos=0;PO=0;drawWave();return;}
+    ppos=pos;drawWave();
+    RAF=requestAnimationFrame(tick);
+  };
   RAF=requestAnimationFrame(tick);
   src.onended=()=>{if(SN===src){stopPB();ppos=0;PO=0;drawWave();}};
 }
 function stopSilent(){if(SN){try{SN.stop();}catch(e){}SN.disconnect();SN=null;}if(RAF)cancelAnimationFrame(RAF);playing=false;stopVisualizer();}
 function stopPB(){stopSilent();document.getElementById('btnPlay').textContent='▶';}
-function togglePlay(){if(playing){PO=(getAC().currentTime-ST)*SN.playbackRate.value;stopPB();}else startPB();}
+function togglePlay(){if(playing){PO=Math.max(0,(getAC().currentTime-ST)*SN.playbackRate.value);stopPB();}else startPB();}
 function applyLive(){if(SN){const ctx=getAC(),co=(ctx.currentTime-ST)*SN.playbackRate.value,nr=prvR();SN.playbackRate.value=nr;ST=ctx.currentTime-co/nr;}if(GN)GN.gain.value=vol;updStats();updExpInfo();hlPre();hlAuto();}
 /* KNOBS */
 function updKnob(id,pct,c){const r=document.getElementById(id);r.style.background=`conic-gradient(from -135deg,${c} 0deg,${c} ${pct/100*270}deg,#1e1e30 ${pct/100*270}deg,#1e1e30 270deg,transparent 270deg)`;const n=r.querySelector('.kneedle');n.style.transform=`rotate(${-135+pct/100*270}deg)`;n.style.background=c;}
@@ -3294,7 +3269,7 @@ async function deletePromoCode(id, code){
 /* TRANSPORT */
 document.getElementById('btnPlay').addEventListener('click',togglePlay); document.getElementById('btnRew').addEventListener('click',()=>{if(playing)stopPB();PO=0;ppos=0;drawWave();}); document.getElementById('btnStop').addEventListener('click',()=>{stopPB();PO=0;ppos=0;drawWave();});
 let _rt; window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(()=>{_waveCache.width=0;if(files.length)drawWave();},150);});
-document.getElementById('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}); document.getElementById('lEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}); document.getElementById('rPass').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
+(document.getElementById('lPass')||{}).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}); (document.getElementById('lEmail')||{}).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}); (document.getElementById('rPass')||{}).addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
 function updExpState(){if(!CU)return;const ok=canExport();document.getElementById('btnEx').disabled=!ok;document.getElementById('btnExAll').disabled=!ok;if(!ok)document.getElementById('btnEx').textContent='🚫 LIMIT HABIS — UPGRADE VIP';else updExpBtns();}
 
 /* ============================================================
@@ -3947,7 +3922,7 @@ function onPasswordInput(inputId, fillId, labelId){
   initTheme();
 
   // Init password strength for register
-  const rPass = document.getElementById('rPass');
+  const rPass = (document.getElementById('rPass')||{});
   if(rPass){
     // Add strength indicator after password field
     const fg = rPass.closest('.fg');
@@ -3975,7 +3950,7 @@ function onPasswordInput(inputId, fillId, labelId){
   }
 
   // Add eye toggle to login password
-  const lPass = document.getElementById('lPass');
+  const lPass = (document.getElementById('lPass')||{});
   if(lPass && !lPass.closest('.input-wrap')){
     const wrap = document.createElement('div');
     wrap.className = 'input-wrap';
