@@ -7,35 +7,48 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♫</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--a:#00e5ff;--a2:#9c6cff;--bg:#06060c;--s:#0e0e18;--s2:#161624;--b:#252538;--t:#e0e0ec;--d:#55557a;--ok:#00e676;--w:#ffab40;--r:#ff5252;--g:#ffd700}
+:root{
+  --a:#00d4ff;--a2:#7c4dff;--bg:#080810;--s:#0d0d1a;--s2:#12121f;--b:#1e1e30;
+  --t:#e8e8f0;--d:#5a5a80;--ok:#00c853;--w:#ff8c00;--r:#ff3d71;--g:#ffc107;
+  --grad:linear-gradient(135deg,#00d4ff,#7c4dff);
+  --glow:0 0 20px rgba(0,212,255,.15);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background-color:#06060c;color:var(--t);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+body{background-color:var(--bg);color:var(--t);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--b);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--a)}
 input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;width:100%}
-input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--b)}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--a);margin-top:-6px;box-shadow:0 0 8px var(--a)}
+input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:var(--b)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--a);margin-top:-5.5px;box-shadow:0 0 6px var(--a)}
 
-/* AUTH */
+/* ─── AUTH — Discord Only ─── */
 .ov{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
 .ov.hide{display:none}
-.auth-box{max-width:420px;width:100%;animation:fadeIn .4s}
-.auth-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px}
-.logo-ico{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--a),var(--a2));display:grid;place-items:center;font-size:20px}
-.logo-txt{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:19px;letter-spacing:1px}.logo-txt .dot{color:var(--a)}
-.atabs{display:flex;border:1px solid var(--b);border-radius:10px;overflow:hidden;margin-bottom:14px}
-.atab{flex:1;padding:10px;text-align:center;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;background:var(--s);color:var(--d);transition:color .2s,background .2s}
-.atab.on{background:rgba(0,229,255,.1);color:var(--a);border-bottom:2px solid var(--a)}
-.aform{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:24px}
-.aform h2{font-size:17px;font-weight:700;margin-bottom:3px}
-.asub{font-size:11px;color:var(--d);margin-bottom:16px}
-.fg{margin-bottom:11px}
-.fl{font-size:10px;letter-spacing:1.5px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-bottom:4px;display:block;text-transform:uppercase}
-.fi{width:100%;padding:10px 13px;border-radius:8px;border:1px solid var(--b);background:var(--s2);color:var(--t);font-size:13px;font-family:'Outfit',sans-serif;transition:border-color .2s}
-.fi:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px rgba(0,229,255,.1)}
-.btn-a{width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;cursor:pointer;font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-top:4px;transition:opacity .2s,transform .15s}
-.btn-a:hover{transform:translateY(-1px);opacity:.9}
-.btn-a:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.aerr{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);border-radius:8px;padding:8px 12px;font-size:11px;color:#ff8080;margin-bottom:10px;font-family:'JetBrains Mono',monospace;display:none}
+.dc-auth-box{max-width:400px;width:100%;animation:fadeIn .4s}
+.dc-auth-card{background:linear-gradient(145deg,#0f0f1e,#141428);border:1px solid var(--b);border-radius:24px;padding:36px 32px;position:relative;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.dc-auth-card::before{content:'';position:absolute;top:-80px;right:-80px;width:240px;height:240px;background:radial-gradient(circle,rgba(124,77,255,.12) 0%,transparent 70%);pointer-events:none}
+.dc-auth-card::after{content:'';position:absolute;bottom:-60px;left:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(0,212,255,.08) 0%,transparent 70%);pointer-events:none}
+.dc-logo{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px}
+.dc-logo-ico{width:52px;height:52px;border-radius:16px;background:var(--grad);display:grid;place-items:center;font-size:24px;box-shadow:0 8px 24px rgba(0,212,255,.25)}
+.dc-logo-name{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;letter-spacing:.5px;color:var(--t)}
+.dc-logo-name span{color:var(--a)}
+.dc-tagline{text-align:center;font-size:12px;color:var(--d);margin-bottom:28px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+.dc-divider{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.dc-divider-line{flex:1;height:1px;background:var(--b)}
+.dc-divider-text{font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.btn-dc-login{width:100%;padding:14px;border-radius:14px;border:none;background:#5865F2;color:#fff;cursor:pointer;font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 20px rgba(88,101,242,.3)}
+.btn-dc-login:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(88,101,242,.45);background:#4752c4}
+.btn-dc-login:active{transform:translateY(0)}
+.dc-features{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px}
+.dc-feat{background:var(--s2);border:1px solid var(--b);border-radius:12px;padding:12px;text-align:center}
+.dc-feat-ico{font-size:20px;margin-bottom:5px}
+.dc-feat-txt{font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace;font-weight:600}
+.dc-note{text-align:center;font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-top:14px;line-height:1.6}
+.dc-note a{color:var(--a);text-decoration:none}
+.dc-note a:hover{text-decoration:underline}
+.aerr{background:rgba(255,61,113,.08);border:1px solid rgba(255,61,113,.25);border-radius:8px;padding:8px 12px;font-size:11px;color:#ff8080;margin-bottom:10px;font-family:'JetBrains Mono',monospace;display:none}
+
+
 .anote{font-size:10px;color:var(--d);text-align:center;margin-top:10px;font-family:'JetBrains Mono',monospace}
 
 /* GATE */
@@ -328,72 +341,13 @@ body.exporting .spin{animation:spin .8s linear infinite}
 .footer-rating-btn:hover{text-decoration:underline}
 .avg-stars{font-size:22px;letter-spacing:2px;margin-bottom:4px}
 
-.footer-gradient-text{background:linear-gradient(90deg,#00e5ff,#9c6cff,#00e676,#ffd700,#00e5ff);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientMove 4s linear infinite}
+/* footer gradient — selektif saja */
+.footer-gradient-text{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
-/* ============================================================
-   RAINBOW GRADIENT TEXT — ANIMATED
-   ============================================================ */
-@keyframes rainbowMove {
-  0%   { background-position: 0% center; }
-  100% { background-position: 300% center; }
-}
+/* ─── KEYFRAMES ─── */
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(0,212,255,.2)}50%{box-shadow:0 0 20px rgba(0,212,255,.5)}}
 
-.aform h2, .aform .asub, .aform .anote, .aform .fl,
-.or-divider, .forgot-link, .logo-txt, .atab,
-.gate-title, .gate-sub, .gnote, .gstep-title, .gstep-desc,
-.hdr-logo-txt, .hdr-logo-sub,
-.bdg, .bdg-ok, .bdg-gold, .bdg-red,
-.uname, .urole, #uName, #uRole, #limTxt,
-.bsm, .lbar,
-.hero h1, .hero p, .hacc,
-.istrip,
-.feat-ttl, .feat-desc,
-.dz-ttl, .dz-sub,
-.footer, .footer-gradient-text, .footer-rating-btn,
-#srvBadge, #autoInd, #fCount {
-  background: linear-gradient(90deg,
-    #00e5ff 0%,
-    #9c6cff 25%,
-    #00e676 50%,
-    #ffd700 75%,
-    #00e5ff 100%
-  ) !important;
-  background-size: 400% 100% !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  animation: rainbowMove 3s linear infinite !important;
-  display: inline-block;
-}
-
-/* ... css kamu yang lain ... */
-
-/* FIX — hero text layout */
-.hero h1 {
-  display: block !important;
-  font-size: 28px !important;
-  margin-bottom: 6px !important;
-}
-
-.hero p {
-  display: block !important;
-  font-size: 13px !important;
-  max-width: 500px !important;
-  margin: 0 auto !important;
-  -webkit-text-fill-color: transparent !important;
-  background: linear-gradient(90deg,
-    #00e5ff 0%, #9c6cff 25%, #00e676 50%, #ffd700 75%, #00e5ff 100%
-  ) !important;
-  background-size: 400% 100% !important;
-  background-clip: text !important;
-  -webkit-background-clip: text !important;
-  animation: rainbowMove 3s linear infinite !important;
-}
-
-.dz-ttl, .dz-sub, .feat-ttl, .feat-desc,
-.istrip, .footer, .hdr-logo-txt, .hdr-logo-sub {
-  display: block !important;
-}
 
 .custom-preset-panel{background:var(--s);border-radius:13px;padding:13px 16px;border:1px solid var(--b);margin-bottom:12px}
 .preset-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:32px}
@@ -480,13 +434,6 @@ body.exporting .spin{animation:spin .8s linear infinite}
 .promo-badge.active{background:rgba(0,230,118,.15);color:var(--ok);border:1px solid rgba(0,230,118,.3)}
 .promo-badge.expired{background:rgba(255,82,82,.15);color:var(--r);border:1px solid rgba(255,82,82,.3)}
 .promo-badge.used{background:rgba(255,171,64,.15);color:var(--w);border:1px solid rgba(255,171,64,.3)}
-
-@keyframes gradientMove{0%{background-position:0% center}100%{background-position:300% center}}
-
-@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
-@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ============================================================
    DARK / LIGHT MODE TOGGLE
@@ -905,8 +852,8 @@ raf=requestAnimationFrame(draw);
         </div>
       </div>
       <div class="landing-cta">
-        <button class="btn-landing-primary" onclick="goToAuth('login')">🚀 MULAI GRATIS →</button>
-        <button class="btn-landing-secondary" onclick="goToAuth('reg')">📝 BUAT AKUN</button>
+        <button class="btn-landing-primary" onclick="goToAuth()">🚀 MULAI GRATIS →</button>
+        <button class="btn-landing-secondary" onclick="goToAuth()">📝 BUAT AKUN</button>
       </div>
       <div class="landing-stats">
         <div class="landing-stat">
@@ -941,43 +888,52 @@ raf=requestAnimationFrame(draw);
   </div>
 </div>
 
-<!-- AUTH -->
+<!-- AUTH — Discord Only -->
 <div class="ov hide" id="authOv">
-  <div class="auth-box">
-    <div class="auth-logo">
-      <div class="logo-ico">♫</div>
-      <div class="logo-txt">RPMxDEV<span class="dot">.</span>BYPASS AUDIO</div>
-    </div>
-<div style="font-size:10px;color:var(--w);font-family:'JetBrains Mono',monospace;text-align:center;margin-bottom:10px;line-height:1.6;padding:0 10px">⚠ Pakai email aktif supaya anda bisa mereset password kalau suatu hari anda lupa password anda!!!!!</div>
-<div class="atabs">
-      <div class="atab on" id="tLogin" onclick="switchTab('login')">LOGIN</div>
-      <div class="atab" id="tReg" onclick="switchTab('reg')">BUAT AKUN</div>
-    </div>
-    <h2>Selamat Datang 👋</h2>
-      <div class="asub">Login untuk akses RPMxPRIME BYPASS</div>
-      <div class="aerr" id="eLogin"></div>
-      <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="lEmail" placeholder="email@kamu.com" autocomplete="email"></div>
-      <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="lPass" placeholder="••••••••" autocomplete="current-password"></div>
-      <span class="forgot-link" onclick="doResetPassword()">Lupa password?</span>
-      <button class="btn-a" id="btnLogin" onclick="doLogin()">LOGIN →</button>
-      <div class="or-divider">OR</div>
-      <button class="btn-discord" onclick="doDiscordLogin()">
-        <svg width="20" height="20" viewBox="0 0 71 55" fill="white"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.5.6a40 40 0 0 0-1.8 3.7 54.2 54.2 0 0 0-16.3 0A38 38 0 0 0 25.6.6 58.5 58.5 0 0 0 11 4.9C1.6 18.8-1 32.4.3 45.8a59 59 0 0 0 18 9.1 44.7 44.7 0 0 0 3.9-6.3 38.4 38.4 0 0 1-6.1-2.9l1.5-1.1a42 42 0 0 0 36 0l1.5 1.1a38.3 38.3 0 0 1-6.1 2.9 44.4 44.4 0 0 0 3.9 6.3 58.8 58.8 0 0 0 18-9.1C72 30.2 68 16.7 60.1 4.9ZM23.7 37.6c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2 6.5 3.2 6.4 7.2c0 4-2.8 7.2-6.4 7.2Zm23.6 0c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2 6.5 3.2 6.4 7.2c0 4-2.8 7.2-6.4 7.2Z"/></svg>
+  <div class="dc-auth-box">
+    <div class="dc-auth-card">
+      <div class="dc-logo">
+        <div class="dc-logo-ico">♫</div>
+        <div class="dc-logo-name">RPMxDEV<span>.</span>AUDIO</div>
+      </div>
+      <div class="dc-tagline">BYPASS STUDIO · Roblox Audio Processor</div>
+
+      <div class="dc-features">
+        <div class="dc-feat">
+          <div class="dc-feat-ico">⚡</div>
+          <div class="dc-feat-txt">AUTO BYPASS</div>
+        </div>
+        <div class="dc-feat">
+          <div class="dc-feat-ico">🎚️</div>
+          <div class="dc-feat-txt">10-BAND EQ</div>
+        </div>
+        <div class="dc-feat">
+          <div class="dc-feat-ico">🎵</div>
+          <div class="dc-feat-txt">TRUE MP3</div>
+        </div>
+        <div class="dc-feat">
+          <div class="dc-feat-ico">📊</div>
+          <div class="dc-feat-txt">VISUALIZER</div>
+        </div>
+      </div>
+
+      <div id="eLogin" class="aerr"></div>
+
+      <button class="btn-dc-login" id="btnLogin" onclick="doDiscordLogin()">
+        <svg width="22" height="22" viewBox="0 0 71 55" fill="white"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.5.6a40 40 0 0 0-1.8 3.7 54.2 54.2 0 0 0-16.3 0A38 38 0 0 0 25.6.6 58.5 58.5 0 0 0 11 4.9C1.6 18.8-1 32.4.3 45.8a59 59 0 0 0 18 9.1 44.7 44.7 0 0 0 3.9-6.3 38.4 38.4 0 0 1-6.1-2.9l1.5-1.1a42 42 0 0 0 36 0l1.5 1.1a38.3 38.3 0 0 1-6.1 2.9 44.4 44.4 0 0 0 3.9 6.3 58.8 58.8 0 0 0 18-9.1C72 30.2 68 16.7 60.1 4.9ZM23.7 37.6c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2 6.5 3.2 6.4 7.2c0 4-2.8 7.2-6.4 7.2Zm23.6 0c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2 6.5 3.2 6.4 7.2c0 4-2.8 7.2-6.4 7.2Z"/></svg>
         LOGIN DENGAN DISCORD
       </button>
-      <div class="anote">Belum punya akun? → klik <b>BUAT AKUN</b></div>
-    </div>
-    <div class="aform" id="fReg" style="display:none">
-      <h2>Buat Akun Baru 🚀</h2>
-      <div class="asub">Gratis · 10 export/hari · reset tiap pagi</div>
-      <div class="aerr" id="eReg"></div>
-      <div class="fg"><label class="fl">Username</label><input class="fi" type="text" id="rUser" placeholder="min 3 karakter" autocomplete="username"></div>
-      <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="rEmail" placeholder="email@kamu.com" autocomplete="email"></div>
-      <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="rPass" placeholder="min 6 karakter" autocomplete="new-password"></div>
-      <button class="btn-a" id="btnReg" onclick="doRegister()">BUAT AKUN →</button>
-      <div class="anote">Sudah punya akun? → klik <b>LOGIN</b></div>
+
+      <div class="dc-note">
+        Login gratis · 10 export/hari · <a href="https://discord.gg/5EAzVWSV" target="_blank">Join Discord</a> untuk support<br>
+        <span style="opacity:.6">Akun dibuat otomatis saat pertama kali login</span>
+      </div>
     </div>
   </div>
+</div>
+
+<!-- GATE -->
+
 </div>
 
 <!-- GATE -->
@@ -2023,7 +1979,7 @@ function listenAnnouncement(){
     if(!doc.exists) return;
     const data = doc.data();
     const text = data.text || '';
-    const color = data.color || '#00e5ff';
+    const color = data.color || '#00d4ff';
     const banner = document.getElementById('globalAnnounceBanner');
     const bannerText = document.getElementById('bannerAnnounceText');
     if(text && text.trim() !== ''){
@@ -2103,7 +2059,7 @@ async function clearAnnouncement(){
   if(!CU || CU.role !== 'admin') { toast('Akses ditolak','Hanya admin','error'); return; }
   if(!confirm('Hapus pengumuman global?')) return;
   try{
-    await announcementRef().set({ text: '', color: '#00e5ff', updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    await announcementRef().set({ text: '', color: '#00d4ff', updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
     document.getElementById('announceText').value = '';
     toast('Pengumuman dihapus','','success');
     await addLog('ANNOUNCE','Clear announcement','admin');
@@ -2372,6 +2328,11 @@ async function doResetPassword(){
 }
 
 async function doDiscordLogin(){
+    const _dcBtn = document.getElementById('btnLogin');
+  const _dcBtnOrigHTML = _dcBtn ? _dcBtn.innerHTML : '';
+  if(_dcBtn){ _dcBtn.disabled=true; _dcBtn.textContent='Menghubungkan ke Discord...'; }
+  const _dcErr = document.getElementById('eLogin');
+  if(_dcErr){ _dcErr.style.display='none'; }
   try{
     const provider = new firebase.auth.OAuthProvider('oidc.discord');
     provider.addScope('identify');
@@ -2397,6 +2358,9 @@ async function doDiscordLogin(){
     const msg = e.code==='auth/popup-closed-by-user'
       ? '⚠ Popup ditutup sebelum selesai'
       : '❌ '+e.message;
+    
+    if(_dcBtn){ _dcBtn.disabled=false; _dcBtn.innerHTML=_dcBtnOrigHTML; }
+    if(_dcErr){ _dcErr.style.display='block'; _dcErr.textContent = e.code==='auth/popup-closed-by-user' ? '⚠ Popup ditutup — coba lagi' : e.code==='auth/popup-blocked' ? '⚠ Izinkan popup di browser kamu' : '❌ '+e.message; }
     showErr('eLogin', msg);
   }
 }
@@ -2405,7 +2369,6 @@ async function doLogin(){
   const email = sanitize(document.getElementById('lEmail').value, 100);
   const pass  = document.getElementById('lPass').value;
   if(!email||!pass){showErr('eLogin','⚠ Email & password wajib');return;}
-  setBtnLoading('btnLogin',true);
   try{
     await auth.signInWithEmailAndPassword(email, pass);
   }catch(e){
@@ -2421,8 +2384,7 @@ async function doLogin(){
         ? '🚫 Akun kamu dinonaktifkan. Hubungi admin.'
         : '❌ '+e.message;
     showErr('eLogin', msg);
-    setBtnLoading('btnLogin',false,'LOGIN →');
-  }
+    }
 }
 
 async function doRegister(){
@@ -2433,10 +2395,9 @@ async function doRegister(){
   if(uname.length<3){showErr('eReg','⚠ Username min 3 karakter');return;}
   if(!/^[a-z0-9_]{3,30}$/.test(uname)){showErr('eReg','⚠ Username: huruf kecil, angka, underscore saja');return;}
   if(pass.length<6){showErr('eReg','⚠ Password min 6 karakter');return;}
-  setBtnLoading('btnReg',true);
   try{
     const existing = await db.collection('users').where('username','==',uname).limit(1).get();
-    if(!existing.empty){showErr('eReg','❌ Username sudah dipakai');setBtnLoading('btnReg',false,'BUAT AKUN →');return;}
+    if(!existing.empty){showErr('eReg','❌ Username sudah dipakai');return;}
     const cred = await auth.createUserWithEmailAndPassword(email, pass);
     await userRef(cred.user.uid).set({
       uid: cred.user.uid,
@@ -2453,8 +2414,7 @@ async function doRegister(){
       ? '❌ Email sudah terdaftar'
       : '❌ '+e.message;
     showErr('eReg', msg);
-    setBtnLoading('btnReg',false,'BUAT AKUN →');
-  }
+    }
 }
 
 async function doLogout(){
@@ -2477,8 +2437,6 @@ auth.onAuthStateChanged(async(firebaseUser)=>{
     document.getElementById('authOv').classList.add('hide');
     document.getElementById('gateOv').classList.add('hide');
     document.getElementById('landingOv').classList.remove('hide');
-    setBtnLoading('btnLogin',false,'LOGIN →');
-    setBtnLoading('btnReg',false,'BUAT AKUN →');
     if(announceUnsub) announceUnsub();
     if(chatUnsub) chatUnsub();
     loadLandingStats();
@@ -2587,10 +2545,10 @@ function openAdmin(){
   announcementRef().get().then(doc=>{
     if(doc.exists){
       document.getElementById('announceText').value = doc.data().text || '';
-      document.getElementById('announceColor').value = doc.data().color || '#00e5ff';
+      document.getElementById('announceColor').value = doc.data().color || '#00d4ff';
     }else{
       document.getElementById('announceText').value = '';
-      document.getElementById('announceColor').value = '#00e5ff';
+      document.getElementById('announceColor').value = '#00d4ff';
     }
   });
 }
@@ -2902,16 +2860,58 @@ function selFile(i){ai=i;renderTabs();const f=files[i];if(!f)return;document.get
 /* WAVEFORM */
 const wcanv=document.getElementById('wc'); const wctx=wcanv.getContext('2d',{alpha:false}); let _waveCache={fileIdx:-1,width:0,peaks:null};
 function buildPeaks(data,W){const step=Math.ceil(data.length/W);const mn=new Float32Array(W),mx=new Float32Array(W);for(let i=0;i<W;i++){let lo=1,hi=-1;for(let j=0;j<step;j++){const v=data[i*step+j]||0;if(v<lo)lo=v;if(v>hi)hi=v;}mn[i]=lo;mx[i]=hi;}return{mn,mx};}
-function drawWave(){ const f=files[ai];const dpr=Math.min(window.devicePixelRatio||1,2);const rect=wcanv.getBoundingClientRect();const W=Math.floor(rect.width),H=Math.floor(rect.height); wcanv.width=W*dpr;wcanv.height=H*dpr;wctx.setTransform(dpr,0,0,dpr,0,0);wctx.fillStyle='#161624';wctx.fillRect(0,0,W,H); if(!f)return; if(f.broken||!f.ab){wctx.fillStyle='#ffab40';wctx.font='600 12px JetBrains Mono,monospace';wctx.textAlign='center';wctx.fillText('⚠ Preview tidak tersedia',W/2,H/2-8);wctx.fillStyle='#55557a';wctx.font='10px JetBrains Mono,monospace';wctx.fillText('Export tetap bisa bekerja',W/2,H/2+12);document.getElementById('wTime').textContent=fmtSz(f.size)+' · export only';return;} if(_waveCache.fileIdx!==ai||_waveCache.width!==W){_waveCache={fileIdx:ai,width:W,peaks:buildPeaks(f.ab.getChannelData(0),W)};} const{mn,mx}=_waveCache.peaks;const playX=Math.floor(ppos*W); wctx.fillStyle='#3a3a52';for(let i=playX;i<W;i++){const top=(1+mn[i])*H/2,bot=(1+mx[i])*H/2,bH=Math.max(bot-top,1);wctx.fillRect(i,top,1,bH);} if(playX>0){wctx.fillStyle='#00e5ff';for(let i=0;i<playX;i++){const top=(1+mn[i])*H/2,bot=(1+mx[i])*H/2,bH=Math.max(bot-top,1);wctx.fillRect(i,top,1,bH);}} if(ppos>0&&ppos<1){const x=playX;wctx.strokeStyle='rgba(255,255,255,.9)';wctx.lineWidth=1.5;wctx.beginPath();wctx.moveTo(x,0);wctx.lineTo(x,H);wctx.stroke();} document.getElementById('wTime').textContent=fmtT(f.dur*ppos)+' / '+fmtT(f.dur)+' · '+fmtSz(f.size); }
+function drawWave(){ const f=files[ai];const dpr=Math.min(window.devicePixelRatio||1,2);const rect=wcanv.getBoundingClientRect();const W=Math.floor(rect.width),H=Math.floor(rect.height); wcanv.width=W*dpr;wcanv.height=H*dpr;wctx.setTransform(dpr,0,0,dpr,0,0);wctx.fillStyle='#12121f';wctx.fillRect(0,0,W,H); if(!f)return; if(f.broken||!f.ab){wctx.fillStyle='#ffab40';wctx.font='600 12px JetBrains Mono,monospace';wctx.textAlign='center';wctx.fillText('⚠ Preview tidak tersedia',W/2,H/2-8);wctx.fillStyle='#55557a';wctx.font='10px JetBrains Mono,monospace';wctx.fillText('Export tetap bisa bekerja',W/2,H/2+12);document.getElementById('wTime').textContent=fmtSz(f.size)+' · export only';return;} if(_waveCache.fileIdx!==ai||_waveCache.width!==W){_waveCache={fileIdx:ai,width:W,peaks:buildPeaks(f.ab.getChannelData(0),W)};} const{mn,mx}=_waveCache.peaks;const playX=Math.floor(ppos*W); wctx.fillStyle='#1e1e30';for(let i=playX;i<W;i++){const top=(1+mn[i])*H/2,bot=(1+mx[i])*H/2,bH=Math.max(bot-top,1);wctx.fillRect(i,top,1,bH);} if(playX>0){wctx.fillStyle='#00d4ff';for(let i=0;i<playX;i++){const top=(1+mn[i])*H/2,bot=(1+mx[i])*H/2,bH=Math.max(bot-top,1);wctx.fillRect(i,top,1,bH);}} if(ppos>0&&ppos<1){const x=playX;wctx.strokeStyle='rgba(255,255,255,.9)';wctx.lineWidth=1.5;wctx.beginPath();wctx.moveTo(x,0);wctx.lineTo(x,H);wctx.stroke();} document.getElementById('wTime').textContent=fmtT(f.dur*ppos)+' / '+fmtT(f.dur)+' · '+fmtSz(f.size); }
 wcanv.addEventListener('click',e=>{const f=files[ai];if(!f||f.broken||!f.ab)return;const rect=wcanv.getBoundingClientRect();PO=((e.clientX-rect.left)/rect.width)*f.ab.duration;ppos=PO/f.ab.duration;drawWave();if(playing){stopSilent();startPB();}});
-function startPB(){const f=files[ai];if(!f)return;if(f.broken||!f.ab){toast('Preview N/A','Export langsung aja','warn');return;}const ctx=getAC();if(ctx.state==='suspended')ctx.resume();const src=ctx.createBufferSource();src.buffer=f.ab;src.playbackRate.value=prvR();const g=ctx.createGain();g.gain.value=vol;GN=g;src.connect(g);g.connect(ctx.destination);src.start(0,PO||0);ST=ctx.currentTime-(PO||0)/prvR();SN=src;playing=true;document.getElementById('btnPlay').textContent='⏸';const tick=()=>{if(!playing)return;const el=(ctx.currentTime-ST)*prvR(),pos=el/f.ab.duration;if(pos>=1){stopPB();ppos=0;PO=0;drawWave();return;}ppos=pos;drawWave();RAF=requestAnimationFrame(tick);};RAF=requestAnimationFrame(tick);src.onended=()=>{if(SN===src){stopPB();ppos=0;PO=0;drawWave();}};}
-function stopSilent(){if(SN){try{SN.stop();}catch(e){}SN.disconnect();SN=null;}if(RAF)cancelAnimationFrame(RAF);playing=false;}
+function startPB(){
+  const f=files[ai];if(!f)return;
+  if(f.broken||!f.ab){toast('Preview N/A','Export langsung aja','warn');return;}
+  const ctx=getAC();if(ctx.state==='suspended')ctx.resume();
+  const src=ctx.createBufferSource();src.buffer=f.ab;src.playbackRate.value=prvR();
+
+  // Gain node
+  const g=ctx.createGain();g.gain.value=vol;GN=g;
+
+  // Analyser for visualizer
+  if(!_vizAnalyserRef){
+    _vizAnalyserRef=ctx.createAnalyser();
+    _vizAnalyserRef.fftSize=512;
+    _vizAnalyserRef.smoothingTimeConstant=0.8;
+  }
+
+  // Build chain: src → EQ filters → gain → analyser → destination
+  let lastNode=src;
+  if(_eqEnabled && eqFilters.length>0){
+    // reconnect EQ filters to current context if needed
+    try{
+      for(let i=0;i<eqFilters.length;i++){
+        lastNode.connect(eqFilters[i]);
+        lastNode=eqFilters[i];
+      }
+    }catch(e){lastNode=src;}
+  }
+  lastNode.connect(g);
+  g.connect(_vizAnalyserRef);
+  _vizAnalyserRef.connect(ctx.destination);
+
+  src.start(0,PO||0);
+  ST=ctx.currentTime-(PO||0)/prvR();SN=src;playing=true;
+  document.getElementById('btnPlay').textContent='⏸';
+
+  // Start visualizer if panel visible
+  const vp=document.getElementById('vizPanel');
+  if(vp&&vp.style.display!=='none')startVisualizer(_vizAnalyserRef);
+
+  const tick=()=>{if(!playing)return;const el=(ctx.currentTime-ST)*prvR(),pos=el/f.ab.duration;if(pos>=1){stopPB();ppos=0;PO=0;drawWave();return;}ppos=pos;drawWave();RAF=requestAnimationFrame(tick);};
+  RAF=requestAnimationFrame(tick);
+  src.onended=()=>{if(SN===src){stopPB();ppos=0;PO=0;drawWave();}};
+}
+function stopSilent(){if(SN){try{SN.stop();}catch(e){}SN.disconnect();SN=null;}if(RAF)cancelAnimationFrame(RAF);playing=false;stopVisualizer();}
 function stopPB(){stopSilent();document.getElementById('btnPlay').textContent='▶';}
 function togglePlay(){if(playing){PO=(getAC().currentTime-ST)*SN.playbackRate.value;stopPB();}else startPB();}
 function applyLive(){if(SN){const ctx=getAC(),co=(ctx.currentTime-ST)*SN.playbackRate.value,nr=prvR();SN.playbackRate.value=nr;ST=ctx.currentTime-co/nr;}if(GN)GN.gain.value=vol;updStats();updExpInfo();hlPre();hlAuto();}
 /* KNOBS */
-function updKnob(id,pct,c){const r=document.getElementById(id);r.style.background=`conic-gradient(from -135deg,${c} 0deg,${c} ${pct/100*270}deg,#252538 ${pct/100*270}deg,#252538 270deg,transparent 270deg)`;const n=r.querySelector('.kneedle');n.style.transform=`rotate(${-135+pct/100*270}deg)`;n.style.background=c;}
-function syncUI(){ const sp=((spd-0.25)/3.75)*100;document.getElementById('slSpd').value=spd;document.getElementById('svSpd').textContent=spd.toFixed(2)+'x';document.getElementById('sfSpd').style.width=sp+'%';document.getElementById('kvSpd').textContent=spd.toFixed(2)+'x';updKnob('kSpd',sp,'#00e5ff'); const pp=((pit+12)/24)*100;document.getElementById('slPit').value=pit;document.getElementById('svPit').textContent=pit+' st';document.getElementById('sfPit').style.width=pp+'%';document.getElementById('kvPit').textContent=(pit>0?'+':'')+pit+'st';updKnob('kPit',pp,'#9c6cff'); const vp=(vol/2)*100;document.getElementById('slVol').value=vol;document.getElementById('svVol').textContent=Math.round(vol*100)+'%';document.getElementById('sfVol').style.width=vp+'%';document.getElementById('kvVol').textContent=Math.round(vol*100)+'%';updKnob('kVol',vp,'#00e676'); applyLive(); }
+function updKnob(id,pct,c){const r=document.getElementById(id);r.style.background=`conic-gradient(from -135deg,${c} 0deg,${c} ${pct/100*270}deg,#1e1e30 ${pct/100*270}deg,#1e1e30 270deg,transparent 270deg)`;const n=r.querySelector('.kneedle');n.style.transform=`rotate(${-135+pct/100*270}deg)`;n.style.background=c;}
+function syncUI(){ const sp=((spd-0.25)/3.75)*100;document.getElementById('slSpd').value=spd;document.getElementById('svSpd').textContent=spd.toFixed(2)+'x';document.getElementById('sfSpd').style.width=sp+'%';document.getElementById('kvSpd').textContent=spd.toFixed(2)+'x';updKnob('kSpd',sp,'#00d4ff'); const pp=((pit+12)/24)*100;document.getElementById('slPit').value=pit;document.getElementById('svPit').textContent=pit+' st';document.getElementById('sfPit').style.width=pp+'%';document.getElementById('kvPit').textContent=(pit>0?'+':'')+pit+'st';updKnob('kPit',pp,'#7c4dff'); const vp=(vol/2)*100;document.getElementById('slVol').value=vol;document.getElementById('svVol').textContent=Math.round(vol*100)+'%';document.getElementById('sfVol').style.width=vp+'%';document.getElementById('kvVol').textContent=Math.round(vol*100)+'%';updKnob('kVol',vp,'#00c853'); applyLive(); }
 document.getElementById('slSpd').addEventListener('input',e=>{spd=parseFloat(e.target.value);amode=null;syncUI();}); document.getElementById('slPit').addEventListener('input',e=>{pit=parseInt(e.target.value);amode=null;syncUI();}); document.getElementById('slVol').addEventListener('input',e=>{vol=parseFloat(e.target.value);syncUI();});
 function mkKnob(id,param,mn,mx,st){const el=document.getElementById(id);let drag=false,sy=0,sv=0;el.addEventListener('pointerdown',e=>{drag=true;sy=e.clientY;sv=param==='s'?spd:param==='p'?pit:vol;el.setPointerCapture(e.pointerId);});el.addEventListener('pointermove',e=>{if(!drag)return;let nv=sv+((sy-e.clientY)/150)*(mx-mn);nv=Math.round(nv/st)*st;nv=Math.max(mn,Math.min(mx,nv));if(param==='s'){spd=nv;amode=null;}else if(param==='p'){pit=nv;amode=null;}else vol=nv;syncUI();});el.addEventListener('pointerup',()=>drag=false);el.addEventListener('pointercancel',()=>drag=false);}
 mkKnob('kSpd','s',0.25,4,0.05); mkKnob('kPit','p',-12,12,1); mkKnob('kVol','v',0,2,0.05);
@@ -2927,7 +2927,18 @@ function updExpBtns(){if(!CU||!canExport())return;const e=fmt.toUpperCase();docu
 function updStats(){const f=files[ai];if(!f)return;document.getElementById('stR').textContent=f.broken?'—':'44100Hz';document.getElementById('stC').textContent=f.broken?'—':'Stereo';document.getElementById('stO').textContent=f.broken?'—':fmtT(f.dur);document.getElementById('stP').textContent=f.broken?'—':fmtT(f.dur/spd);}
 function updExpInfo(){const f=files[ai];if(!f)return;document.getElementById('expinfo').innerHTML=`Output: ${fmt.toUpperCase()} · 44100Hz · Stereo<br>Speed: ${spd.toFixed(2)}× · Pitch: ${pit>0?'+':''}${pit}st · Vol: ${Math.round(vol*100)}%`;}
 /* RENDER */
-async function renderAudio(fd){ const raw=await fd.file.arrayBuffer(); const decodeCtx=new OfflineAudioContext(1,1,44100); const decoded=await decodeCtx.decodeAudioData(raw); const pitchRate=Math.pow(2,pit/12); const SR=22050; const outLen=Math.max(1,Math.ceil(decoded.length*0.5/spd/pitchRate)); const nCh=Math.min(decoded.numberOfChannels,2); const offCtx=new OfflineAudioContext(nCh,outLen,SR); const src=offCtx.createBufferSource(); let buf=decoded; if(pit!==0){const shiftedSR=Math.round(decoded.sampleRate*pitchRate); const sb=new AudioBuffer({numberOfChannels:nCh,length:decoded.length,sampleRate:shiftedSR}); for(let ch=0;ch<nCh;ch++)sb.copyToChannel(decoded.getChannelData(ch),ch); buf=sb;} src.buffer=buf; src.playbackRate.value=spd; const gn=offCtx.createGain();gn.gain.value=Math.min(vol,1.8); src.connect(gn); gn.connect(offCtx.destination); src.start(0); await new Promise(r=>setTimeout(r,0)); setProg(40,'Rendering audio...'); await new Promise(r=>setTimeout(r,0)); const rendered=await offCtx.startRendering(); src.buffer=null; return rendered; }
+async function renderAudio(fd){ const raw=await fd.file.arrayBuffer(); const decodeCtx=new OfflineAudioContext(1,1,44100); const decoded=await decodeCtx.decodeAudioData(raw); const pitchRate=Math.pow(2,pit/12); const SR=22050; const outLen=Math.max(1,Math.ceil(decoded.length*0.5/spd/pitchRate)); const nCh=Math.min(decoded.numberOfChannels,2); const offCtx=new OfflineAudioContext(nCh,outLen,SR); const src=offCtx.createBufferSource(); let buf=decoded; if(pit!==0){const shiftedSR=Math.round(decoded.sampleRate*pitchRate); const sb=new AudioBuffer({numberOfChannels:nCh,length:decoded.length,sampleRate:shiftedSR}); for(let ch=0;ch<nCh;ch++)sb.copyToChannel(decoded.getChannelData(ch),ch); buf=sb;} src.buffer=buf; src.playbackRate.value=spd; const gn=offCtx.createGain();gn.gain.value=Math.min(vol,1.8);
+  // Apply EQ in offline render too
+  let lastOffNode=src;
+  if(_eqEnabled && _eqGains.some(g=>g!==0)){
+    EQ_FREQS.forEach((freq,i)=>{
+      const f=offCtx.createBiquadFilter();
+      f.type=i===0?'lowshelf':i===EQ_FREQS.length-1?'highshelf':'peaking';
+      f.frequency.value=freq;f.Q.value=1.4;f.gain.value=_eqGains[i];
+      lastOffNode.connect(f);lastOffNode=f;
+    });
+  }
+  lastOffNode.connect(gn); gn.connect(offCtx.destination); src.start(0); await new Promise(r=>setTimeout(r,0)); setProg(40,'Rendering audio...'); await new Promise(r=>setTimeout(r,0)); const rendered=await offCtx.startRendering(); src.buffer=null; return rendered; }
 function buf2wav(buffer){const nCh=buffer.numberOfChannels,SR=buffer.sampleRate,len=buffer.length,bps=2,dLen=len*nCh*bps;const wb=new ArrayBuffer(44+dLen),v=new DataView(wb);const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};w(0,'RIFF');v.setUint32(4,36+dLen,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,nCh,true);v.setUint32(24,SR,true);v.setUint32(28,SR*nCh*bps,true);v.setUint16(32,nCh*bps,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,dLen,true);let off=44;for(let i=0;i<len;i++)for(let ch=0;ch<nCh;ch++){const s=Math.max(-1,Math.min(1,buffer.getChannelData(ch)[i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}return wb;}
 async function encodeMp3(rendered,bitrate){ bitrate=bitrate||128; if(typeof lamejs==='undefined')return null; const nCh=Math.min(rendered.numberOfChannels,2); const ch0=rendered.getChannelData(0); const ch1=nCh>1?rendered.getChannelData(1):ch0; const toI16=f=>{const a=new Int16Array(f.length);for(let i=0;i<f.length;i++){const s=Math.max(-1,Math.min(1,f[i]));a[i]=s<0?s*0x8000:s*0x7FFF;}return a;}; const left=toI16(ch0),right=toI16(ch1); const encoder=new lamejs.Mp3Encoder(nCh===1?1:2,rendered.sampleRate,bitrate); const CHUNK=1152; const mp3Data=[]; const total=left.length; for(let i=0;i<total;i+=CHUNK){ const l=left.subarray(i,i+CHUNK),r=right.subarray(i,i+CHUNK); const encoded=nCh===1?encoder.encodeBuffer(l):encoder.encodeBuffer(l,r); if(encoded.length>0)mp3Data.push(new Int8Array(encoded)); if(i%(CHUNK*100)===0){setProg(65+Math.round((i/total)*30),'Encoding MP3... '+Math.round((i/total)*100)+'%');await new Promise(r=>setTimeout(r,0));} } const end=encoder.flush();if(end.length>0)mp3Data.push(new Int8Array(end)); return new Blob(mp3Data,{type:'audio/mp3'}); }
 async function doExport(fd){ showProg('Processing Audio','Speed '+spd.toFixed(2)+'× · Pitch '+(pit>0?'+':'')+pit+'st'); if(playing)stopPB(); let rendered; try{setProg(30,'Rendering audio...');rendered=await renderAudio(fd);setProg(65,'Audio rendered...');} catch(e){hideProg();throw new Error('Render gagal: '+(e.message||e));} const base=fd.name.replace(/\.[^.]+$/,''); let blob,outName; if(fmt==='mp3'){ if(typeof lamejs!=='undefined'){blob=await encodeMp3(rendered,128);if(!blob){const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs error','Disimpan sebagai WAV','warn');}else outName=base+'_bypass.mp3';} else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs tidak tersedia','Disimpan sebagai WAV','warn');} }else if(fmt==='ogg'&&typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported('audio/ogg;codecs=vorbis')){ blob=await new Promise(res=>{const ac2=new AudioContext(),src2=ac2.createBufferSource();src2.buffer=rendered;const dest=ac2.createMediaStreamDestination();src2.connect(dest);const mr=new MediaRecorder(dest.stream,{mimeType:'audio/ogg;codecs=vorbis'});const chunks=[];mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};mr.onstop=()=>{ac2.close();res(new Blob(chunks,{type:'audio/ogg'}));};mr.start();src2.start(0);src2.onended=()=>setTimeout(()=>{try{mr.stop();}catch(e){}},200);setTimeout(()=>{try{mr.stop();}catch(e){}},Math.ceil((rendered.duration+3)*1000));}); outName=base+'_bypass.ogg'; }else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass.wav';if(fmt==='ogg')toast('OGG tidak didukung','Disimpan sebagai WAV','warn');} rendered=null; setProg(95,'Menyiapkan download...');return{blob,filename:outName}; }
@@ -3484,8 +3495,6 @@ function hideLanding(){
 function goToAuth(tab){
   hideLanding();
   document.getElementById('authOv').classList.remove('hide');
-  if(tab === 'reg') switchTab('reg');
-  else switchTab('login');
 }
 
 async function loadLandingStats(){
@@ -3595,18 +3604,37 @@ function toggleEQ(){
   _eqEnabled = document.getElementById('eqEnabled').checked;
   const status = document.getElementById('eqStatus');
   if(status) status.textContent = _eqEnabled ? 'ON' : 'OFF';
+
+  // Initialize EQ filters with current AudioContext if not done yet
+  if(_eqEnabled && eqFilters.length === 0){
+    const ctx = getAC();
+    initEQ(ctx, null);
+    console.log('[EQ] Initialized', eqFilters.length, 'band filters');
+  }
+
   // Enable/disable sliders
   EQ_FREQS.forEach((_, i) => {
     const sl = document.getElementById('eqSlider'+i);
     if(sl) sl.disabled = !_eqEnabled;
   });
-  // Apply gains
+
+  // Apply gains to filters
   if(_eqEnabled){
     eqFilters.forEach((f, i) => { if(f) f.gain.value = _eqGains[i]; });
-    toast('EQ Aktif 🎚️', 'Equalizer 10-band dinyalakan', 'success');
+    toast('EQ Aktif', 'Equalizer ON — play audio untuk dengar efek EQ', 'success');
   } else {
     eqFilters.forEach(f => { if(f) f.gain.value = 0; });
-    toast('EQ Off', '', 'warn');
+    toast('EQ Off', 'Equalizer dimatikan', 'warn');
+  }
+
+  // Restart playback if currently playing so EQ takes effect immediately
+  if(playing){
+    try{
+      const p = (getAC().currentTime - ST) * (SN ? SN.playbackRate.value : prvR());
+      PO = p;
+      stopSilent();
+      setTimeout(startPB, 50);
+    }catch(e){}
   }
 }
 
@@ -3704,7 +3732,7 @@ function drawVisualizer(){
     const data = new Uint8Array(bufLen);
     _vizAnalyser.getByteTimeDomainData(data);
     ctx.beginPath();
-    ctx.strokeStyle = '#00e5ff';
+    ctx.strokeStyle = '#00d4ff';
     ctx.lineWidth = 2;
     const sliceW = W / bufLen;
     let x = 0;
