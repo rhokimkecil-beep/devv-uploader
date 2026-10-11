@@ -366,42 +366,6 @@ body.exporting .spin{animation:spin .8s linear infinite}
   display: inline-block;
 }
 
-/* ============================================================
-   RAINBOW GRADIENT TEXT — ANIMATED
-   ============================================================ */
-@keyframes rainbowMove {
-  0%   { background-position: 0% center; }
-  100% { background-position: 300% center; }
-}
-
-.aform h2, .aform .asub, .aform .anote, .aform .fl,
-.or-divider, .forgot-link, .logo-txt, .atab,
-.gate-title, .gate-sub, .gnote, .gstep-title, .gstep-desc,
-.hdr-logo-txt, .hdr-logo-sub,
-.bdg, .bdg-ok, .bdg-gold, .bdg-red,
-.uname, .urole, #uName, #uRole, #limTxt,
-.bsm, .lbar,
-.hero h1, .hero p, .hacc,
-.istrip,
-.feat-ttl, .feat-desc,
-.dz-ttl, .dz-sub,
-.footer, .footer-gradient-text, .footer-rating-btn,
-#srvBadge, #autoInd, #fCount {
-  background: linear-gradient(90deg,
-    #00e5ff 0%,
-    #9c6cff 25%,
-    #00e676 50%,
-    #ffd700 75%,
-    #00e5ff 100%
-  ) !important;
-  background-size: 400% 100% !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  animation: rainbowMove 3s linear infinite !important;
-  display: inline-block;
-}
-
 /* ... css kamu yang lain ... */
 
 /* FIX — hero text layout */
@@ -523,6 +487,155 @@ body.exporting .spin{animation:spin .8s linear infinite}
 @keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============================================================
+   DARK / LIGHT MODE TOGGLE
+   ============================================================ */
+body.light-mode {
+  --bg:#f0f2f5; --s:#ffffff; --s2:#f5f7fa; --b:#dde2ea; --t:#1a1a2e;
+  --d:#6b7280; background-color:#f0f2f5;
+}
+body.light-mode #auroraBg { opacity: 0.15; }
+body.light-mode .hdr { background: rgba(240,242,245,.97) !important; }
+body.light-mode .feat, body.light-mode .panel, body.light-mode .wpanel,
+body.light-mode .autosec, body.light-mode .ubar, body.light-mode .aform,
+body.light-mode .modal-box, body.light-mode .buy-modal-box,
+body.light-mode .profile-modal, body.light-mode .chat-modal,
+body.light-mode .lb-modal, body.light-mode .rating-modal { box-shadow: 0 2px 16px rgba(0,0,0,.08); }
+
+.theme-btn {
+  width:34px; height:34px; border-radius:50%; border:1px solid var(--b);
+  background:var(--s2); color:var(--t); cursor:pointer; font-size:16px;
+  display:grid; place-items:center; transition:border-color .2s,transform .15s;
+  flex-shrink:0;
+}
+.theme-btn:hover { border-color:var(--a); transform:scale(1.1); }
+
+/* ============================================================
+   10-BAND EQUALIZER
+   ============================================================ */
+.eq-panel { background:var(--s); border-radius:13px; padding:14px 16px; border:1px solid var(--b); margin-bottom:12px; }
+.eq-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:6px; }
+.eq-toggle { display:flex; align-items:center; gap:8px; }
+.eq-switch { position:relative; width:40px; height:22px; flex-shrink:0; }
+.eq-switch input { opacity:0; width:0; height:0; }
+.eq-slider-sw { position:absolute; inset:0; background:var(--b); border-radius:11px; cursor:pointer; transition:background .2s; }
+.eq-slider-sw:before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .2s; }
+input:checked + .eq-slider-sw { background:var(--a); }
+input:checked + .eq-slider-sw:before { transform:translateX(18px); }
+.eq-bands { display:flex; align-items:flex-end; gap:6px; height:130px; }
+.eq-band { display:flex; flex-direction:column; align-items:center; flex:1; height:100%; }
+.eq-band-slider { writing-mode:vertical-lr; direction:rtl; -webkit-appearance:none; appearance:none; background:transparent; cursor:pointer; flex:1; width:24px; }
+.eq-band-slider::-webkit-slider-runnable-track { width:4px; border-radius:2px; background:var(--b); }
+.eq-band-slider::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:var(--a); box-shadow:0 0 6px var(--a); margin-left:-5px; }
+.eq-band-label { font-size:8px; color:var(--d); font-family:'JetBrains Mono',monospace; margin-top:4px; text-align:center; white-space:nowrap; }
+.eq-band-val { font-size:9px; font-family:'JetBrains Mono',monospace; color:var(--a); margin-bottom:3px; min-height:12px; }
+.eq-presets { display:flex; flex-wrap:wrap; gap:4px; margin-top:10px; }
+.eq-preset-btn { padding:4px 9px; border-radius:6px; border:1px solid var(--b); background:var(--s2); color:var(--d); cursor:pointer; font-size:9px; font-family:'JetBrains Mono',monospace; font-weight:600; transition:border-color .15s,background .15s,color .15s; }
+.eq-preset-btn:hover { border-color:var(--a); color:var(--a); }
+.eq-preset-btn.on { border-color:var(--a); background:rgba(0,229,255,.1); color:var(--a); }
+.eq-band-slider:disabled { opacity:.4; cursor:not-allowed; }
+
+/* ============================================================
+   SOUNDWAVE VISUALIZER
+   ============================================================ */
+.visualizer-panel { background:var(--s); border-radius:13px; padding:13px 16px; border:1px solid var(--b); margin-bottom:12px; position:relative; overflow:hidden; }
+#vizCanvas { width:100%; height:80px; border-radius:8px; display:block; }
+.viz-controls { display:flex; gap:5px; flex-wrap:wrap; margin-top:8px; align-items:center; }
+.viz-type-btn { padding:4px 9px; border-radius:6px; border:1px solid var(--b); background:var(--s2); color:var(--d); cursor:pointer; font-size:9px; font-family:'JetBrains Mono',monospace; font-weight:600; transition:border-color .15s,background .15s,color .15s; }
+.viz-type-btn:hover,.viz-type-btn.on { border-color:var(--a); background:rgba(0,229,255,.1); color:var(--a); }
+.viz-label { font-size:8px; letter-spacing:2px; color:var(--d); font-family:'JetBrains Mono',monospace; text-transform:uppercase; margin-right:auto; }
+
+/* ============================================================
+   HISTORY EXPORT
+   ============================================================ */
+.history-panel { background:var(--s); border-radius:13px; padding:14px 16px; border:1px solid var(--b); margin-bottom:12px; }
+.history-list { max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:5px; margin-top:10px; }
+.history-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:9px; background:var(--s2); border:1px solid var(--b); font-family:'JetBrains Mono',monospace; font-size:10px; transition:border-color .15s; }
+.history-item:hover { border-color:var(--a); }
+.history-item-name { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--t); font-size:11px; }
+.history-item-meta { color:var(--d); font-size:9px; flex-shrink:0; }
+.history-item-badge { padding:2px 6px; border-radius:4px; font-size:8px; font-weight:700; background:rgba(0,229,255,.12); color:var(--a); border:1px solid rgba(0,229,255,.25); flex-shrink:0; }
+.history-empty { text-align:center; padding:18px; font-size:11px; color:var(--d); font-family:'JetBrains Mono',monospace; }
+.history-clear-btn { padding:4px 9px; border-radius:6px; border:1px solid rgba(255,82,82,.3); background:transparent; color:var(--r); cursor:pointer; font-size:9px; font-family:'JetBrains Mono',monospace; font-weight:600; transition:background .15s; }
+.history-clear-btn:hover { background:rgba(255,82,82,.08); }
+
+/* ============================================================
+   NOTIFICATION SYSTEM
+   ============================================================ */
+.notif-bell-wrap { position:relative; flex-shrink:0; }
+.notif-bell { width:34px; height:34px; border-radius:50%; border:1px solid var(--b); background:var(--s2); color:var(--t); cursor:pointer; font-size:16px; display:grid; place-items:center; transition:border-color .2s,transform .15s; }
+.notif-bell:hover { border-color:var(--a); transform:scale(1.1); }
+.notif-count { position:absolute; top:-4px; right:-4px; width:16px; height:16px; border-radius:50%; background:var(--r); color:#fff; font-size:9px; font-weight:700; display:grid; place-items:center; font-family:'JetBrains Mono',monospace; display:none; }
+.notif-count.show { display:grid; }
+.notif-panel { position:fixed; top:56px; right:20px; width:310px; background:var(--s); border:1px solid var(--b); border-radius:14px; z-index:800; animation:slideUp .2s ease-out; box-shadow:0 8px 30px rgba(0,0,0,.3); display:none; }
+.notif-panel.show { display:block; }
+.notif-panel-hdr { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--b); }
+.notif-panel-hdr h4 { font-size:13px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+.notif-panel-hdr button { background:none; border:none; color:var(--d); cursor:pointer; font-size:11px; font-family:'JetBrains Mono',monospace; }
+.notif-panel-hdr button:hover { color:var(--t); }
+.notif-list { max-height:320px; overflow-y:auto; }
+.notif-item { display:flex; gap:10px; padding:10px 14px; border-bottom:1px solid rgba(37,37,56,.4); cursor:pointer; transition:background .15s; }
+.notif-item:hover { background:rgba(255,255,255,.02); }
+.notif-item.unread { background:rgba(0,229,255,.04); }
+.notif-item.unread .notif-dot { display:block; }
+.notif-dot { width:7px; height:7px; border-radius:50%; background:var(--a); flex-shrink:0; margin-top:5px; display:none; }
+.notif-ico { font-size:18px; flex-shrink:0; }
+.notif-body { flex:1; min-width:0; }
+.notif-title { font-size:11px; font-weight:700; margin-bottom:2px; }
+.notif-text { font-size:10px; color:var(--d); line-height:1.4; font-family:'JetBrains Mono',monospace; }
+.notif-time { font-size:9px; color:var(--d); margin-top:3px; font-family:'JetBrains Mono',monospace; }
+.notif-empty { text-align:center; padding:24px; font-size:11px; color:var(--d); font-family:'JetBrains Mono',monospace; }
+
+/* ============================================================
+   LANDING PAGE (sebelum login)
+   ============================================================ */
+.landing-ov { position:fixed; inset:0; z-index:8500; display:flex; align-items:center; justify-content:center; padding:20px; overflow-y:auto; background:var(--bg); }
+.landing-ov.hide { display:none; }
+.landing-box { max-width:660px; width:100%; text-align:center; animation:fadeIn .5s; }
+.landing-hero { padding:32px 0 24px; }
+.landing-logo { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:24px; }
+.landing-logo-ico { width:56px; height:56px; border-radius:14px; background:linear-gradient(135deg,var(--a),var(--a2)); display:grid; place-items:center; font-size:26px; box-shadow:0 0 30px rgba(0,229,255,.3); }
+.landing-logo-txt { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:22px; letter-spacing:1px; background:linear-gradient(135deg,var(--a),var(--a2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.landing-h1 { font-size:36px; font-weight:800; line-height:1.2; margin-bottom:12px; }
+.landing-h1 .acc { background:linear-gradient(135deg,var(--a),var(--a2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.landing-sub { font-size:14px; color:var(--d); max-width:460px; margin:0 auto 28px; line-height:1.7; }
+.landing-feats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:28px; text-align:left; }
+@media(max-width:580px){.landing-feats{grid-template-columns:1fr}}
+.landing-feat { background:var(--s); border:1px solid var(--b); border-radius:12px; padding:14px; transition:border-color .2s,transform .2s; }
+.landing-feat:hover { border-color:var(--a); transform:translateY(-3px); }
+.landing-feat-ico { font-size:24px; margin-bottom:8px; }
+.landing-feat-ttl { font-size:12px; font-weight:700; font-family:'JetBrains Mono',monospace; margin-bottom:4px; color:var(--a); }
+.landing-feat-desc { font-size:11px; color:var(--d); line-height:1.5; }
+.landing-cta { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:16px; }
+.btn-landing-primary { padding:14px 28px; border-radius:12px; border:none; background:linear-gradient(135deg,var(--a),var(--a2)); color:#fff; cursor:pointer; font-size:14px; font-weight:700; font-family:'JetBrains Mono',monospace; letter-spacing:1px; transition:opacity .2s,transform .15s; }
+.btn-landing-primary:hover { transform:translateY(-2px); opacity:.9; }
+.btn-landing-secondary { padding:14px 28px; border-radius:12px; border:1px solid var(--b); background:var(--s); color:var(--t); cursor:pointer; font-size:14px; font-weight:700; font-family:'JetBrains Mono',monospace; transition:border-color .2s; }
+.btn-landing-secondary:hover { border-color:var(--a); }
+.landing-stats { display:flex; justify-content:center; gap:28px; flex-wrap:wrap; padding:16px; background:var(--s); border:1px solid var(--b); border-radius:12px; margin-top:16px; }
+.landing-stat { text-align:center; }
+.landing-stat-v { font-size:22px; font-weight:800; font-family:'JetBrains Mono',monospace; background:linear-gradient(135deg,var(--a),var(--a2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.landing-stat-l { font-size:9px; color:var(--d); font-family:'JetBrains Mono',monospace; letter-spacing:1px; text-transform:uppercase; margin-top:3px; }
+
+/* ============================================================
+   AUTH UI — Improved Animation
+   ============================================================ */
+.auth-box-v2 { max-width:440px; width:100%; position:relative; }
+.auth-card { background:var(--s); border:1px solid var(--b); border-radius:20px; padding:28px; position:relative; overflow:hidden; }
+.auth-card::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:conic-gradient(from 0deg, transparent 0%, rgba(0,229,255,.03) 25%, transparent 50%); animation:spin 8s linear infinite; pointer-events:none; }
+.auth-glow { position:absolute; top:-60px; right:-60px; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle, rgba(0,229,255,.08) 0%, transparent 70%); pointer-events:none; }
+.auth-glow2 { position:absolute; bottom:-60px; left:-60px; width:140px; height:140px; border-radius:50%; background:radial-gradient(circle, rgba(156,108,255,.07) 0%, transparent 70%); pointer-events:none; }
+.input-wrap { position:relative; }
+.input-wrap .fi { padding-right:36px; }
+.input-eye { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--d); cursor:pointer; font-size:14px; padding:4px; line-height:1; }
+.input-eye:hover { color:var(--t); }
+.input-strength { height:3px; border-radius:2px; margin-top:4px; background:var(--b); overflow:hidden; }
+.input-strength-fill { height:100%; border-radius:2px; transition:width .3s,background .3s; width:0%; }
+.strength-weak { background:var(--r); }
+.strength-med { background:var(--w); }
+.strength-strong { background:var(--ok); }
+.strength-label { font-size:9px; color:var(--d); font-family:'JetBrains Mono',monospace; margin-top:3px; height:11px; }
+
 </style>
 
 <script>
@@ -747,6 +860,85 @@ raf=requestAnimationFrame(draw);
 <div class="fb-loading" id="fbLoading">
   <div class="spin-ring"></div>
   <p>Menghubungkan ke Firebase...</p>
+</div>
+
+<!-- LANDING PAGE -->
+<div class="landing-ov hide" id="landingOv">
+  <div class="landing-box">
+    <div class="landing-logo">
+      <div class="landing-logo-ico">♫</div>
+      <div class="landing-logo-txt">RPMxDEV<span style="-webkit-text-fill-color:rgba(0,229,255,1)">.</span>AUDIO</div>
+    </div>
+    <div class="landing-hero">
+      <h1 class="landing-h1">Bypass Audio untuk<br><span class="acc">Roblox</span> — Gratis!</h1>
+      <p class="landing-sub">Tool audio processor terbaik untuk bypass copyright detection Roblox. Pitch & speed independen, export MP3 asli, 100% di browser, tanpa install apapun.</p>
+      <div class="landing-feats">
+        <div class="landing-feat">
+          <div class="landing-feat-ico">⚡</div>
+          <div class="landing-feat-ttl">AUTO BYPASS</div>
+          <div class="landing-feat-desc">Otomatis adjust audio untuk lolos filter copyright Roblox dengan satu klik</div>
+        </div>
+        <div class="landing-feat">
+          <div class="landing-feat-ico">🎚️</div>
+          <div class="landing-feat-ttl">10-BAND EQ</div>
+          <div class="landing-feat-desc">Equalizer profesional 10 band dengan preset populer: Bass Boost, Vocal, Gaming</div>
+        </div>
+        <div class="landing-feat">
+          <div class="landing-feat-ico">🎵</div>
+          <div class="landing-feat-ttl">TRUE MP3</div>
+          <div class="landing-feat-desc">Export MP3 nyata via lamejs encoder — bukan WAV yang di-rename jadi MP3</div>
+        </div>
+        <div class="landing-feat">
+          <div class="landing-feat-ico">📊</div>
+          <div class="landing-feat-ttl">VISUALIZER</div>
+          <div class="landing-feat-desc">Real-time soundwave visualizer dengan mode bars, wave, dan circular</div>
+        </div>
+        <div class="landing-feat">
+          <div class="landing-feat-ico">💾</div>
+          <div class="landing-feat-ttl">MULTI FORMAT</div>
+          <div class="landing-feat-desc">Input MP3, WAV, OGG, FLAC, M4A. Export ke MP3, OGG, atau WAV</div>
+        </div>
+        <div class="landing-feat">
+          <div class="landing-feat-ico">🔒</div>
+          <div class="landing-feat-ttl">100% PRIVAT</div>
+          <div class="landing-feat-desc">Audio diproses langsung di browser kamu. Tidak ada yang di-upload ke server</div>
+        </div>
+      </div>
+      <div class="landing-cta">
+        <button class="btn-landing-primary" onclick="goToAuth('login')">🚀 MULAI GRATIS →</button>
+        <button class="btn-landing-secondary" onclick="goToAuth('reg')">📝 BUAT AKUN</button>
+      </div>
+      <div class="landing-stats">
+        <div class="landing-stat">
+          <div class="landing-stat-v" id="lsUsers">—</div>
+          <div class="landing-stat-l">Total Users</div>
+        </div>
+        <div class="landing-stat">
+          <div class="landing-stat-v">10+</div>
+          <div class="landing-stat-l">Fitur Canggih</div>
+        </div>
+        <div class="landing-stat">
+          <div class="landing-stat-v">100%</div>
+          <div class="landing-stat-l">Gratis Dasar</div>
+        </div>
+        <div class="landing-stat">
+          <div class="landing-stat-v" id="lsOnline">—</div>
+          <div class="landing-stat-l">Online Sekarang</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-panel-hdr">
+    <h4>🔔 Notifikasi</h4>
+    <button onclick="markAllNotifRead()">Tandai Semua Dibaca</button>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="notif-empty">Belum ada notifikasi</div>
+  </div>
 </div>
 
 <!-- AUTH -->
@@ -1149,7 +1341,13 @@ raf=requestAnimationFrame(draw);
       <div class="bdg bdg-ok" id="srvBadge">✅ Firebase Online</div>
       <div class="bdg" id="autoInd" style="display:none;color:var(--w);border-color:rgba(255,171,64,.3);background:rgba(255,171,64,.06)">⚡ AUTO</div>
       <div class="bdg" id="fCount">0 FILES</div>
+      <div class="notif-bell-wrap">
+        <button class="notif-bell" id="notifBellBtn" onclick="toggleNotifPanel()" title="Notifikasi">🔔</button>
+        <div class="notif-count" id="notifCount">0</div>
+      </div>
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Ganti tema">🌙</button>
     </div>
+
   </div>
   
   <!-- GLOBAL ANNOUNCEMENT BANNER -->
@@ -1254,7 +1452,68 @@ raf=requestAnimationFrame(draw);
       <div class="statcard"><div class="stlbl">ORIGINAL</div><div class="stval" id="stO">—</div></div>
       <div class="statcard"><div class="stlbl">PROCESSED</div><div class="stval" id="stP">—</div></div>
     </div>
-  </div>
+
+    <!-- TOOLBAR PANEL TOGGLE -->
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;margin-top:4px">
+      <span style="font-size:9px;letter-spacing:2px;color:var(--d);font-family:'JetBrains Mono',monospace;align-self:center;text-transform:uppercase;margin-right:4px">Panel Tambahan:</span>
+      <button class="abtn2" id="btnToggleViz" onclick="togglePanelViz()">📊 Visualizer</button>
+      <button class="abtn2" id="btnToggleEQ" onclick="togglePanelEQ()">🎚️ Equalizer</button>
+      <button class="abtn2" id="btnToggleHist" onclick="togglePanelHist()">📋 History</button>
+    </div>
+
+    <!-- SOUNDWAVE VISUALIZER -->
+    <div class="visualizer-panel" id="vizPanel" style="display:none">
+      <div class="plbl">📊 REAL-TIME VISUALIZER</div>
+      <canvas id="vizCanvas"></canvas>
+      <div class="viz-controls">
+        <span class="viz-label">Mode:</span>
+        <button class="viz-type-btn on" data-mode="bars" onclick="setVizMode('bars',this)">BARS</button>
+        <button class="viz-type-btn" data-mode="wave" onclick="setVizMode('wave',this)">WAVE</button>
+        <button class="viz-type-btn" data-mode="circular" onclick="setVizMode('circular',this)">CIRCLE</button>
+      </div>
+    </div>
+
+    <!-- 10-BAND EQUALIZER -->
+    <div class="eq-panel" id="eqPanel" style="display:none">
+      <div class="eq-header">
+        <div class="plbl" style="margin:0">🎚️ 10-BAND EQUALIZER</div>
+        <div class="eq-toggle">
+          <label class="eq-switch">
+            <input type="checkbox" id="eqEnabled" onchange="toggleEQ()">
+            <span class="eq-slider-sw"></span>
+          </label>
+          <span style="font-size:10px;color:var(--d);font-family:'JetBrains Mono',monospace" id="eqStatus">OFF</span>
+        </div>
+      </div>
+      <div class="eq-bands" id="eqBands">
+        <!-- Generated by JS -->
+      </div>
+      <div class="eq-presets">
+        <button class="eq-preset-btn" onclick="applyEQPreset('flat')">FLAT</button>
+        <button class="eq-preset-btn" onclick="applyEQPreset('bass')">🔊 BASS BOOST</button>
+        <button class="eq-preset-btn" onclick="applyEQPreset('vocal')">🎤 VOCAL</button>
+        <button class="eq-preset-btn" onclick="applyEQPreset('gaming')">🎮 GAMING</button>
+        <button class="eq-preset-btn" onclick="applyEQPreset('electronic')">⚡ ELECTRONIC</button>
+        <button class="eq-preset-btn" onclick="applyEQPreset('classical')">🎻 CLASSICAL</button>
+      </div>
+    </div>
+
+    <!-- HISTORY EXPORT -->
+    <div class="history-panel" id="historyPanel" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div class="plbl" style="margin:0">📋 HISTORY EXPORT</div>
+        <button class="history-clear-btn" onclick="clearExportHistory()">🗑 HAPUS SEMUA</button>
+      </div>
+      <div style="font-size:9px;color:var(--d);font-family:'JetBrains Mono',monospace;margin-bottom:8px">Riwayat 20 export terakhir tersimpan di browser</div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">Belum ada riwayat export</div>
+      </div>
+    </div>
+
+  </div><!-- end #editor -->
+  </div><!-- end #mainApp -->
+
+
   <div class="footer">
   <span class="footer-gradient-text">RPMxDEV.AUDIO BYPASS STUDIO · Firebase Realtime · MP3 Encoder by RPMxPRIME</span>
   <span class="footer-rating-btn" onclick="openRatingModal()">⭐ Kasih Rating</span>
@@ -2215,14 +2474,17 @@ auth.onAuthStateChanged(async(firebaseUser)=>{
   document.getElementById('fbLoading').classList.add('hide');
   if(!firebaseUser){
     document.getElementById('mainApp').style.display='none';
-    document.getElementById('authOv').classList.remove('hide');
+    document.getElementById('authOv').classList.add('hide');
     document.getElementById('gateOv').classList.add('hide');
+    document.getElementById('landingOv').classList.remove('hide');
     setBtnLoading('btnLogin',false,'LOGIN →');
     setBtnLoading('btnReg',false,'BUAT AKUN →');
     if(announceUnsub) announceUnsub();
     if(chatUnsub) chatUnsub();
+    loadLandingStats();
     return;
   }
+
   try{
     loadConfig();
     const profSnap = await userRef(firebaseUser.uid).get();
@@ -2274,13 +2536,17 @@ function afterAuth(){
 function launchApp(){
   if(!CU)return;
   document.getElementById('gateOv').classList.add('hide');
+  document.getElementById('landingOv').classList.add('hide');
   document.getElementById('mainApp').style.display='';
   updateUBar();syncUI();
   initMentionInput();
   showPromoSection();
   initCustomPresets();
   setTimeout(checkVipExpiry,2000);
+  // Init new features
+  setTimeout(onNewFeaturesReady, 500);
 }
+
 
 function updateUBar(){
   if(!CU)return;
@@ -2667,8 +2933,15 @@ async function encodeMp3(rendered,bitrate){ bitrate=bitrate||128; if(typeof lame
 async function doExport(fd){ showProg('Processing Audio','Speed '+spd.toFixed(2)+'× · Pitch '+(pit>0?'+':'')+pit+'st'); if(playing)stopPB(); let rendered; try{setProg(30,'Rendering audio...');rendered=await renderAudio(fd);setProg(65,'Audio rendered...');} catch(e){hideProg();throw new Error('Render gagal: '+(e.message||e));} const base=fd.name.replace(/\.[^.]+$/,''); let blob,outName; if(fmt==='mp3'){ if(typeof lamejs!=='undefined'){blob=await encodeMp3(rendered,128);if(!blob){const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs error','Disimpan sebagai WAV','warn');}else outName=base+'_bypass.mp3';} else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass_fallback.wav';toast('lamejs tidak tersedia','Disimpan sebagai WAV','warn');} }else if(fmt==='ogg'&&typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported('audio/ogg;codecs=vorbis')){ blob=await new Promise(res=>{const ac2=new AudioContext(),src2=ac2.createBufferSource();src2.buffer=rendered;const dest=ac2.createMediaStreamDestination();src2.connect(dest);const mr=new MediaRecorder(dest.stream,{mimeType:'audio/ogg;codecs=vorbis'});const chunks=[];mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};mr.onstop=()=>{ac2.close();res(new Blob(chunks,{type:'audio/ogg'}));};mr.start();src2.start(0);src2.onended=()=>setTimeout(()=>{try{mr.stop();}catch(e){}},200);setTimeout(()=>{try{mr.stop();}catch(e){}},Math.ceil((rendered.duration+3)*1000));}); outName=base+'_bypass.ogg'; }else{const wb=buf2wav(rendered);blob=new Blob([wb],{type:'audio/wav'});outName=base+'_bypass.wav';if(fmt==='ogg')toast('OGG tidak didukung','Disimpan sebagai WAV','warn');} rendered=null; setProg(95,'Menyiapkan download...');return{blob,filename:outName}; }
 function triggerDL(blob,filename){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},2000);}
 function openImage(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('show');}
-document.getElementById('btnEx').addEventListener('click',async()=>{ if(!CU)return; if(!canExport()){toast('Limit habis','Upgrade VIP','warn');openMod('subModal');return;} const f=files[ai];if(!f)return; const btn=document.getElementById('btnEx');btn.disabled=true; try{ const res=await doExport(f);setProg(100,'Download dimulai! 🎉');triggerDL(res.blob,res.filename);setTimeout(hideProg,700); await incUsage(); await addLog('EXPORT',`${f.name}→${fmt.toUpperCase()}(${spd}×,${pit>0?'+':''}${pit}st)`,''); toast('Export berhasil! 🎉',res.filename,'success'); }catch(e){hideProg();toast('Export gagal',e.message||'Error','error');} btn.disabled=false;updExpState();updExpBtns(); });
-document.getElementById('btnExAll').addEventListener('click',async()=>{ if(!CU)return; let ok=0,fail=0; for(let i=0;i<files.length;i++){ if(!canExport()){toast('Limit habis','Sisa tidak di-export','warn');break;} try{const res=await doExport(files[i]);triggerDL(res.blob,res.filename);await incUsage();await addLog('EXP_BULK',files[i].name+' OK','');ok++;await new Promise(r=>setTimeout(r,600));} catch(e){fail++;toast('Gagal: '+files[i].name,e.message,'error');} } setProg(100,`Selesai: ${ok} berhasil, ${fail} gagal`);setTimeout(hideProg,900); if(ok>0)toast('Bulk export selesai',ok+' file','success'); updExpState();updExpBtns(); });
+document.getElementById('btnEx').addEventListener('click',async()=>{ if(!CU)return; if(!canExport()){toast('Limit habis','Upgrade VIP','warn');openMod('subModal');return;} const f=files[ai];if(!f)return; const btn=document.getElementById('btnEx');btn.disabled=true; try{ const res=await doExport(f);setProg(100,'Download dimulai! 🎉');triggerDL(res.blob,res.filename);setTimeout(hideProg,700); await incUsage(); await addLog('EXPORT',`${f.name}→${fmt.toUpperCase()}(${spd}×,${pit>0?'+':''}${pit}st)`,''); toast('Export berhasil! 🎉',res.filename,'success');
+  // Add to history & notification
+  addExportHistory(res.filename, fmt, `${spd}x / ${pit>0?'+':''}${pit}st`);
+  addNotification('🎉', 'Export Berhasil!', res.filename + ' · ' + fmt.toUpperCase());
+  }catch(e){hideProg();toast('Export gagal',e.message||'Error','error');} btn.disabled=false;updExpState();updExpBtns(); });
+document.getElementById('btnExAll').addEventListener('click',async()=>{ if(!CU)return; let ok=0,fail=0; for(let i=0;i<files.length;i++){ if(!canExport()){toast('Limit habis','Sisa tidak di-export','warn');break;} try{const res=await doExport(files[i]);triggerDL(res.blob,res.filename);
+    addExportHistory(res.filename, fmt, `${spd}x / ${pit>0?'+':''}${pit}st`);
+    await incUsage();await addLog('EXP_BULK',files[i].name+' OK','');ok++;await new Promise(r=>setTimeout(r,600));} catch(e){fail++;toast('Gagal: '+files[i].name,e.message,'error');} } setProg(100,`Selesai: ${ok} berhasil, ${fail} gagal`);setTimeout(hideProg,900); if(ok>0){toast('Bulk export selesai',ok+' file','success');addNotification('📦','Bulk Export Selesai',ok+' file berhasil di-export!');} updExpState();updExpBtns(); });
+
 /* DROPZONE */
 const dzEl=document.getElementById('dz'),fiEl=document.getElementById('fInput'); dzEl.addEventListener('dragover',e=>{e.preventDefault();dzEl.classList.add('drag');}); dzEl.addEventListener('dragleave',()=>dzEl.classList.remove('drag')); dzEl.addEventListener('drop',e=>{e.preventDefault();dzEl.classList.remove('drag');addFiles(e.dataTransfer.files);}); dzEl.addEventListener('click',()=>fiEl.click()); fiEl.addEventListener('change',e=>{addFiles(e.target.files);e.target.value='';});
 
@@ -3194,6 +3467,636 @@ async function deleteCustomPreset(id){
     loadCustomPresets();
   }catch(e){ toast('Gagal hapus', e.message, 'error'); }
 }
+
+/* ============================================================
+   LANDING PAGE
+   ============================================================ */
+function showLanding(){
+  document.getElementById('landingOv').classList.remove('hide');
+  // Load live stats for landing
+  loadLandingStats();
+}
+
+function hideLanding(){
+  document.getElementById('landingOv').classList.add('hide');
+}
+
+function goToAuth(tab){
+  hideLanding();
+  document.getElementById('authOv').classList.remove('hide');
+  if(tab === 'reg') switchTab('reg');
+  else switchTab('login');
+}
+
+async function loadLandingStats(){
+  try{
+    // Count online presence
+    const presSnap = await db.collection('presence').get();
+    const cut = Date.now() - 5*60*1000;
+    let online = 0;
+    presSnap.forEach(doc => {
+      const d = doc.data();
+      const t = d.ts?.toMillis?.() || d.ts?.seconds*1000 || 0;
+      if(t > cut && d.online === true) online++;
+    });
+    const lsOnline = document.getElementById('lsOnline');
+    if(lsOnline) lsOnline.textContent = online;
+
+    // Count total users
+    const usersSnap = await db.collection('users').get();
+    const lsUsers = document.getElementById('lsUsers');
+    if(lsUsers) lsUsers.textContent = usersSnap.size + '+';
+  }catch(e){}
+}
+
+/* ============================================================
+   DARK / LIGHT MODE TOGGLE
+   ============================================================ */
+let _isLightMode = false;
+
+function toggleTheme(){
+  _isLightMode = !_isLightMode;
+  document.body.classList.toggle('light-mode', _isLightMode);
+  const btn = document.getElementById('themeBtn');
+  if(btn) btn.textContent = _isLightMode ? '☀️' : '🌙';
+  localStorage.setItem('rpmx_theme', _isLightMode ? 'light' : 'dark');
+  toast(_isLightMode ? 'Light Mode ☀️' : 'Dark Mode 🌙', '', 'success');
+}
+
+function initTheme(){
+  const saved = localStorage.getItem('rpmx_theme');
+  if(saved === 'light'){
+    _isLightMode = true;
+    document.body.classList.add('light-mode');
+    const btn = document.getElementById('themeBtn');
+    if(btn) btn.textContent = '☀️';
+  }
+}
+
+/* ============================================================
+   10-BAND EQUALIZER
+   ============================================================ */
+const EQ_FREQS = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+const EQ_LABELS = ['32Hz','64Hz','125Hz','250Hz','500Hz','1kHz','2kHz','4kHz','8kHz','16kHz'];
+const EQ_PRESETS = {
+  flat:       [0,0,0,0,0,0,0,0,0,0],
+  bass:       [8,7,5,3,1,0,-1,-1,-1,-2],
+  vocal:      [-2,-1,0,2,4,4,3,1,0,-1],
+  gaming:     [5,4,3,1,0,-1,0,2,4,5],
+  electronic: [6,5,2,0,-1,1,2,3,4,5],
+  classical:  [3,2,1,0,-1,-1,0,1,3,4]
+};
+
+let eqFilters = [];
+let _eqEnabled = false;
+let _eqGains = [0,0,0,0,0,0,0,0,0,0];
+
+function initEQ(audioCtx, sourceNode){
+  eqFilters = EQ_FREQS.map((freq, i) => {
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = i === 0 ? 'lowshelf' : i === EQ_FREQS.length-1 ? 'highshelf' : 'peaking';
+    filter.frequency.value = freq;
+    filter.Q.value = 1.4;
+    filter.gain.value = 0;
+    return filter;
+  });
+  // chain filters
+  for(let i = 0; i < eqFilters.length - 1; i++){
+    eqFilters[i].connect(eqFilters[i+1]);
+  }
+  return eqFilters;
+}
+
+function buildEQBands(){
+  const container = document.getElementById('eqBands');
+  if(!container) return;
+  container.innerHTML = EQ_FREQS.map((freq, i) => `
+    <div class="eq-band">
+      <div class="eq-band-val" id="eqVal${i}">0dB</div>
+      <input type="range" class="eq-band-slider" id="eqSlider${i}"
+        min="-12" max="12" step="1" value="0"
+        oninput="onEQChange(${i},this.value)"
+        disabled>
+      <div class="eq-band-label">${EQ_LABELS[i]}</div>
+    </div>
+  `).join('');
+}
+
+function onEQChange(idx, val){
+  _eqGains[idx] = parseFloat(val);
+  const valEl = document.getElementById('eqVal'+idx);
+  if(valEl) valEl.textContent = (val > 0 ? '+' : '') + val + 'dB';
+  if(eqFilters[idx] && _eqEnabled){
+    eqFilters[idx].gain.value = parseFloat(val);
+  }
+}
+
+function toggleEQ(){
+  _eqEnabled = document.getElementById('eqEnabled').checked;
+  const status = document.getElementById('eqStatus');
+  if(status) status.textContent = _eqEnabled ? 'ON' : 'OFF';
+  // Enable/disable sliders
+  EQ_FREQS.forEach((_, i) => {
+    const sl = document.getElementById('eqSlider'+i);
+    if(sl) sl.disabled = !_eqEnabled;
+  });
+  // Apply gains
+  if(_eqEnabled){
+    eqFilters.forEach((f, i) => { if(f) f.gain.value = _eqGains[i]; });
+    toast('EQ Aktif 🎚️', 'Equalizer 10-band dinyalakan', 'success');
+  } else {
+    eqFilters.forEach(f => { if(f) f.gain.value = 0; });
+    toast('EQ Off', '', 'warn');
+  }
+}
+
+function applyEQPreset(name){
+  const gains = EQ_PRESETS[name] || EQ_PRESETS.flat;
+  _eqGains = [...gains];
+  // Update UI
+  gains.forEach((g, i) => {
+    const sl = document.getElementById('eqSlider'+i);
+    const vl = document.getElementById('eqVal'+i);
+    if(sl) sl.value = g;
+    if(vl) vl.textContent = (g > 0 ? '+' : '') + g + 'dB';
+    if(eqFilters[i] && _eqEnabled) eqFilters[i].gain.value = g;
+  });
+  // Highlight active preset button
+  document.querySelectorAll('.eq-preset-btn').forEach(btn => {
+    btn.classList.remove('on');
+    if(btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'"+name+"'")) btn.classList.add('on');
+  });
+  toast('EQ Preset: '+name.toUpperCase(), '', 'success');
+}
+
+function showEQAndViz(){
+  const vizPanel = document.getElementById('vizPanel');
+  const eqPanel = document.getElementById('eqPanel');
+  const historyPanel = document.getElementById('historyPanel');
+  if(vizPanel) vizPanel.style.display = '';
+  if(eqPanel) eqPanel.style.display = '';
+  if(historyPanel) historyPanel.style.display = '';
+  buildEQBands();
+  initVizCanvas();
+}
+
+/* ============================================================
+   SOUNDWAVE VISUALIZER REAL-TIME
+   ============================================================ */
+let _vizMode = 'bars';
+let _vizRAF = null;
+let _vizAnalyser = null;
+
+function setVizMode(mode, btn){
+  _vizMode = mode;
+  document.querySelectorAll('.viz-type-btn').forEach(b => b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+}
+
+function initVizCanvas(){
+  const canvas = document.getElementById('vizCanvas');
+  if(!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = (rect.width || 600) * dpr;
+  canvas.height = 80 * dpr;
+}
+
+function startVisualizer(analyser){
+  _vizAnalyser = analyser;
+  if(_vizRAF) cancelAnimationFrame(_vizRAF);
+  drawVisualizer();
+}
+
+function stopVisualizer(){
+  if(_vizRAF) cancelAnimationFrame(_vizRAF);
+  _vizRAF = null;
+  const canvas = document.getElementById('vizCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawVisualizer(){
+  _vizRAF = requestAnimationFrame(drawVisualizer);
+  const canvas = document.getElementById('vizCanvas');
+  if(!canvas || !_vizAnalyser) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  if(_vizMode === 'bars'){
+    const bufLen = _vizAnalyser.frequencyBinCount;
+    const data = new Uint8Array(bufLen);
+    _vizAnalyser.getByteFrequencyData(data);
+    const barW = Math.max(1, Math.floor(W / (bufLen / 4)));
+    let x = 0;
+    for(let i = 0; i < bufLen; i += 4){
+      const h = (data[i] / 255) * H;
+      const hue = (i / bufLen) * 200 + 160;
+      ctx.fillStyle = `hsl(${hue},100%,60%)`;
+      ctx.fillRect(x, H - h, barW - 1, h);
+      x += barW;
+      if(x >= W) break;
+    }
+  } else if(_vizMode === 'wave'){
+    const bufLen = _vizAnalyser.fftSize;
+    const data = new Uint8Array(bufLen);
+    _vizAnalyser.getByteTimeDomainData(data);
+    ctx.beginPath();
+    ctx.strokeStyle = '#00e5ff';
+    ctx.lineWidth = 2;
+    const sliceW = W / bufLen;
+    let x = 0;
+    for(let i = 0; i < bufLen; i++){
+      const v = data[i] / 128.0;
+      const y = v * H / 2;
+      if(i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+      x += sliceW;
+    }
+    ctx.stroke();
+  } else if(_vizMode === 'circular'){
+    const bufLen = _vizAnalyser.frequencyBinCount;
+    const data = new Uint8Array(bufLen);
+    _vizAnalyser.getByteFrequencyData(data);
+    const cx = W/2, cy = H/2;
+    const radius = Math.min(W, H) * 0.25;
+    const bars = Math.min(64, bufLen);
+    for(let i = 0; i < bars; i++){
+      const angle = (i / bars) * Math.PI * 2 - Math.PI/2;
+      const bh = (data[i] / 255) * radius * 0.8;
+      const hue = (i / bars) * 360;
+      ctx.beginPath();
+      ctx.strokeStyle = `hsl(${hue},100%,60%)`;
+      ctx.lineWidth = 2;
+      ctx.moveTo(cx + Math.cos(angle)*radius, cy + Math.sin(angle)*radius);
+      ctx.lineTo(cx + Math.cos(angle)*(radius+bh), cy + Math.sin(angle)*(radius+bh));
+      ctx.stroke();
+    }
+    // inner circle
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(0,229,255,0.2)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+}
+
+/* ============================================================
+   HISTORY EXPORT
+   ============================================================ */
+const HISTORY_KEY = 'rpmx_export_history';
+
+function getExportHistory(){
+  try{ return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
+  catch(e){ return []; }
+}
+
+function addExportHistory(filename, format, settings){
+  const hist = getExportHistory();
+  hist.unshift({
+    filename, format, settings,
+    ts: Date.now()
+  });
+  if(hist.length > 20) hist.length = 20;
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+  renderExportHistory();
+}
+
+function renderExportHistory(){
+  const container = document.getElementById('historyList');
+  if(!container) return;
+  const hist = getExportHistory();
+  if(!hist.length){
+    container.innerHTML = '<div class="history-empty">Belum ada riwayat export</div>';
+    return;
+  }
+  container.innerHTML = hist.map(h => {
+    const d = new Date(h.ts);
+    const time = d.toLocaleString('id-ID', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    return `<div class="history-item">
+      <div class="history-item-name" title="${h.filename}">${h.filename}</div>
+      <div class="history-item-badge">${h.format.toUpperCase()}</div>
+      <div class="history-item-meta">${h.settings || ''}</div>
+      <div class="history-item-meta">${time}</div>
+    </div>`;
+  }).join('');
+}
+
+function clearExportHistory(){
+  if(!confirm('Hapus semua riwayat export?')) return;
+  localStorage.removeItem(HISTORY_KEY);
+  renderExportHistory();
+  toast('History dihapus','','warn');
+}
+
+/* ============================================================
+   NOTIFICATION SYSTEM
+   ============================================================ */
+let _notifications = [];
+let _notifUnread = 0;
+
+function addNotification(icon, title, text){
+  const notif = { id: Date.now(), icon, title, text, ts: Date.now(), read: false };
+  _notifications.unshift(notif);
+  if(_notifications.length > 30) _notifications.length = 30;
+  _notifUnread++;
+  updateNotifBadge();
+  renderNotifList();
+}
+
+function updateNotifBadge(){
+  const badge = document.getElementById('notifCount');
+  if(!badge) return;
+  if(_notifUnread > 0){
+    badge.textContent = _notifUnread > 9 ? '9+' : _notifUnread;
+    badge.classList.add('show');
+  } else {
+    badge.classList.remove('show');
+  }
+}
+
+function toggleNotifPanel(){
+  const panel = document.getElementById('notifPanel');
+  if(!panel) return;
+  panel.classList.toggle('show');
+  if(panel.classList.contains('show')){
+    renderNotifList();
+    // close when clicking outside
+    setTimeout(()=>{
+      document.addEventListener('click', function h(e){
+        if(!panel.contains(e.target) && e.target.id !== 'notifBellBtn'){
+          panel.classList.remove('show');
+          document.removeEventListener('click', h);
+        }
+      });
+    }, 10);
+  }
+}
+
+function markAllNotifRead(){
+  _notifications.forEach(n => n.read = true);
+  _notifUnread = 0;
+  updateNotifBadge();
+  renderNotifList();
+}
+
+function renderNotifList(){
+  const container = document.getElementById('notifList');
+  if(!container) return;
+  if(!_notifications.length){
+    container.innerHTML = '<div class="notif-empty">🔔 Belum ada notifikasi</div>';
+    return;
+  }
+  container.innerHTML = _notifications.map(n => {
+    const d = new Date(n.ts);
+    const time = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    return `<div class="notif-item${n.read?'':' unread'}" onclick="markNotifRead(${n.id})">
+      <div class="notif-dot"></div>
+      <div class="notif-ico">${n.icon}</div>
+      <div class="notif-body">
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-time">${time}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function markNotifRead(id){
+  const notif = _notifications.find(n => n.id === id);
+  if(notif && !notif.read){
+    notif.read = true;
+    _notifUnread = Math.max(0, _notifUnread - 1);
+    updateNotifBadge();
+    renderNotifList();
+  }
+}
+
+/* ============================================================
+   AUTH UI — Password visibility toggle + strength meter
+   ============================================================ */
+function togglePasswordVisibility(inputId, btn){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  if(input.type === 'password'){
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+function checkPasswordStrength(val){
+  let score = 0;
+  if(val.length >= 6) score++;
+  if(val.length >= 10) score++;
+  if(/[A-Z]/.test(val)) score++;
+  if(/[0-9]/.test(val)) score++;
+  if(/[^A-Za-z0-9]/.test(val)) score++;
+  return score;
+}
+
+function onPasswordInput(inputId, fillId, labelId){
+  const val = document.getElementById(inputId)?.value || '';
+  const fill = document.getElementById(fillId);
+  const label = document.getElementById(labelId);
+  if(!fill || !label) return;
+  const score = checkPasswordStrength(val);
+  const pct = Math.min(100, score * 20);
+  fill.style.width = pct + '%';
+  fill.className = 'input-strength-fill ' + (score <= 1 ? 'strength-weak' : score <= 3 ? 'strength-med' : 'strength-strong');
+  label.textContent = score <= 1 ? 'Lemah' : score <= 3 ? 'Sedang' : 'Kuat';
+}
+
+/* ============================================================
+   INITIALIZATION — Semua fitur baru
+   ============================================================ */
+(function initNewFeatures(){
+  // Init theme
+  initTheme();
+
+  // Init password strength for register
+  const rPass = document.getElementById('rPass');
+  if(rPass){
+    // Add strength indicator after password field
+    const fg = rPass.closest('.fg');
+    if(fg){
+      const strengthDiv = document.createElement('div');
+      strengthDiv.innerHTML = `
+        <div class="input-strength"><div class="input-strength-fill" id="rPassFill"></div></div>
+        <div class="strength-label" id="rPassLabel"></div>
+      `;
+      fg.appendChild(strengthDiv);
+      rPass.addEventListener('input', () => onPasswordInput('rPass', 'rPassFill', 'rPassLabel'));
+
+      // Add password visibility toggle
+      const wrap = document.createElement('div');
+      wrap.className = 'input-wrap';
+      rPass.parentNode.insertBefore(wrap, rPass);
+      wrap.appendChild(rPass);
+      const eyeBtn = document.createElement('button');
+      eyeBtn.className = 'input-eye';
+      eyeBtn.type = 'button';
+      eyeBtn.textContent = '👁';
+      eyeBtn.onclick = () => togglePasswordVisibility('rPass', eyeBtn);
+      wrap.appendChild(eyeBtn);
+    }
+  }
+
+  // Add eye toggle to login password
+  const lPass = document.getElementById('lPass');
+  if(lPass && !lPass.closest('.input-wrap')){
+    const wrap = document.createElement('div');
+    wrap.className = 'input-wrap';
+    lPass.parentNode.insertBefore(wrap, lPass);
+    wrap.appendChild(lPass);
+    const eyeBtn = document.createElement('button');
+    eyeBtn.className = 'input-eye';
+    eyeBtn.type = 'button';
+    eyeBtn.textContent = '👁';
+    eyeBtn.onclick = () => togglePasswordVisibility('lPass', eyeBtn);
+    wrap.appendChild(eyeBtn);
+  }
+
+  // On page load: show landing if not logged in (will be overridden by auth state)
+  window.addEventListener('load', () => {
+    // Landing will be shown/hidden by onAuthStateChanged
+  });
+})();
+
+/* Override showMain to init new features */
+const _origInitCustomPresets = window.initCustomPresets;
+
+// Hook: called after user logs in and main app shows
+function onNewFeaturesReady(){
+  showEQAndViz();
+  renderExportHistory();
+  renderNotifList();
+
+  // Welcome notification
+  addNotification('👋', 'Selamat Datang!', 'Fitur baru: EQ 10-band, Visualizer & History Export tersedia!');
+
+  // Announce new features notification
+  setTimeout(()=>{
+    addNotification('🎚️', 'EQ 10-Band Siap', 'Coba equalizer 10-band baru di bawah — aktifkan toggle ON untuk mulai');
+    addNotification('📊', 'Visualizer Real-time', 'Putar audio untuk melihat visualizer gelombang suara real-time');
+  }, 2000);
+}
+
+/* Hook into existing auth flow — patch the function that shows main app */
+const _origOnAuthUser = window.onAuthUser;
+
+/* ============================================================
+   PANEL TOGGLE FUNCTIONS
+   ============================================================ */
+function togglePanelViz(){
+  const p = document.getElementById('vizPanel');
+  const btn = document.getElementById('btnToggleViz');
+  if(!p) return;
+  const shown = p.style.display !== 'none' && p.style.display !== '';
+  p.style.display = shown ? 'none' : '';
+  if(btn) btn.classList.toggle('on', !shown);
+  if(!shown){
+    initVizCanvas();
+    if(playing) startVisualizer(_vizAnalyserRef);
+  } else {
+    stopVisualizer();
+  }
+}
+
+function togglePanelEQ(){
+  const p = document.getElementById('eqPanel');
+  const btn = document.getElementById('btnToggleEQ');
+  if(!p) return;
+  const shown = p.style.display !== 'none' && p.style.display !== '';
+  p.style.display = shown ? 'none' : '';
+  if(btn) btn.classList.toggle('on', !shown);
+  if(!shown && !document.getElementById('eqBands').children.length) buildEQBands();
+}
+
+function togglePanelHist(){
+  const p = document.getElementById('historyPanel');
+  const btn = document.getElementById('btnToggleHist');
+  if(!p) return;
+  const shown = p.style.display !== 'none' && p.style.display !== '';
+  p.style.display = shown ? 'none' : '';
+  if(btn) btn.classList.toggle('on', !shown);
+  if(!shown) renderExportHistory();
+}
+
+/* ============================================================
+   HOOK VISUALIZER TO AUDIO PLAYBACK
+   ============================================================ */
+let _vizAnalyserRef = null;
+
+// Patch startPB to also start visualizer
+const _origStartPB = window.startPB;
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Patch startPB by monitoring playing state
+  const origBtnPlay = document.getElementById('btnPlay');
+  if(origBtnPlay){
+    origBtnPlay.addEventListener('click', () => {
+      // After 100ms check if playing started, hook analyser
+      setTimeout(() => {
+        try{
+          if(typeof getAC === 'function' && typeof SN !== 'undefined' && SN){
+            const ctx = getAC();
+            if(!_vizAnalyserRef){
+              _vizAnalyserRef = ctx.createAnalyser();
+              _vizAnalyserRef.fftSize = 512;
+              _vizAnalyserRef.smoothingTimeConstant = 0.8;
+            }
+            // connect source to analyser → destination
+            try{ SN.connect(_vizAnalyserRef); } catch(e){}
+            try{ _vizAnalyserRef.connect(ctx.destination); } catch(e){}
+            // Start visualizer if panel visible
+            const vizPanel = document.getElementById('vizPanel');
+            if(vizPanel && vizPanel.style.display !== 'none'){
+              startVisualizer(_vizAnalyserRef);
+            }
+          }
+        }catch(e){}
+      }, 120);
+    });
+  }
+});
+
+/* ============================================================
+   INIT THEME ON LOAD (early, before DOMContentLoaded)
+   ============================================================ */
+(function(){
+  const saved = localStorage.getItem('rpmx_theme');
+  if(saved === 'light'){
+    document.body.classList.add('light-mode');
+  }
+})();
+
+/* ============================================================
+   CUSTOM PRESET PANEL — Reposition setelah panels baru
+   ============================================================ */
+// Override initCustomPresets to also show the new panel toolbar
+const _baseInitCustomPresets = initCustomPresets;
+initCustomPresets = function(){
+  _baseInitCustomPresets();
+};
+
+/* ============================================================
+   CLOSE NOTIF PANEL ON OUTSIDE CLICK
+   ============================================================ */
+document.addEventListener('click', function(e){
+  const panel = document.getElementById('notifPanel');
+  const bell = document.getElementById('notifBellBtn');
+  if(panel && panel.classList.contains('show')){
+    if(!panel.contains(e.target) && e.target !== bell && !bell?.contains(e.target)){
+      panel.classList.remove('show');
+    }
+  }
+});
+
 </script>
 </body>
 </html>
