@@ -2791,9 +2791,9 @@ function startPB(){
   if(f.broken||!f.ab){toast('Preview N/A','Export langsung aja','warn');return;}
 
   // Resume atau buat AudioContext baru
-  const ctx=getAC();
-  if(ctx.state==='suspended'){ctx.resume();}
-  if(ctx.state==='closed'){AC=null;const ctx2=getAC();}
+  let ctx=getAC();
+  if(ctx.state==='closed'){AC=null;ctx=getAC();}
+  if(ctx.state==='suspended'){ctx.resume().catch(()=>{});}
 
   const src=ctx.createBufferSource();
   src.buffer=f.ab;
@@ -3269,7 +3269,7 @@ async function deletePromoCode(id, code){
 /* TRANSPORT */
 document.getElementById('btnPlay').addEventListener('click',togglePlay); document.getElementById('btnRew').addEventListener('click',()=>{if(playing)stopPB();PO=0;ppos=0;drawWave();}); document.getElementById('btnStop').addEventListener('click',()=>{stopPB();PO=0;ppos=0;drawWave();});
 let _rt; window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(()=>{_waveCache.width=0;if(files.length)drawWave();},150);});
-(document.getElementById('lPass')||{}).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}); (document.getElementById('lEmail')||{}).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}); (document.getElementById('rPass')||{}).addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
+document.getElementById('lPass')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&typeof doLogin==='function')doLogin();}); document.getElementById('lEmail')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&typeof doLogin==='function')doLogin();}); document.getElementById('rPass')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&typeof doRegister==='function')doRegister();});
 function updExpState(){if(!CU)return;const ok=canExport();document.getElementById('btnEx').disabled=!ok;document.getElementById('btnExAll').disabled=!ok;if(!ok)document.getElementById('btnEx').textContent='🚫 LIMIT HABIS — UPGRADE VIP';else updExpBtns();}
 
 /* ============================================================
@@ -3922,7 +3922,7 @@ function onPasswordInput(inputId, fillId, labelId){
   initTheme();
 
   // Init password strength for register
-  const rPass = (document.getElementById('rPass')||{});
+  const rPass = document.getElementById('rPass');
   if(rPass){
     // Add strength indicator after password field
     const fg = rPass.closest('.fg');
@@ -3950,7 +3950,7 @@ function onPasswordInput(inputId, fillId, labelId){
   }
 
   // Add eye toggle to login password
-  const lPass = (document.getElementById('lPass')||{});
+  const lPass = document.getElementById('lPass');
   if(lPass && !lPass.closest('.input-wrap')){
     const wrap = document.createElement('div');
     wrap.className = 'input-wrap';
